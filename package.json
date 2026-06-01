@@ -9,9 +9,18 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@prisma/client": "^5.18.0",
+    "bcryptjs": "^3.0.3",
+    "clsx": "^2.1.1",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8",
+    "lucide-react": "^1.17.0",
     "next": "16.2.6",
+    "next-auth": "^4.24.14",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "recharts": "^3.8.1",
+    "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -20,8 +29,13 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
+    "prisma": "^5.18.0",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   },
-  "packageManager": "npm@11.11.0+sha512.f36811c4aae1fde639527368ae44c571d050006a608d67a191f195a801a52637a312d259186254aa3a3799b05335b7390539cf28656d18f0591a1125ba35f973"
+  "packageManager": "npm@11.11.0+sha512.f36811c4aae1fde639527368ae44c571d050006a608d67a191f195a801a52637a312d259186254aa3a3799b05335b7390539cf28656d18f0591a1125ba35f973",
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  }
 }

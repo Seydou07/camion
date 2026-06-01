@@ -22,22 +22,22 @@ export function Button({
   ...props
 }: ButtonProps) {
   const variants = {
-    primary: "bg-sky-500 hover:bg-sky-600 text-white shadow-sm",
-    secondary: "bg-white hover:bg-sky-50 text-sky-500 border border-sky-500",
-    danger: "bg-red-50 hover:bg-red-100 text-red-600 border border-red-200",
-    ghost: "bg-transparent hover:bg-gray-100 text-gray-700",
+    primary: "bg-sky-500 hover:bg-sky-600 text-white shadow-md shadow-sky-500/10 btn-premium",
+    secondary: "bg-sky-50/80 hover:bg-sky-100 text-sky-600 font-semibold",
+    danger: "bg-red-50 hover:bg-red-100 text-red-600 font-semibold",
+    ghost: "bg-transparent hover:bg-slate-50 text-slate-600",
   };
 
   const sizes = {
-    sm: "px-3 py-1.5 text-sm",
-    md: "px-4 py-2.5 text-sm",
-    lg: "px-6 py-3 text-base",
+    sm: "px-3.5 py-2 text-xs rounded-xl",
+    md: "px-5 py-2.5 text-sm rounded-xl",
+    lg: "px-7 py-3.5 text-base rounded-2xl",
   };
 
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-sky-500/20 disabled:opacity-50 disabled:cursor-not-allowed",
+        "inline-flex items-center justify-center gap-2 font-semibold transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-sky-500/10 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer",
         variants[variant],
         sizes[size],
         className
@@ -71,22 +71,22 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, className, ...props }, ref) => (
-    <div className="space-y-1.5">
+    <div className="space-y-1.5 w-full">
       {label && (
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider">
           {label}
         </label>
       )}
       <input
         ref={ref}
         className={cn(
-          "w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500",
-          error && "border-red-300 focus:border-red-500 focus:ring-red-500/20",
+          "w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 hover:border-slate-300",
+          error && "border-red-300 focus:border-red-500 focus:ring-red-500/10",
           className
         )}
         {...props}
       />
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && <p className="text-xs text-red-500 font-medium">{error}</p>}
     </div>
   )
 );
@@ -104,31 +104,38 @@ interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
 
 export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   ({ label, error, options, placeholder, className, ...props }, ref) => (
-    <div className="space-y-1.5">
+    <div className="space-y-1.5 w-full">
       {label && (
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider">
           {label}
         </label>
       )}
-      <select
-        ref={ref}
-        className={cn(
-          "w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500",
-          error && "border-red-300 focus:border-red-500 focus:ring-red-500/20",
-          className
-        )}
-        {...props}
-      >
-        {placeholder && (
-          <option value="">{placeholder}</option>
-        )}
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
-      </select>
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      <div className="relative">
+        <select
+          ref={ref}
+          className={cn(
+            "w-full appearance-none rounded-xl border border-slate-200 bg-white px-4 py-2.5 pr-10 text-sm text-slate-800 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 hover:border-slate-300 cursor-pointer",
+            error && "border-red-300 focus:border-red-500 focus:ring-red-500/10",
+            className
+          )}
+          {...props}
+        >
+          {placeholder && (
+            <option value="">{placeholder}</option>
+          )}
+          {options.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </div>
+      {error && <p className="text-xs text-red-500 font-medium">{error}</p>}
     </div>
   )
 );
@@ -144,22 +151,22 @@ interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement
 
 export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ label, error, className, ...props }, ref) => (
-    <div className="space-y-1.5">
+    <div className="space-y-1.5 w-full">
       {label && (
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider">
           {label}
         </label>
       )}
       <textarea
         ref={ref}
         className={cn(
-          "w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 min-h-[80px]",
-          error && "border-red-300 focus:border-red-500 focus:ring-red-500/20",
+          "w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 hover:border-slate-300 min-h-[80px]",
+          error && "border-red-300 focus:border-red-500 focus:ring-red-500/10",
           className
         )}
         {...props}
       />
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && <p className="text-xs text-red-500 font-medium">{error}</p>}
     </div>
   )
 );
@@ -179,8 +186,8 @@ export function Card({ children, className, hover = false, onClick }: CardProps)
   return (
     <div
       className={cn(
-        "bg-white rounded-xl border border-gray-100 shadow-sm p-5",
-        hover && "hover:shadow-md hover:border-gray-200 transition-all duration-200 cursor-pointer",
+        "card-modern",
+        hover && "card-modern-hover cursor-pointer",
         className
       )}
       onClick={onClick}
@@ -200,10 +207,12 @@ interface BadgeProps {
 }
 
 export function Badge({ children, variant, className }: BadgeProps) {
+  // Mapper les variants classiques de couleur
+  // Ex: "bg-sky-500 text-white" -> plus moderne
   return (
     <span
       className={cn(
-        "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border",
+        "inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider border-0 shadow-sm/5",
         variant,
         className
       )}
@@ -234,33 +243,33 @@ export function Modal({ isOpen, onClose, title, children, size = "md" }: ModalPr
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-fade-in"
+        className="absolute inset-0 bg-slate-900/40 backdrop-blur-md animate-fade-in"
         onClick={onClose}
       />
       {/* Modal content */}
       <div
         className={cn(
-          "relative bg-white rounded-xl shadow-xl w-full mx-4 animate-scale-in overflow-hidden",
+          "relative bg-white rounded-3xl shadow-2xl w-full border border-slate-100 animate-scale-in overflow-hidden max-h-[90vh] flex flex-col",
           sizes[size]
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-50 flex-shrink-0">
+          <h3 className="text-base font-bold text-slate-800 tracking-tight">{title}</h3>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
+            className="p-1.5 rounded-xl hover:bg-slate-50 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
           >
-            <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
         {/* Body */}
-        <div className="px-6 py-4 max-h-[70vh] overflow-y-auto">
+        <div className="px-6 py-5 overflow-y-auto">
           {children}
         </div>
       </div>
@@ -289,42 +298,48 @@ export function Toast({ message, type = "success", isVisible, onClose }: ToastPr
   if (!isVisible) return null;
 
   const typeStyles = {
-    success: "bg-green-50 border-green-200 text-green-800",
-    error: "bg-red-50 border-red-200 text-red-800",
-    info: "bg-sky-50 border-sky-200 text-sky-800",
+    success: "bg-white border-emerald-100 text-emerald-800 shadow-emerald-500/5",
+    error: "bg-white border-rose-100 text-rose-800 shadow-rose-500/5",
+    info: "bg-white border-sky-100 text-sky-800 shadow-sky-500/5",
   };
 
   const icons = {
     success: (
-      <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-      </svg>
+      <div className="p-1 rounded-lg bg-emerald-50 text-emerald-500">
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
     ),
     error: (
-      <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-      </svg>
+      <div className="p-1 rounded-lg bg-rose-50 text-rose-50">
+        <svg className="w-5 h-5 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </div>
     ),
     info: (
-      <svg className="w-5 h-5 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
+      <div className="p-1 rounded-lg bg-sky-50 text-sky-500">
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
     ),
   };
 
   return (
-    <div className="fixed top-4 right-4 z-[100] animate-slide-in">
+    <div className="fixed bottom-6 right-6 z-[100] animate-slide-in">
       <div
         className={cn(
-          "flex items-center gap-3 px-4 py-3 rounded-xl border shadow-lg",
+          "flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl border shadow-xl max-w-sm",
           typeStyles[type]
         )}
       >
         {icons[type]}
-        <span className="text-sm font-medium">{message}</span>
-        <button onClick={onClose} className="ml-2 opacity-70 hover:opacity-100">
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        <span className="text-sm font-semibold tracking-tight">{message}</span>
+        <button onClick={onClose} className="ml-3 opacity-60 hover:opacity-100 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer">
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
@@ -338,36 +353,55 @@ export function Toast({ message, type = "success", isVisible, onClose }: ToastPr
 interface StatCardProps {
   title: string;
   value: string;
+  fullValue?: string;
   icon: React.ReactNode;
   change?: { value: number; isPositive: boolean };
   subtitle?: string;
 }
 
-export function StatCard({ title, value, icon, change, subtitle }: StatCardProps) {
+export function StatCard({ title, value, fullValue, icon, change, subtitle }: StatCardProps) {
   return (
-    <Card className="flex items-start justify-between hover:shadow-md transition-all duration-200">
-      <div className="space-y-2">
-        <p className="text-sm text-gray-500 font-medium">{title}</p>
-        <p className="text-2xl font-bold text-gray-900">{value}</p>
-        {change && (
-          <div className={cn("flex items-center gap-1 text-sm font-medium", change.isPositive ? "text-green-600" : "text-red-600")}>
-            {change.isPositive ? (
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 17l9.2-9.2M17 17V7H7" />
-              </svg>
-            ) : (
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 7l-9.2 9.2M7 7v10h10" />
-              </svg>
+    <Card className="flex flex-col justify-between hover:shadow-lg hover:shadow-slate-100 transition-all duration-300 stagger-1 overflow-hidden relative group h-full min-h-[140px] p-5">
+      {/* Background soft hover glow */}
+      <div className="absolute inset-0 bg-gradient-to-r from-sky-50/0 to-sky-50/0 group-hover:from-sky-50/5 group-hover:to-indigo-50/10 transition-all duration-500 pointer-events-none" />
+      
+      <div className="flex justify-between items-start w-full relative z-10">
+        <div className="space-y-2">
+          <div className="flex items-center gap-1.5">
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{title}</p>
+            {fullValue && (
+              <div className="group/tooltip relative">
+                <div className="w-4 h-4 rounded-full border border-slate-300 text-slate-400 flex items-center justify-center text-[10px] font-bold cursor-help hover:bg-slate-200 transition-colors">
+                  i
+                </div>
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max px-3 py-1.5 bg-slate-800 text-white text-xs font-bold rounded-lg opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-20 shadow-xl">
+                  {fullValue}
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-800"></div>
+                </div>
+              </div>
             )}
-            <span>{Math.abs(change.value)}%</span>
           </div>
-        )}
-        {subtitle && <p className="text-xs text-gray-400">{subtitle}</p>}
+          <p className="text-2xl font-black text-slate-800 tracking-tight leading-none">{value}</p>
+        </div>
+        <div className="p-3.5 rounded-2xl bg-sky-50 text-sky-500 group-hover:bg-sky-500 group-hover:text-white transition-all duration-300 relative z-10 shadow-sm shadow-sky-500/5 flex-shrink-0">
+          {icon}
+        </div>
       </div>
-      <div className="p-3 rounded-xl bg-sky-50 text-sky-500">
-        {icon}
-      </div>
+
+      {(change || subtitle) && (
+        <div className="flex items-center gap-2 pt-4 mt-auto relative z-10">
+          {change && (
+            <span className={cn(
+              "inline-flex items-center gap-0.5 px-2 py-0.5 rounded-lg text-xs font-bold", 
+              change.isPositive ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"
+            )}>
+              {change.isPositive ? "+" : "-"}
+              {Math.abs(change.value)}%
+            </span>
+          )}
+          {subtitle && <p className="text-xs text-slate-400 font-medium">{subtitle}</p>}
+        </div>
+      )}
     </Card>
   );
 }
