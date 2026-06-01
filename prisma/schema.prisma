@@ -1,0 +1,115 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("admin") // admin, manager
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("users")
+}
+
+model Camion {
+  id              Int       @id @default(autoincrement())
+  immatriculation String    @unique
+  marque          String
+  modele          String?
+  capaciteTonnes  Float     @map("capacite_tonnes")
+  statut          String    @default("en_service") // en_service, en_panne, en_attente, hors_service
+  chauffeurNom    String?   @map("chauffeur_nom")
+  dateMiseService DateTime  @map("date_mise_service")
+  prochaineVisite DateTime? @map("prochaine_visite")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  carburants  Carburant[]
+  reparations Reparation[]
+  ventes      Vente[]
+
+  @@map("camions")
+}
+
+model Carburant {
+  id          Int      @id @default(autoincrement())
+  camionId    Int      @map("camion_id")
+  camion      Camion   @relation(fields: [camionId], references: [id], onDelete: Cascade)
+  date        DateTime @default(now())
+  kilometrage Int
+  litres      Float
+  coutTotal   Float    @map("cout_total")
+  prixLitre   Float    @map("prix_litre")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("carburants")
+}
+
+model Reparation {
+  id          Int      @id @default(autoincrement())
+  camionId    Int      @map("camion_id")
+  camion      Camion   @relation(fields: [camionId], references: [id], onDelete: Cascade)
+  date        DateTime @default(now())
+  type        String   // mecanique, pneus, vidange, carrosserie, electricite, autre
+  garage      String
+  description String   @db.Text
+  cout        Float
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("reparations")
+}
+
+model Client {
+  id        Int      @id @default(autoincrement())
+  nom       String
+  contact   String?
+  adresse   String?
+  email     String?
+  typePrix  String   @default("standard") @map("type_prix") // standard, preferentiel
+  createdAt DateTime @default(now()) @map("created_at")
+
+  ventes Vente[]
+
+  @@map("clients")
+}
+
+model Produit {
+  id        Int      @id @default(autoincrement())
+  nom       String   @unique
+  unite     String   @default("tonne") // tonne, m3
+  prixVente Float    @map("prix_vente")
+  prixAchat Float    @map("prix_achat")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  ventes Vente[]
+
+  @@map("produits")
+}
+
+model Vente {
+  id             Int      @id @default(autoincrement())
+  camionId       Int      @map("camion_id")
+  camion         Camion   @relation(fields: [camionId], references: [id], onDelete: Cascade)
+  clientId       Int      @map("client_id")
+  client         Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  produitId      Int      @map("produit_id")
+  produit        Produit  @relation(fields: [produitId], references: [id], onDelete: Cascade)
+  date           DateTime @default(now())
+  quantite       Float
+  prixUnitaire   Float    @map("prix_unitaire")
+  montantTotal   Float    @map("montant_total")
+  statutPaiement String   @default("en_attente") @map("statut_paiement") // paye, en_attente, annule
+  numeroFacture  String?  @map("numero_facture")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@map("ventes")
+}
