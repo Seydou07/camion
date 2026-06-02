@@ -560,7 +560,7 @@ export default function VentesPage() {
 
           {/* Form Actions */}
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-            <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>Annuler</Button>
+            <Button type="button" variant="ghost" onClick={() => setIsModalOpen(false)}>Annuler</Button>
             <Button type="submit" loading={isSubmitting} className="bg-sky-500 hover:bg-sky-600 text-white border-none shadow-lg shadow-sky-500/30 min-w-[200px]">
                Enregistrer & Facturer
             </Button>
