@@ -26,20 +26,38 @@ const menuItems = [
     ),
   },
   {
-    label: "Ventes",
-    href: "/ventes",
+    label: "Carburant",
+    href: "/carburant",
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
       </svg>
     ),
   },
   {
-    label: "Clients",
-    href: "/clients",
+    label: "Voyages",
+    href: "/voyages",
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.446l-6.002-3.001a1.125 1.125 0 00-1.006 0L3.998 16.446A.75.75 0 013 15.78V5.267c0-.282.158-.54.413-.66l5.083-2.4a1.125 1.125 0 011.008 0l5.502 2.61 5.58-2.64A.75.75 0 0121 3.267v10.513c0 .282-.158.54-.413.66l-4.084 1.933a1.125 1.125 0 01-1.008 0z" />
+      </svg>
+    ),
+  },
+  {
+    label: "Chauffeurs",
+    href: "/chauffeurs",
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+      </svg>
+    ),
+  },
+  {
+    label: "Maintenance",
+    href: "/maintenance",
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.492-3.053c.217-.266.198-.654-.044-.897L11.5 8.85m-2.227 3.518l-3.053 2.492c-.266.217-.654.198-.897-.044L3.83 12.5" />
       </svg>
     ),
   },
@@ -91,10 +109,14 @@ function getBreadcrumbs(pathname: string) {
     if (segments[1]) {
       crumbs.push({ label: segments[1], href: `/camions/${segments[1]}` });
     }
-  } else if (segments[0] === "ventes") {
-    crumbs.push({ label: "Ventes", href: "/ventes" });
-  } else if (segments[0] === "clients") {
-    crumbs.push({ label: "Clients", href: "/clients" });
+  } else if (segments[0] === "carburant") {
+    crumbs.push({ label: "Carburant", href: "/carburant" });
+  } else if (segments[0] === "voyages") {
+    crumbs.push({ label: "Voyages", href: "/voyages" });
+  } else if (segments[0] === "chauffeurs") {
+    crumbs.push({ label: "Chauffeurs", href: "/chauffeurs" });
+  } else if (segments[0] === "maintenance") {
+    crumbs.push({ label: "Maintenance", href: "/maintenance" });
   } else if (segments[0] === "rapports") {
     crumbs.push({ label: "Rapports", href: "/rapports" });
   } else if (segments[0] === "historique") {
@@ -110,8 +132,10 @@ function getPageTitle(pathname: string) {
   if (pathname === "/") return "Dashboard";
   if (pathname === "/camions") return "Gestion des camions";
   if (pathname.startsWith("/camions/")) return "Fiche camion";
-  if (pathname === "/ventes") return "Gestion des ventes";
-  if (pathname === "/clients") return "Gestion des clients";
+  if (pathname === "/carburant") return "Suivi carburant";
+  if (pathname === "/voyages") return "Suivi des voyages";
+  if (pathname === "/chauffeurs") return "Gestion des chauffeurs";
+  if (pathname === "/maintenance") return "Planification de la maintenance";
   if (pathname === "/rapports") return "Rapports et analyses";
   if (pathname === "/historique") return "Historique des activités";
   if (pathname === "/parametres") return "Paramètres";
@@ -123,19 +147,23 @@ function NavItem({ item, isActive }: { item: typeof menuItems[0]; isActive: bool
     <Link
       href={item.href}
       className={cn(
-        "flex items-center gap-3 px-4 py-2.5 rounded-2xl text-sm font-semibold transition-all duration-300 group relative",
+        "relative flex items-center gap-3 py-3 px-6 font-bold text-sm tracking-tight border-r-4 transition-all duration-300 group",
         isActive
-          ? "bg-sky-500 text-white shadow-lg shadow-sky-500/20"
-          : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
+          ? "bg-fleet-blue/10 text-fleet-blue border-fleet-blue"
+          : "text-slate-500/60 border-transparent hover:bg-slate-50 hover:text-fleet-blue"
       )}
     >
       <span className={cn(
-        "transition-colors duration-300",
-        isActive ? "text-white" : "text-slate-400 group-hover:text-slate-600"
+        "w-5 h-5 transition-transform duration-300 group-hover:scale-110",
+        isActive ? "text-fleet-blue" : "text-slate-400 group-hover:text-fleet-blue"
       )}>
         {item.icon}
       </span>
-      {item.label}
+      <span className="flex-1 uppercase tracking-tight">{item.label}</span>
+      {/* Simulation de point de notification pour Maintenance si c'est le lien "Maintenance" et inactif */}
+      {item.label === "Maintenance" && !isActive && (
+        <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse ml-1" />
+      )}
     </Link>
   );
 }
@@ -159,7 +187,7 @@ export function DashboardShell({
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-[3px] border-sky-500 border-t-transparent rounded-full animate-spin" />
+          <div className="w-12 h-12 border-[3px] border-fleet-blue border-t-transparent rounded-full animate-spin" />
           <p className="text-sm text-slate-400 font-semibold tracking-wide">Chargement...</p>
         </div>
       </div>
@@ -178,14 +206,14 @@ export function DashboardShell({
         {/* Logo */}
         <div className="px-6 py-6">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-11 h-11 rounded-2xl bg-sky-500 text-white flex items-center justify-center shadow-lg shadow-sky-500/20 group-hover:shadow-sky-500/30 transition-shadow">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <div className="w-9 h-9 rounded-xl bg-fleet-blue text-white flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
               </svg>
             </div>
             <div>
-              <h1 className="text-base font-black text-slate-800 tracking-tight">TruckManager</h1>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Gestion de flotte</p>
+              <h1 className="text-lg font-black text-fleet-blue tracking-tight leading-tight">FleetGuardian</h1>
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">Gestion de flotte</p>
             </div>
           </Link>
         </div>
@@ -217,7 +245,7 @@ export function DashboardShell({
         {/* User section */}
         <div className="px-4 py-4 border-t border-slate-100/80 mt-auto">
           <div className="flex items-center gap-3 p-2 rounded-2xl hover:bg-slate-50 transition-colors group">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-sky-400 to-indigo-500 text-white flex items-center justify-center text-sm font-black shadow-lg shadow-sky-500/15">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-fleet-blue to-fleet-blue-dark text-white flex items-center justify-center text-sm font-black shadow-lg shadow-fleet-blue/15">
               {session.user?.name?.charAt(0)?.toUpperCase() || "A"}
             </div>
             <div className="flex-1 min-w-0">
@@ -262,7 +290,7 @@ export function DashboardShell({
                       className={cn(
                         "text-xs font-semibold transition-colors",
                         index === breadcrumbs.length - 1
-                          ? "text-sky-500"
+                          ? "text-fleet-blue"
                           : "text-slate-400 hover:text-slate-600"
                       )}
                     >
@@ -286,7 +314,7 @@ export function DashboardShell({
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
                 </svg>
-                <span className="absolute top-2 right-2 w-2 h-2 bg-sky-500 rounded-full ring-2 ring-white" />
+                <span className="absolute top-2 right-2 w-2 h-2 bg-fleet-blue rounded-full ring-2 ring-white" />
               </button>
             </div>
           </div>

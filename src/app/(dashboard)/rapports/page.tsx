@@ -4,13 +4,15 @@ import { useEffect, useState } from "react";
 import {
   Card,
   Select,
-  Badge,
   Skeleton,
+  StatCard,
+  Toast,
 } from "@/components/ui";
 import { formatMontant, moisFrancais } from "@/lib/utils";
 import {
   BarChart,
   Bar,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -20,14 +22,26 @@ import {
   PieChart,
   Pie,
   Cell,
+  ComposedChart,
 } from "recharts";
 
-const COLORS = ["#38BDF8", "#0EA5E9", "#F59E0B", "#EF4444", "#10B981", "#8B5CF6"];
+const COLORS = ["#0EA5E9", "#EF4444", "#F59E0B", "#8B5CF6", "#10B981"];
 
 export default function RapportsPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [camions, setCamions] = useState<any[]>([]);
+  const [exporting, setExporting] = useState(false);
+  const [exportingPdf, setExportingPdf] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState<"success" | "error">("error");
+  const [showToast, setShowToast] = useState(false);
+
+  const showExportError = (message: string) => {
+    setToastMessage(message);
+    setToastType("error");
+    setShowToast(true);
+  };
 
   // Filtres
   const [filterMois, setFilterMois] = useState("");
@@ -56,7 +70,7 @@ export default function RapportsPage() {
   const fetchCamions = () => {
     fetch("/api/camions")
       .then((res) => res.json())
-      .then((resData) => setCamions(resData))
+      .then((resData) => setCamions(Array.isArray(resData) ? resData : []))
       .catch((err) => console.error(err));
   };
 
@@ -68,32 +82,69 @@ export default function RapportsPage() {
     fetchCamions();
   }, []);
 
-  // Fonction d'export au format CSV (Lisible dans Excel)
+  // Fonction d'export au format Excel Premium
   const exportToExcel = () => {
-    if (!data || !data.comparatifCamions) return;
+    setExporting(true);
+    const query = new URLSearchParams();
+    if (filterMois) query.append("mois", filterMois);
+    if (filterAnnee) query.append("annee", filterAnnee);
+    if (filterCamion && filterCamion !== "tous") query.append("camionId", filterCamion);
 
-    let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // BOM UTF-8 pour Excel
-    csvContent += "Camion;Chiffre d'Affaires (F);Carburant (F);Réparations (F);Bénéfice Net (F);Taux de Marge (%)\n";
+    fetch(`/api/rapports/excel?${query.toString()}`)
+      .then(async (res) => {
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || "Erreur lors de la génération du fichier Excel");
+        }
+        return res.blob();
+      })
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `Rapport_Flotte_Premium_${new Date().getFullYear()}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+        setExporting(false);
+      })
+      .catch((err) => {
+        showExportError(err.message || "Une erreur est survenue lors de la génération du rapport Excel.");
+        setExporting(false);
+      });
+  };
 
-    data.comparatifCamions.forEach((c: any) => {
-      const row = [
-        c.immatriculation,
-        c.chiffreAffaires,
-        c.carburant,
-        c.reparation,
-        c.benefice,
-        Math.round(c.marge * 10) / 10,
-      ].join(";");
-      csvContent += row + "\n";
-    });
+  const exportToPdf = () => {
+    setExportingPdf(true);
+    const query = new URLSearchParams();
+    if (filterMois) query.append("mois", filterMois);
+    if (filterAnnee) query.append("annee", filterAnnee);
+    if (filterCamion && filterCamion !== "tous") query.append("camionId", filterCamion);
 
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `Rapport_Flotte_${filterAnnee}_${filterMois || "Annuel"}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    fetch(`/api/rapports/pdf?${query.toString()}`)
+      .then(async (res) => {
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || "Erreur lors de la génération du PDF");
+        }
+        return res.blob();
+      })
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `Rapport_Flotte_${filterAnnee}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+        setExportingPdf(false);
+      })
+      .catch((err) => {
+        showExportError(err.message || "Une erreur est survenue lors de la génération du rapport PDF.");
+        setExportingPdf(false);
+      });
   };
 
   if (loading) {
@@ -119,17 +170,77 @@ export default function RapportsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-gray-900">Rapports et Analyses</h1>
-          <p className="text-sm text-gray-400">Analysez la rentabilité, les charges et la performance de votre flotte</p>
+          <p className="text-sm text-gray-400">Analysez l'efficacité du carburant, les coûts d'exploitation et la maintenance de votre flotte</p>
         </div>
-        <button
-          onClick={exportToExcel}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-sky-500 text-sky-500 font-semibold hover:bg-sky-50 transition-colors"
-        >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          Exporter en Excel (CSV)
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={exportToPdf}
+            disabled={exportingPdf}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          >
+            {exportingPdf ? "Génération..." : "Exporter PDF"}
+          </button>
+          <button
+            onClick={exportToExcel}
+            disabled={exporting}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-fleet-blue text-fleet-blue font-semibold hover:bg-fleet-blue/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          >
+          {exporting ? (
+            <svg className="animate-spin h-5 w-5 text-fleet-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+            </svg>
+          ) : (
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          )}
+          {exporting ? "Génération de l'Excel..." : "Exporter Excel Premium"}
+          </button>
+        </div>
+      </div>
+
+      {/* KPIs */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard
+          title="Total Exploitation"
+          value={formatMontant(data.coutTotalExploitation)}
+          icon={
+            <svg className="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V7m0 10v1" />
+            </svg>
+          }
+        />
+        <StatCard
+          title="Carburant"
+          value={formatMontant(data.coutCarburant)}
+          subtitle={`${Math.round((data.coutCarburant / (data.coutTotalExploitation || 1)) * 100)}% des charges`}
+          icon={
+            <svg className="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+            </svg>
+          }
+        />
+        <StatCard
+          title="Maintenance"
+          value={formatMontant(data.coutReparations)}
+          subtitle={`${data.nbAlertesMaintenance || 0} alerte(s) en retard`}
+          icon={
+            <svg className="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.492-3.053c.217-.266.198-.654-.044-.897L11.5 8.85" />
+            </svg>
+          }
+        />
+        <StatCard
+          title="Dotation Flotte"
+          value={formatMontant(data.dotationTotale || 0)}
+          subtitle={`${data.camionsEnService}/${data.totalCamions} en service`}
+          icon={
+            <svg className="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" />
+            </svg>
+          }
+        />
       </div>
 
       {/* Filtres */}
@@ -160,11 +271,11 @@ export default function RapportsPage() {
         />
       </div>
 
-      {/* Section 1 - Graphique CA Mensuel */}
+      {/* Section 1 - Graphique Dépenses Mensuelles */}
       <Card className="p-6">
         <div className="mb-4">
-          <h3 className="text-base font-semibold text-gray-900">Chiffre d'Affaires Mensuel</h3>
-          <p className="text-xs text-gray-400">Évolution globale des ventes</p>
+          <h3 className="text-base font-semibold text-gray-900">Charges d'Exploitation Mensuelles</h3>
+          <p className="text-xs text-gray-400">Évolution globale des dépenses de carburant vs réparations mécaniques</p>
         </div>
         <div className="h-[280px] w-full">
           <ResponsiveContainer width="100%" height="100%">
@@ -176,57 +287,170 @@ export default function RapportsPage() {
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
                     return (
-                      <div className="custom-tooltip">
+                      <div className="bg-white rounded-2xl border border-slate-100 shadow-xl px-4 py-3 text-xs">
                         <p className="text-xs font-semibold text-gray-500 mb-1">{payload[0].payload.name}</p>
-                        <p className="text-sm font-bold text-sky-500">
-                          CA : {formatMontant(payload[0].value as number)}
-                        </p>
+                        {payload.map((p: any) => (
+                          <p key={p.name} className="font-bold" style={{ color: p.color }}>
+                            {p.name} : {formatMontant(p.value as number)}
+                          </p>
+                        ))}
                       </div>
                     );
                   }
                   return null;
                 }}
               />
-              <Bar dataKey="Chiffre d'Affaires" fill="#0EA5E9" radius={[4, 4, 0, 0]} />
+              <Legend verticalAlign="top" align="right" height={36} wrapperStyle={{ fontSize: "11px", fontWeight: 700 }} />
+              <Bar dataKey="Carburant" fill="#0EA5E9" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="Maintenance" fill="#EF4444" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </Card>
+
+      {/* Section Fréquences Carburant & Maintenance */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="p-6">
+          <div className="mb-4">
+            <h3 className="text-base font-semibold text-gray-900">Fréquence des pleins carburant</h3>
+            <p className="text-xs text-gray-400">Nombre de tickets et volume mensuel (litres)</p>
+          </div>
+          <div className="h-[260px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={data.frequenceCarburant || []}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
+                <XAxis dataKey="name" stroke="#94A3B8" fontSize={11} tickLine={false} />
+                <YAxis yAxisId="left" stroke="#0EA5E9" fontSize={11} tickLine={false} axisLine={false} />
+                <YAxis yAxisId="right" orientation="right" stroke="#64748B" fontSize={11} tickLine={false} axisLine={false} />
+                <Tooltip
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      return (
+                        <div className="bg-white rounded-2xl border border-slate-100 shadow-xl px-4 py-3 text-xs">
+                          <p className="font-semibold text-gray-500 mb-1">{payload[0].payload.name}</p>
+                          <p className="font-bold text-fleet-blue">Pleins : {payload[0].payload.pleins}</p>
+                          <p className="font-bold text-slate-600">Litres : {payload[0].payload.litres} L</p>
+                          <p className="font-bold text-rose-500">Montant : {formatMontant(payload[0].payload.montant)}</p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Legend wrapperStyle={{ fontSize: "11px", fontWeight: 700 }} />
+                <Bar yAxisId="left" dataKey="pleins" name="Nb pleins" fill="#0EA5E9" radius={[4, 4, 0, 0]} />
+                <Line yAxisId="right" type="monotone" dataKey="litres" name="Litres" stroke="#F59E0B" strokeWidth={2} dot={{ r: 3 }} />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <div className="mb-4">
+            <h3 className="text-base font-semibold text-gray-900">Fréquence des maintenances</h3>
+            <p className="text-xs text-gray-400">Interventions et coûts mensuels</p>
+          </div>
+          <div className="h-[260px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={data.frequenceMaintenance || []}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
+                <XAxis dataKey="name" stroke="#94A3B8" fontSize={11} tickLine={false} />
+                <YAxis yAxisId="left" stroke="#EF4444" fontSize={11} tickLine={false} axisLine={false} />
+                <YAxis yAxisId="right" orientation="right" stroke="#64748B" fontSize={11} tickLine={false} axisLine={false} />
+                <Tooltip
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      return (
+                        <div className="bg-white rounded-2xl border border-slate-100 shadow-xl px-4 py-3 text-xs">
+                          <p className="font-semibold text-gray-500 mb-1">{payload[0].payload.name}</p>
+                          <p className="font-bold text-red-500">Interventions : {payload[0].payload.interventions}</p>
+                          <p className="font-bold text-slate-700">Coût : {formatMontant(payload[0].payload.montant)}</p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Legend wrapperStyle={{ fontSize: "11px", fontWeight: 700 }} />
+                <Bar yAxisId="left" dataKey="interventions" name="Interventions" fill="#EF4444" radius={[4, 4, 0, 0]} />
+                <Line yAxisId="right" type="monotone" dataKey="montant" name="Montant (F)" stroke="#8B5CF6" strokeWidth={2} dot={{ r: 3 }} />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      </div>
+
+      {/* Budget par véhicule */}
+      {(data.budgetParVehicule || []).length > 0 && (
+        <Card className="p-6">
+          <div className="mb-4">
+            <h3 className="text-base font-semibold text-gray-900">Consommation budgétaire par véhicule</h3>
+            <p className="text-xs text-gray-400">Dotation annuelle vs budget véhicule consommé (carburant + maintenance imputée)</p>
+          </div>
+          <div className="h-[280px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={data.budgetParVehicule} layout="vertical" margin={{ left: 20 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" horizontal={false} />
+                <XAxis type="number" stroke="#94A3B8" fontSize={11} tickLine={false} />
+                <YAxis type="category" dataKey="immatriculation" stroke="#94A3B8" fontSize={10} width={80} tickLine={false} />
+                <Tooltip
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      const p = payload[0].payload;
+                      return (
+                        <div className="bg-white rounded-2xl border border-slate-100 shadow-xl px-4 py-3 text-xs">
+                          <p className="font-bold text-slate-800 mb-1">{p.immatriculation}</p>
+                          <p className="text-indigo-600">Dotation : {formatMontant(p.dotation)}</p>
+                          <p className="text-rose-600">Consommé : {formatMontant(p.consomme)}</p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Legend wrapperStyle={{ fontSize: "11px", fontWeight: 700 }} />
+                <Bar dataKey="dotation" name="Dotation" fill="#6366F1" radius={[0, 4, 4, 0]} />
+                <Bar dataKey="consomme" name="Consommé" fill="#EF4444" radius={[0, 4, 4, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      )}
 
       {/* Section 2 & 3 - Tableau Comparatif et Répartition des Charges */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Tableau comparatif */}
         <Card className="lg:col-span-2 p-6 overflow-hidden">
           <div className="mb-4">
-            <h3 className="text-base font-semibold text-gray-900">Tableau comparatif par camion</h3>
-            <p className="text-xs text-gray-400">Rentabilité analytique par engin</p>
+            <h3 className="text-base font-semibold text-gray-900">Synthèse d'exploitation par véhicule</h3>
+            <p className="text-xs text-gray-400">Kilométrage, consommation et frais d'exploitation de chaque camion</p>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/50">
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Camion</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">CA</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Chauffeur</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Kilométrage</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Carburant</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Réparations</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Bénéfice</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Marge</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Conso Moy.</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Maintenance</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Exploitation</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {(data.comparatifCamions || []).map((c: any) => (
-                  <tr key={c.id} className="hover:bg-sky-50/50 cursor-pointer transition-colors" onClick={() => (window.location.href = `/camions/${c.id}`)}>
-                    <td className="px-4 py-3 text-sm font-semibold text-gray-900">{c.immatriculation}</td>
-                    <td className="px-4 py-3 text-sm text-gray-700">{formatMontant(c.chiffreAffaires)}</td>
-                    <td className="px-4 py-3 text-sm text-gray-700">{formatMontant(c.carburant)}</td>
-                    <td className="px-4 py-3 text-sm text-gray-700">{formatMontant(c.reparation)}</td>
-                    <td className="px-4 py-3 text-sm">
-                      <span className={c.benefice >= 0 ? "text-green-600 font-semibold" : "text-red-600 font-semibold"}>
-                        {formatMontant(c.benefice)}
-                      </span>
+                  <tr key={c.id} className="hover:bg-fleet-blue/5 cursor-pointer transition-colors text-xs font-medium text-slate-700" onClick={() => (window.location.href = `/camions/${c.id}`)}>
+                    <td className="px-4 py-3 font-bold text-slate-900 text-sm">{c.immatriculation}</td>
+                    <td className="px-4 py-3">{c.chauffeurNom}</td>
+                    <td className="px-4 py-3 font-semibold">{c.kilometrage.toLocaleString()} km</td>
+                    <td className="px-4 py-3">{formatMontant(c.carburant)} ({c.litres} L)</td>
+                    <td className="px-4 py-3 font-semibold text-fleet-blue">
+                      {c.consoMoyenne ? `${c.consoMoyenne} L/100` : "-"}
                     </td>
-                    <td className="px-4 py-3 text-sm font-semibold text-sky-500">
-                      {Math.round(c.marge * 10) / 10}%
+                    <td className="px-4 py-3">{formatMontant(c.reparation)}</td>
+                    <td className="px-4 py-3 font-black text-rose-600">
+                      {formatMontant(c.coutTotal)}
                     </td>
                   </tr>
                 ))}
@@ -238,11 +462,11 @@ export default function RapportsPage() {
         {/* Camembert des charges */}
         <Card className="p-6 flex flex-col justify-center items-center">
           <div className="mb-4 text-center">
-            <h3 className="text-base font-semibold text-gray-900">Répartition des charges</h3>
-            <p className="text-xs text-gray-400">Structure des dépenses globales</p>
+            <h3 className="text-base font-semibold text-gray-900">Répartition des Dépenses</h3>
+            <p className="text-xs text-gray-400">Structure des charges globales</p>
           </div>
           <div className="h-[180px] w-full relative flex items-center justify-center">
-            {data.repartitionCharges.length > 0 ? (
+            {data.repartitionCharges && data.repartitionCharges.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie data={data.repartitionCharges} cx="50%" cy="50%" innerRadius={40} outerRadius={60} paddingAngle={3} dataKey="value">
@@ -269,6 +493,13 @@ export default function RapportsPage() {
           </div>
         </Card>
       </div>
+
+      <Toast
+        message={toastMessage}
+        type={toastType}
+        isVisible={showToast}
+        onClose={() => setShowToast(false)}
+      />
     </div>
   );
 }

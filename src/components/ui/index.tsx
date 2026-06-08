@@ -22,22 +22,22 @@ export function Button({
   ...props
 }: ButtonProps) {
   const variants = {
-    primary: "bg-sky-500 hover:bg-sky-600 text-white shadow-md shadow-sky-500/10 btn-premium",
-    secondary: "bg-sky-50/80 hover:bg-sky-100 text-sky-600 font-semibold",
-    danger: "bg-red-50 hover:bg-red-100 text-red-600 font-semibold",
-    ghost: "bg-transparent hover:bg-slate-50 text-slate-600",
+    primary: "bg-fleet-blue hover:bg-fleet-blue-dark text-white shadow-premium btn-premium",
+    secondary: "bg-fleet-blue/10 hover:bg-fleet-blue/20 text-fleet-blue font-bold",
+    danger: "bg-red-50 hover:bg-red-100 text-red-600 font-bold",
+    ghost: "bg-transparent hover:bg-slate-50 text-slate-500 font-bold border border-slate-200",
   };
 
   const sizes = {
-    sm: "px-3.5 py-2 text-xs rounded-xl",
-    md: "px-5 py-2.5 text-sm rounded-xl",
-    lg: "px-7 py-3.5 text-base rounded-2xl",
+    sm: "h-9 px-6 text-[11px] uppercase tracking-wide rounded-xl",
+    md: "h-9 px-10 text-[11px] uppercase tracking-wide rounded-xl",
+    lg: "h-11 px-12 text-xs uppercase tracking-wide rounded-xl",
   };
 
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center gap-2 font-semibold transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-sky-500/10 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer",
+        "inline-flex items-center justify-center gap-2 font-semibold transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-fleet-blue/10 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer",
         variants[variant],
         sizes[size],
         className
@@ -73,14 +73,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, className, ...props }, ref) => (
     <div className="space-y-1.5 w-full">
       {label && (
-        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider">
+        <label className="block text-[10px] font-black uppercase text-slate-400 ml-1">
           {label}
         </label>
       )}
       <input
         ref={ref}
         className={cn(
-          "w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 hover:border-slate-300",
+          "w-full h-9 px-4 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-800 placeholder:text-slate-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue hover:border-slate-300",
           error && "border-red-300 focus:border-red-500 focus:ring-red-500/10",
           className
         )}
@@ -106,7 +106,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   ({ label, error, options, placeholder, className, ...props }, ref) => (
     <div className="space-y-1.5 w-full">
       {label && (
-        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider">
+        <label className="block text-[10px] font-black uppercase text-slate-400 ml-1">
           {label}
         </label>
       )}
@@ -114,7 +114,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         <select
           ref={ref}
           className={cn(
-            "w-full appearance-none rounded-xl border border-slate-200 bg-white px-4 py-2.5 pr-10 text-sm text-slate-800 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 hover:border-slate-300 cursor-pointer",
+            "w-full appearance-none h-9 px-4 pr-10 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue hover:border-slate-300 cursor-pointer",
             error && "border-red-300 focus:border-red-500 focus:ring-red-500/10",
             className
           )}
@@ -153,14 +153,14 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ label, error, className, ...props }, ref) => (
     <div className="space-y-1.5 w-full">
       {label && (
-        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider">
+        <label className="block text-[10px] font-black uppercase text-slate-400 ml-1">
           {label}
         </label>
       )}
       <textarea
         ref={ref}
         className={cn(
-          "w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 hover:border-slate-300 min-h-[80px]",
+          "w-full resize-none rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs font-medium text-slate-800 placeholder:text-slate-400 transition-all duration-300 shadow-inner focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue hover:border-slate-300 min-h-[80px]",
           error && "border-red-300 focus:border-red-500 focus:ring-red-500/10",
           className
         )}
@@ -230,38 +230,52 @@ interface ModalProps {
   onClose: () => void;
   title: string;
   children: React.ReactNode;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl" | "2xl";
+  noScroll?: boolean;
 }
 
-export function Modal({ isOpen, onClose, title, children, size = "md" }: ModalProps) {
+export function Modal({ isOpen, onClose, title, children, size = "md", noScroll = false }: ModalProps) {
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const sizes = {
     sm: "max-w-md",
     md: "max-w-lg",
     lg: "max-w-2xl",
+    xl: "max-w-4xl",
+    "2xl": "max-w-5xl",
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pl-[270px]">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-slate-900/40 backdrop-blur-md animate-fade-in"
+        className="absolute inset-0 bg-slate-950/40 backdrop-blur-sm animate-fade-in"
         onClick={onClose}
       />
       {/* Modal content */}
       <div
         className={cn(
-          "relative bg-white rounded-3xl shadow-2xl w-full border border-slate-100 animate-scale-in overflow-hidden max-h-[90vh] flex flex-col",
+          "relative bg-white rounded-2xl shadow-2xl w-full border-none animate-scale-in max-h-[95vh] flex flex-col overflow-hidden",
           sizes[size]
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-50 flex-shrink-0">
-          <h3 className="text-base font-bold text-slate-800 tracking-tight">{title}</h3>
+        <div className="px-6 py-4 bg-fleet-blue text-white flex items-center justify-between sticky top-0 z-50 flex-shrink-0">
+          <h3 className="text-xl font-black tracking-tight">{title}</h3>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl hover:bg-slate-50 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+            className="p-1.5 rounded-xl hover:bg-white/20 text-white/70 hover:text-white transition-colors cursor-pointer"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -269,8 +283,91 @@ export function Modal({ isOpen, onClose, title, children, size = "md" }: ModalPr
           </button>
         </div>
         {/* Body */}
-        <div className="px-6 py-5 overflow-y-auto">
+        <div className={cn(
+          "p-6 md:p-8 bg-white flex flex-col flex-1",
+          noScroll ? "overflow-hidden" : "overflow-y-auto overflow-x-hidden"
+        )}>
           {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ==========================================
+// CONFIRM MODAL
+// ==========================================
+interface ConfirmModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  title?: string;
+  message: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  loading?: boolean;
+  variant?: "danger" | "warning";
+}
+
+export function ConfirmModal({
+  isOpen,
+  onClose,
+  onConfirm,
+  title = "Confirmer l'action",
+  message,
+  confirmLabel = "Confirmer",
+  cancelLabel = "Annuler",
+  loading = false,
+  variant = "danger",
+}: ConfirmModalProps) {
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  const iconBg = variant === "danger" ? "bg-red-50 text-red-500" : "bg-amber-50 text-amber-500";
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 pl-[270px]">
+      <div
+        className="absolute inset-0 bg-slate-950/40 backdrop-blur-sm animate-fade-in"
+        onClick={loading ? undefined : onClose}
+      />
+      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md border-none animate-scale-in overflow-hidden">
+        <div className="p-6">
+          <div className="flex items-start gap-4">
+            <div className={cn("p-3 rounded-xl flex-shrink-0", iconBg)}>
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-lg font-black text-slate-900 tracking-tight">{title}</h3>
+              <p className="text-sm text-slate-500 mt-2 leading-relaxed">{message}</p>
+            </div>
+          </div>
+          <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
+            <Button type="button" variant="ghost" onClick={onClose} disabled={loading}>
+              {cancelLabel}
+            </Button>
+            <Button
+              type="button"
+              variant="danger"
+              onClick={onConfirm}
+              loading={loading}
+              className={variant === "danger" ? "bg-red-600 hover:bg-red-700 text-white border-0" : undefined}
+            >
+              {confirmLabel}
+            </Button>
+          </div>
         </div>
       </div>
     </div>
@@ -300,7 +397,7 @@ export function Toast({ message, type = "success", isVisible, onClose }: ToastPr
   const typeStyles = {
     success: "bg-white border-emerald-100 text-emerald-800 shadow-emerald-500/5",
     error: "bg-white border-rose-100 text-rose-800 shadow-rose-500/5",
-    info: "bg-white border-sky-100 text-sky-800 shadow-sky-500/5",
+    info: "bg-white border-fleet-blue/10 text-fleet-blue-dark shadow-fleet-blue/5",
   };
 
   const icons = {
@@ -319,7 +416,7 @@ export function Toast({ message, type = "success", isVisible, onClose }: ToastPr
       </div>
     ),
     info: (
-      <div className="p-1 rounded-lg bg-sky-50 text-sky-500">
+      <div className="p-1 rounded-lg bg-fleet-blue/10 text-fleet-blue">
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
@@ -360,49 +457,51 @@ interface StatCardProps {
 }
 
 export function StatCard({ title, value, fullValue, icon, change, subtitle }: StatCardProps) {
+  // Déterminer la couleur de bordure selon qu'il s'agit d'un changement positif ou négatif, ou par défaut
+  const borderColor = change ? (change.isPositive ? "border-emerald-500" : "border-rose-500") : "border-fleet-blue";
+
   return (
-    <Card className="flex flex-col justify-between hover:shadow-lg hover:shadow-slate-100 transition-all duration-300 stagger-1 overflow-hidden relative group h-full min-h-[140px] p-5">
-      {/* Background soft hover glow */}
-      <div className="absolute inset-0 bg-gradient-to-r from-sky-50/0 to-sky-50/0 group-hover:from-sky-50/5 group-hover:to-indigo-50/10 transition-all duration-500 pointer-events-none" />
+    <div className={cn("p-4 rounded-2xl border-l-4 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-md flex flex-col justify-center min-h-[100px] relative overflow-hidden group", borderColor)}>
+      {/* Fond bleu très léger */}
+      <div className="absolute inset-0 bg-fleet-blue/5 pointer-events-none" />
       
-      <div className="flex justify-between items-start w-full relative z-10">
-        <div className="space-y-2">
-          <div className="flex items-center gap-1.5">
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{title}</p>
-            {fullValue && (
-              <div className="group/tooltip relative">
-                <div className="w-4 h-4 rounded-full border border-slate-300 text-slate-400 flex items-center justify-center text-[10px] font-bold cursor-help hover:bg-slate-200 transition-colors">
-                  i
-                </div>
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max px-3 py-1.5 bg-slate-800 text-white text-xs font-bold rounded-lg opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-20 shadow-xl">
-                  {fullValue}
-                  <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-800"></div>
-                </div>
-              </div>
-            )}
-          </div>
-          <p className="text-2xl font-black text-slate-800 tracking-tight leading-none">{value}</p>
-        </div>
-        <div className="p-3.5 rounded-2xl bg-sky-50 text-sky-500 group-hover:bg-sky-500 group-hover:text-white transition-all duration-300 relative z-10 shadow-sm shadow-sky-500/5 flex-shrink-0">
-          {icon}
-        </div>
+      {/* Icône géante en fond */}
+      <div className="absolute -right-2 -bottom-4 w-20 h-20 opacity-5 text-fleet-blue pointer-events-none group-hover:scale-110 transition-transform duration-500">
+        {icon}
       </div>
 
-      {(change || subtitle) && (
-        <div className="flex items-center gap-2 pt-4 mt-auto relative z-10">
+      <div className="relative z-10 w-full">
+        <div className="flex items-center gap-1.5 mb-1">
+          <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">{title}</p>
+          {fullValue && (
+            <div className="group/tooltip relative inline-flex">
+              <div className="w-3.5 h-3.5 rounded-full border border-slate-300 text-slate-400 flex items-center justify-center text-[8px] font-bold cursor-help hover:bg-slate-200 transition-colors">
+                i
+              </div>
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-max px-2.5 py-1 bg-slate-800 text-white text-[10px] font-bold rounded-lg opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-20 shadow-xl">
+                {fullValue}
+                <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-800"></div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-end gap-3">
+          <p className="text-2xl font-black leading-none text-fleet-blue tracking-tight">{value}</p>
           {change && (
             <span className={cn(
-              "inline-flex items-center gap-0.5 px-2 py-0.5 rounded-lg text-xs font-bold", 
-              change.isPositive ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"
+              "rounded-full text-[9px] font-bold px-1.5 py-0.5 inline-flex items-center gap-0.5", 
+              change.isPositive ? "bg-emerald-100 text-emerald-600" : "bg-rose-100 text-rose-600"
             )}>
               {change.isPositive ? "+" : "-"}
               {Math.abs(change.value)}%
             </span>
           )}
-          {subtitle && <p className="text-xs text-slate-400 font-medium">{subtitle}</p>}
         </div>
-      )}
-    </Card>
+        
+        {subtitle && <p className="text-[10px] text-slate-500 font-semibold mt-1.5">{subtitle}</p>}
+      </div>
+    </div>
   );
 }
 
@@ -439,7 +538,7 @@ export function Skeleton({ className }: { className?: string }) {
 }
 
 // ==========================================
-// TABLE
+// TABLE & PAGINATION (New Design System)
 // ==========================================
 interface Column<T> {
   key: string;
@@ -452,33 +551,44 @@ interface TableProps<T> {
   columns: Column<T>[];
   data: T[];
   onRowClick?: (item: T) => void;
+  rowClassName?: (item: T) => string;
   emptyMessage?: string;
+}
+
+export function TableCard({ children, className }: { children: React.ReactNode, className?: string }) {
+  return (
+    <div className={cn("bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-2xl overflow-hidden p-2", className)}>
+      {children}
+    </div>
+  );
 }
 
 export function DataTable<T extends Record<string, unknown>>({
   columns,
   data,
   onRowClick,
+  rowClassName,
   emptyMessage = "Aucune donnée disponible",
 }: TableProps<T>) {
-  if (data.length === 0) {
+  if (!data || !Array.isArray(data) || data.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500 text-sm">
-        {emptyMessage}
+      <div className="min-h-[220px] flex flex-col items-center justify-center gap-2 rounded-xl border border-slate-200/80 bg-white py-12 text-center text-slate-500 text-sm font-medium dark:border-slate-800 dark:bg-slate-950">
+        <div>{emptyMessage}</div>
+        <div className="text-xs text-slate-400">Ajustez la recherche ou les filtres pour trouver des tickets.</div>
       </div>
     );
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full">
-        <thead>
-          <tr className="border-b border-gray-100">
+    <div className="overflow-x-auto rounded-xl border border-slate-200/80 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950">
+      <table className="min-w-full text-left border-separate border-spacing-0">
+        <thead className="bg-slate-50 dark:bg-slate-950">
+          <tr className="border-b border-slate-200 dark:border-slate-700">
             {columns.map((col) => (
               <th
                 key={col.key}
                 className={cn(
-                  "px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-50/50",
+                  "px-5 py-4 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-700 dark:text-slate-200 align-middle",
                   col.className
                 )}
               >
@@ -487,19 +597,19 @@ export function DataTable<T extends Record<string, unknown>>({
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-50">
+        <tbody>
           {data.map((item, index) => (
             <tr
               key={index}
               className={cn(
-                "transition-colors duration-150",
-                index % 2 === 0 ? "bg-white" : "bg-gray-50/30",
-                onRowClick && "cursor-pointer hover:bg-sky-50/50"
+                "border-b border-slate-200 dark:border-slate-700 transition-colors hover:bg-slate-50 dark:hover:bg-slate-900",
+                onRowClick && "cursor-pointer",
+                rowClassName && rowClassName(item)
               )}
               onClick={() => onRowClick?.(item)}
             >
               {columns.map((col) => (
-                <td key={col.key} className={cn("px-4 py-3 text-sm text-gray-700", col.className)}>
+                <td key={col.key} className={cn("px-5 py-3 align-middle text-sm text-slate-600 dark:text-slate-300", col.className)}>
                   {col.render ? col.render(item) : String(item[col.key] ?? "")}
                 </td>
               ))}
@@ -507,6 +617,77 @@ export function DataTable<T extends Record<string, unknown>>({
           ))}
         </tbody>
       </table>
+    </div>
+  );
+}
+
+// ==========================================
+// PAGINATION
+// ==========================================
+interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  pageSize: number;
+  totalItems: number;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (size: number) => void;
+}
+
+export function Pagination({ currentPage, totalPages, pageSize, totalItems, onPageChange, onPageSizeChange }: PaginationProps) {
+  const firstItem = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const lastItem = Math.min(currentPage * pageSize, totalItems);
+
+  return (
+    <div className="mt-4 flex flex-col gap-3 rounded-b-2xl border-t border-slate-200 bg-white px-4 py-4 text-slate-600 shadow-sm dark:border-slate-800 dark:bg-slate-950 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-wrap items-center gap-3 text-[13px] text-slate-500 dark:text-slate-400">
+        <span className="font-bold uppercase tracking-[0.16em]">Éléments par page</span>
+        <select
+          value={pageSize}
+          onChange={(e) => onPageSizeChange(Number(e.target.value))}
+          className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none transition-all duration-200 focus:border-fleet-blue focus:ring-2 focus:ring-fleet-blue/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+        >
+          <option value={5}>5</option>
+          <option value={10}>10</option>
+          <option value={20}>20</option>
+          <option value={50}>50</option>
+          <option value={100}>100</option>
+        </select>
+      </div>
+
+      <div className="text-[13px] text-slate-500 dark:text-slate-400">
+        {firstItem} - {lastItem} de {totalItems} éléments
+      </div>
+
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => onPageChange(1)}
+          disabled={currentPage <= 1}
+          className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition duration-150 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
+        >
+          <span className="text-sm font-bold">«</span>
+        </button>
+        <button
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage <= 1}
+          className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition duration-150 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
+        >
+          <span className="text-sm font-bold">‹</span>
+        </button>
+        <button
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage >= totalPages}
+          className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition duration-150 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
+        >
+          <span className="text-sm font-bold">›</span>
+        </button>
+        <button
+          onClick={() => onPageChange(totalPages)}
+          disabled={currentPage >= totalPages}
+          className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition duration-150 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
+        >
+          <span className="text-sm font-bold">»</span>
+        </button>
+      </div>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { calculBudgetConsomme } from "@/lib/budget";
 
 export async function GET(request: NextRequest) {
   try {
@@ -22,25 +23,18 @@ export async function GET(request: NextRequest) {
       dateFilter.lt = new Date(annee + 1, 0, 1);
     }
 
-    const whereVente: any = { date: dateFilter };
     const whereCarburant: any = { date: dateFilter };
     const whereReparation: any = { date: dateFilter };
 
     if (camionId && camionId !== "tous") {
       const cid = parseInt(camionId);
-      whereVente.camionId = cid;
       whereCarburant.camionId = cid;
       whereReparation.camionId = cid;
     }
 
     // ========================================================
-    // 2. RÉCUPÉRATION DES DONNÉES FINANCIÈRES
+    // 2. RÉCUPÉRATION DES COÛTS ET DONNÉES
     // ========================================================
-    const ventes = await prisma.vente.findMany({
-      where: whereVente,
-      include: { produit: true, camion: true },
-    });
-
     const carburants = await prisma.carburant.findMany({
       where: whereCarburant,
     });
@@ -49,30 +43,14 @@ export async function GET(request: NextRequest) {
       where: whereReparation,
     });
 
-    // CA = somme des ventes
-    const chiffreAffaires = ventes.reduce((sum, v) => sum + v.montantTotal, 0);
-
-    // Coût des matériaux achetés
-    const coutMateriaux = ventes.reduce((sum, v) => sum + v.quantite * v.produit.prixAchat, 0);
-
     // Coût carburant
     const coutCarburant = carburants.reduce((sum, c) => sum + c.coutTotal, 0);
 
     // Coût réparations
     const coutReparations = reparations.reduce((sum, r) => sum + r.cout, 0);
 
-    // Bénéfice Net
-    const beneficeNet = chiffreAffaires - coutMateriaux - coutCarburant - coutReparations;
-
-    // Factures impayées (toute période, ou période sélectionnée)
-    const facturesImpayeesData = await prisma.vente.findMany({
-      where: {
-        statutPaiement: "en_attente",
-        ...(camionId && camionId !== "tous" ? { camionId: parseInt(camionId) } : {}),
-      },
-    });
-    const nbFacturesImpayees = facturesImpayeesData.length;
-    const montantFacturesImpayees = facturesImpayeesData.reduce((sum, v) => sum + v.montantTotal, 0);
+    // Coût Total Exploitation
+    const coutTotalExploitation = coutCarburant + coutReparations;
 
     // Camions en service
     const totalCamions = await prisma.camion.count();
@@ -80,8 +58,16 @@ export async function GET(request: NextRequest) {
       where: { statut: "en_service" },
     });
 
+    // Nombre d'alertes de maintenance (en retard)
+    const nbAlertesMaintenance = await prisma.maintenancePlanifiee.count({
+      where: {
+        statut: "en_retard",
+        ...(camionId && camionId !== "tous" ? { camionId: parseInt(camionId) } : {}),
+      },
+    });
+
     // ========================================================
-    // 3. ÉVOLUTION MENSUELLE SUR 12 MOIS (CA vs Bénéfice)
+    // 3. ÉVOLUTION MENSUELLE DES DÉPENSES (Carburant vs Maintenance)
     // ========================================================
     const evolutionMensuelle = [];
     const moisLabels = [
@@ -92,14 +78,6 @@ export async function GET(request: NextRequest) {
     for (let i = 0; i < 12; i++) {
       const debutMois = new Date(annee, i, 1);
       const finMois = new Date(annee, i + 1, 1);
-
-      const vMois = await prisma.vente.findMany({
-        where: {
-          date: { gte: debutMois, lt: finMois },
-          ...(camionId && camionId !== "tous" ? { camionId: parseInt(camionId) } : {}),
-        },
-        include: { produit: true },
-      });
 
       const cMois = await prisma.carburant.findMany({
         where: {
@@ -115,34 +93,29 @@ export async function GET(request: NextRequest) {
         },
       });
 
-      const caMois = vMois.reduce((sum, v) => sum + v.montantTotal, 0);
-      const matMois = vMois.reduce((sum, v) => sum + v.quantite * v.produit.prixAchat, 0);
       const carbMois = cMois.reduce((sum, c) => sum + c.coutTotal, 0);
       const repMois = rMois.reduce((sum, r) => sum + r.cout, 0);
-      const benMois = caMois - matMois - carbMois - repMois;
 
       evolutionMensuelle.push({
         name: moisLabels[i],
-        "Chiffre d'Affaires": caMois,
-        "Bénéfice": benMois,
+        "Carburant": carbMois,
+        "Maintenance": repMois,
       });
     }
 
     // ========================================================
     // 4. COMPARATIF PAR CAMION
     // ========================================================
-    const camions = await prisma.camion.findMany();
+    const camions = await prisma.camion.findMany({
+      include: {
+        chauffeur: true,
+        carburants: true,
+      },
+    });
     const comparatifCamions = [];
 
     for (const camion of camions) {
-      const vCamion = await prisma.vente.findMany({
-        where: {
-          camionId: camion.id,
-          date: dateFilter,
-        },
-        include: { produit: true },
-      });
-
+      // Filtrage carburants et réparations sur la période spécifiée
       const cCamion = await prisma.carburant.findMany({
         where: {
           camionId: camion.id,
@@ -155,14 +128,30 @@ export async function GET(request: NextRequest) {
           camionId: camion.id,
           date: dateFilter,
         },
+        include: { piecesChangees: true },
       });
 
-      const caC = vCamion.reduce((sum, v) => sum + v.montantTotal, 0);
-      const matC = vCamion.reduce((sum, v) => sum + v.quantite * v.produit.prixAchat, 0);
       const carbC = cCamion.reduce((sum, c) => sum + c.coutTotal, 0);
       const repC = rCamion.reduce((sum, r) => sum + r.cout, 0);
-      const benC = caC - matC - carbC - repC;
-      const margeC = caC > 0 ? (benC / caC) * 100 : 0;
+      const budgetConsomme = calculBudgetConsomme(cCamion, rCamion);
+      const coutTotalC = carbC + repC;
+      const litresC = cCamion.reduce((sum, c) => sum + c.litres, 0);
+
+      // Calcul consommation moyenne sur l'historique complet de ce camion
+      const carburantsTriés = [...camion.carburants].sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
+      const consommations = [];
+      for (let idx = 1; idx < carburantsTriés.length; idx++) {
+        const kmParcourus = carburantsTriés[idx].kilometrage - carburantsTriés[idx - 1].kilometrage;
+        if (kmParcourus > 0) {
+          consommations.push((carburantsTriés[idx].litres / kmParcourus) * 100);
+        }
+      }
+      const consoMoyenne =
+        consommations.length > 0
+          ? consommations.reduce((sum, val) => sum + val, 0) / consommations.length
+          : null;
 
       comparatifCamions.push({
         id: camion.id,
@@ -170,33 +159,111 @@ export async function GET(request: NextRequest) {
         marque: camion.marque,
         statut: camion.statut,
         capacite: camion.capaciteTonnes,
-        chiffreAffaires: caC,
+        dotationAnnuelle: camion.dotationAnnuelle || 0,
+        budgetConsomme,
+        chauffeurNom: camion.chauffeur
+          ? `${camion.chauffeur.prenom || ""} ${camion.chauffeur.nom}`
+          : "Non assigné",
+        kilometrage: camion.kilometrageActuel,
         carburant: carbC,
+        litres: litresC,
         reparation: repC,
-        benefice: benC,
-        marge: margeC,
+        coutTotal: coutTotalC,
+        consoMoyenne: consoMoyenne ? Math.round(consoMoyenne * 10) / 10 : 0,
       });
     }
 
     // ========================================================
-    // 5. RÉPARTITION DES CHARGES (PieChart)
+    // 5. RÉPARTITION DES DÉPENSES
     // ========================================================
     const repartitionCharges = [
-      { name: "Achats Matériaux", value: coutMateriaux },
       { name: "Carburant", value: coutCarburant },
-      { name: "Réparations", value: coutReparations },
-    ].filter(c => c.value > 0);
+      { name: "Maintenance", value: coutReparations },
+    ].filter((c) => c.value > 0);
+
+    // ========================================================
+    // 6. FRÉQUENCE CARBURANT (nombre de pleins + litres / mois)
+    // ========================================================
+    const frequenceCarburant = [];
+    for (let i = 0; i < 12; i++) {
+      const debutMois = new Date(annee, i, 1);
+      const finMois = new Date(annee, i + 1, 1);
+
+      const cMois = await prisma.carburant.findMany({
+        where: {
+          date: { gte: debutMois, lt: finMois },
+          ...(camionId && camionId !== "tous"
+            ? { camionId: parseInt(camionId) }
+            : {}),
+        },
+      });
+
+      frequenceCarburant.push({
+        name: moisLabels[i],
+        pleins: cMois.length,
+        litres: Math.round(cMois.reduce((s, c) => s + c.litres, 0)),
+        montant: cMois.reduce((s, c) => s + c.coutTotal, 0),
+      });
+    }
+
+    // ========================================================
+    // 7. FRÉQUENCE MAINTENANCE (interventions / mois)
+    // ========================================================
+    const frequenceMaintenance = [];
+    for (let i = 0; i < 12; i++) {
+      const debutMois = new Date(annee, i, 1);
+      const finMois = new Date(annee, i + 1, 1);
+
+      const rMois = await prisma.reparation.findMany({
+        where: {
+          date: { gte: debutMois, lt: finMois },
+          ...(camionId && camionId !== "tous"
+            ? { camionId: parseInt(camionId) }
+            : {}),
+        },
+      });
+
+      frequenceMaintenance.push({
+        name: moisLabels[i],
+        interventions: rMois.length,
+        montant: rMois.reduce((s, r) => s + r.cout, 0),
+      });
+    }
+
+    // ========================================================
+    // 8. BUDGET PAR VÉHICULE (dotation vs consommé annuel)
+    // ========================================================
+    const budgetParVehicule = comparatifCamions
+      .filter((c) => c.dotationAnnuelle > 0 || c.budgetConsomme > 0)
+      .map((c) => ({
+        immatriculation: c.immatriculation,
+        dotation: c.dotationAnnuelle,
+        consomme: c.budgetConsomme,
+        carburant: c.carburant,
+        maintenance: c.reparation,
+      }));
+
+    // Dotation totale flotte
+    const dotationTotale = camions.reduce(
+      (s, c) => s + (c.dotationAnnuelle || 0),
+      0
+    );
 
     return NextResponse.json({
-      chiffreAffaires,
-      beneficeNet,
+      coutCarburant,
+      coutReparations,
+      coutTotalExploitation,
       camionsEnService,
       totalCamions,
-      nbFacturesImpayees,
-      montantFacturesImpayees,
+      nbAlertesMaintenance,
       evolutionMensuelle,
       comparatifCamions,
       repartitionCharges,
+      frequenceCarburant,
+      frequenceMaintenance,
+      budgetParVehicule,
+      dotationTotale,
+      annee,
     });
   } catch (error) {
     console.error("Erreur GET /api/rapports:", error);

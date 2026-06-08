@@ -46,9 +46,9 @@ export function generateNumeroFacture(): string {
 
 /** Labels pour les statuts de camion */
 export const statutCamionLabels: Record<string, string> = {
-  en_service: "En service",
-  en_panne: "En panne",
-  en_attente: "En attente",
+  en_service: "Service",
+  en_panne: "Panne",
+  en_attente: "Attente",
   hors_service: "Hors service",
 };
 

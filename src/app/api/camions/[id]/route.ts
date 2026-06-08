@@ -13,15 +13,18 @@ export async function GET(
     const camion = await prisma.camion.findUnique({
       where: { id: camionId },
       include: {
-        carburants: { orderBy: { date: "desc" } },
-        reparations: { orderBy: { date: "desc" } },
-        ventes: {
-          include: {
-            client: true,
-            produit: true,
-          },
+        chauffeur: true,
+        carburants: { 
           orderBy: { date: "desc" },
+          include: { chauffeur: true }
         },
+        reparations: { 
+          orderBy: { date: "desc" },
+          include: { piecesChangees: true }
+        },
+        maintenancesPlanifiees: {
+          orderBy: { kilometrageCible: "asc" }
+        }
       },
     });
 
@@ -32,29 +35,10 @@ export async function GET(
       );
     }
 
-    // Calcul des résumés financiers du mois en cours
+    // Calcul des résumés d'exploitation du mois en cours
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const startOfYear = new Date(now.getFullYear(), 0, 1);
-
-    // Ventes du mois
-    const ventesMonth = camion.ventes.filter(
-      (v) => new Date(v.date) >= startOfMonth
-    );
-    const totalVentesMois = ventesMonth.reduce((sum, v) => sum + v.montantTotal, 0);
-
-    // Achats matériaux (basé sur le prix d'achat des produits vendus)
-    const achatsMois = await prisma.vente.findMany({
-      where: {
-        camionId: camionId,
-        date: { gte: startOfMonth },
-      },
-      include: { produit: true },
-    });
-    const totalAchatsMois = achatsMois.reduce(
-      (sum, v) => sum + v.quantite * v.produit.prixAchat,
-      0
-    );
 
     // Carburant du mois
     const carburantMois = camion.carburants.filter(
@@ -86,26 +70,26 @@ export async function GET(
       0
     );
 
-    // Bénéfice net du mois
-    const beneficeNet =
-      totalVentesMois - totalAchatsMois - totalCarburantMois - totalReparationsMois;
-
     // Calcul L/100km pour chaque plein (comparaison avec le plein précédent)
-    const carburantsAvecConsommation = camion.carburants
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-      .map((c, index, arr) => {
-        let consommation: number | null = null;
-        if (index > 0) {
-          const kmParcourus = c.kilometrage - arr[index - 1].kilometrage;
-          if (kmParcourus > 0) {
-            consommation = (c.litres / kmParcourus) * 100;
-          }
-        }
-        return { ...c, consommation };
-      })
-      .reverse(); // Retour en ordre décroissant
+    const carburantsTriés = [...camion.carburants].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
 
-    // Consommation moyenne
+    const carburantsAvecConsommation = camion.carburants.map((c) => {
+      // Trouver le plein précédent chronologiquement pour ce véhicule
+      const indexDansTri = carburantsTriés.findIndex((ct) => ct.id === c.id);
+      let consommation: number | null = null;
+      if (indexDansTri > 0) {
+        const precedent = carburantsTriés[indexDansTri - 1];
+        const kmParcourus = c.kilometrage - precedent.kilometrage;
+        if (kmParcourus > 0) {
+          consommation = (c.litres / kmParcourus) * 100;
+        }
+      }
+      return { ...c, consommation };
+    });
+
+    // Consommation moyenne globale calculée sur tout l'historique
     const consommations = carburantsAvecConsommation.filter(
       (c) => c.consommation !== null
     );
@@ -116,7 +100,7 @@ export async function GET(
         : null;
 
     // Km parcourus dans le mois
-    const carburantsMoisTriés = carburantMois.sort(
+    const carburantsMoisTriés = [...carburantMois].sort(
       (a, b) => a.kilometrage - b.kilometrage
     );
     const kmParcourus =
@@ -130,15 +114,11 @@ export async function GET(
       carburants: carburantsAvecConsommation,
       resume: {
         mois: {
-          ventesTotal: totalVentesMois,
-          achatsTotal: totalAchatsMois,
           carburantTotal: totalCarburantMois,
           litresTotal: totalLitresMois,
           reparationsTotal: totalReparationsMois,
-          beneficeNet,
           kmParcourus,
           consommationMoyenne,
-          quantiteLivree: ventesMonth.reduce((sum, v) => sum + v.quantite, 0),
         },
         annee: {
           reparationsTotal: totalReparationsAnnee,
@@ -165,6 +145,16 @@ export async function PUT(
     const camionId = parseInt(id);
     const body = await request.json();
 
+    const cid = body.chauffeurId ? parseInt(body.chauffeurId) : null;
+
+    // Si on change le chauffeur, on libère le chauffeur de son ancien camion éventuel
+    if (cid) {
+      await prisma.camion.updateMany({
+        where: { chauffeurId: cid, id: { not: camionId } },
+        data: { chauffeurId: null },
+      });
+    }
+
     const camion = await prisma.camion.update({
       where: { id: camionId },
       data: {
@@ -173,11 +163,22 @@ export async function PUT(
         modele: body.modele || null,
         capaciteTonnes: parseFloat(body.capaciteTonnes),
         statut: body.statut,
-        chauffeurNom: body.chauffeurNom || null,
+        kilometrageActuel: body.kilometrageActuel ? parseInt(body.kilometrageActuel) : undefined,
         dateMiseService: new Date(body.dateMiseService),
-        prochaineVisite: body.prochaineVisite
-          ? new Date(body.prochaineVisite)
-          : null,
+        prochaineVisite: body.prochaineVisite ? new Date(body.prochaineVisite) : null,
+        annee: body.annee ? parseInt(body.annee) : null,
+        numeroChassis: body.numeroChassis || null,
+        couleur: body.couleur || null,
+        carburant: body.carburant || "Diesel",
+        capaciteReservoir: body.capaciteReservoir ? parseInt(body.capaciteReservoir) : null,
+        transmission: body.transmission || "Manuelle",
+        dotationAnnuelle: body.dotationAnnuelle ? parseFloat(body.dotationAnnuelle) : null,
+        frequenceVidange: body.frequenceVidange ? parseInt(body.frequenceVidange) : null,
+        echeanceAssurance: body.echeanceAssurance ? new Date(body.echeanceAssurance) : null,
+        numeroPoliceAssurance: body.numeroPoliceAssurance || null,
+        compagnieAssurance: body.compagnieAssurance || null,
+        notes: body.notes || null,
+        chauffeurId: cid,
       },
     });
 

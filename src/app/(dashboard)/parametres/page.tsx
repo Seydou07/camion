@@ -64,7 +64,7 @@ export default function ParametresPage() {
                      <h2 className="text-lg font-black text-slate-800 mb-6">Informations personnelles</h2>
                      
                      <div className="flex items-center gap-6 mb-8 pb-8 border-b border-slate-100">
-                        <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-sky-400 to-indigo-500 flex items-center justify-center text-3xl font-black text-white shadow-lg shadow-sky-500/20 border-4 border-white">
+                        <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-fleet-blue to-fleet-blue-dark flex items-center justify-center text-3xl font-black text-white shadow-lg shadow-fleet-blue/20 border-4 border-white">
                            {session?.user?.name?.charAt(0)?.toUpperCase() || "A"}
                         </div>
                         <div>
@@ -84,7 +84,7 @@ export default function ParametresPage() {
                      </div>
 
                      <div className="mt-8 flex justify-end">
-                        <Button className="bg-sky-500 hover:bg-sky-600 border-none shadow-lg shadow-sky-500/30 text-white">Sauvegarder les modifications</Button>
+                        <Button className="bg-fleet-blue hover:bg-fleet-blue-dark border-none shadow-lg shadow-fleet-blue/30 text-white">Sauvegarder les modifications</Button>
                      </div>
                   </div>
                </div>
@@ -107,7 +107,7 @@ export default function ParametresPage() {
                         <Input label="Site Web" defaultValue="www.truckmanager.sn" />
                      </div>
                      <div className="mt-8 flex justify-end">
-                        <Button className="bg-sky-500 hover:bg-sky-600 border-none shadow-lg shadow-sky-500/30 text-white">Mettre à jour l'entreprise</Button>
+                        <Button className="bg-fleet-blue hover:bg-fleet-blue-dark border-none shadow-lg shadow-fleet-blue/30 text-white">Mettre à jour l'entreprise</Button>
                      </div>
                   </div>
                </div>
@@ -125,20 +125,20 @@ export default function ParametresPage() {
                            { title: "Alertes Facturation", desc: "Notifications pour les factures impayées ou en retard.", checked: false },
                            { title: "Activité Système", desc: "Recevoir un email lors de la connexion d'un nouvel appareil au compte admin.", checked: true },
                         ].map((notif, idx) => (
-                           <div key={idx} className="flex items-start justify-between p-4 rounded-2xl border border-slate-100 hover:border-sky-100 bg-slate-50/50 hover:bg-sky-50/10 transition-colors">
+                           <div key={idx} className="flex items-start justify-between p-4 rounded-2xl border border-slate-100 hover:border-fleet-blue/20 bg-slate-50/50 hover:bg-fleet-blue/5 transition-colors">
                               <div>
                                  <h3 className="text-sm font-bold text-slate-800">{notif.title}</h3>
                                  <p className="text-xs text-slate-500 mt-1">{notif.desc}</p>
                               </div>
                               {/* Toggle switch mockup */}
-                              <div className={`w-11 h-6 rounded-full p-1 transition-colors cursor-pointer ${notif.checked ? 'bg-sky-500' : 'bg-slate-300'}`}>
+                              <div className={`w-11 h-6 rounded-full p-1 transition-colors cursor-pointer ${notif.checked ? 'bg-fleet-blue' : 'bg-slate-300'}`}>
                                  <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${notif.checked ? 'translate-x-5' : 'translate-x-0'}`}></div>
                               </div>
                            </div>
                         ))}
                      </div>
                      <div className="mt-8 flex justify-end">
-                        <Button className="bg-sky-500 hover:bg-sky-600 border-none shadow-lg shadow-sky-500/30 text-white">Sauvegarder les préférences</Button>
+                        <Button className="bg-fleet-blue hover:bg-fleet-blue-dark border-none shadow-lg shadow-fleet-blue/30 text-white">Sauvegarder les préférences</Button>
                      </div>
                   </div>
                </div>

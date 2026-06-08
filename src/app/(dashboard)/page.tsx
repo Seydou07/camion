@@ -9,12 +9,10 @@ import {
   DataTable,
   Skeleton,
 } from "@/components/ui";
-import { formatMontant, formatDate, statutCamionColors, statutCamionLabels } from "@/lib/utils";
+import { formatMontant, statutCamionColors, statutCamionLabels } from "@/lib/utils";
 import {
   AreaChart,
   Area,
-  BarChart,
-  Bar,
   PieChart,
   Pie,
   Cell,
@@ -77,14 +75,14 @@ export default function DashboardPage() {
       header: "Camion",
       render: (item: any) => (
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-sky-50 text-sky-500">
+          <div className="p-2 rounded-xl bg-fleet-blue/10 text-fleet-blue">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
             </svg>
           </div>
           <div>
             <p className="font-bold text-slate-800 text-sm">{item.immatriculation}</p>
-            <p className="text-xs text-slate-400 font-medium">{item.marque}</p>
+            <p className="text-xs text-slate-400 font-medium">{item.marque} {item.modele || ""}</p>
           </div>
         </div>
       ),
@@ -93,29 +91,34 @@ export default function DashboardPage() {
       key: "statut",
       header: "Statut",
       render: (item: any) => (
-        <Badge variant={statutCamionColors[item.statut]}>
+        <span className={`text-[9px] font-black uppercase px-2 py-1 rounded-md border ${statutCamionColors[item.statut]}`}>
           {statutCamionLabels[item.statut]}
-        </Badge>
-      ),
-    },
-    {
-      key: "chiffreAffaires",
-      header: "CA du mois",
-      render: (item: any) => <span className="font-bold text-slate-700">{formatMontant(item.chiffreAffaires)}</span>,
-    },
-    {
-      key: "carburant",
-      header: "Carburant",
-      render: (item: any) => <span className="text-slate-500">{formatMontant(item.carburant)}</span>,
-    },
-    {
-      key: "benefice",
-      header: "Bénéfice",
-      render: (item: any) => (
-        <span className={item.benefice >= 0 ? "text-emerald-600 font-bold" : "text-rose-600 font-bold"}>
-          {formatMontant(item.benefice)}
         </span>
       ),
+    },
+    {
+      key: "chauffeurNom",
+      header: "Chauffeur",
+      render: (item: any) => <span className="text-sm font-semibold text-slate-600">{item.chauffeurNom}</span>,
+    },
+    {
+      key: "kilometrage",
+      header: "Kilométrage",
+      render: (item: any) => <span className="text-sm font-bold text-slate-700">{item.kilometrage.toLocaleString()} km</span>,
+    },
+    {
+      key: "consoMoyenne",
+      header: "Conso (100km)",
+      render: (item: any) => (
+        <span className="text-sm font-black text-fleet-blue bg-fleet-blue/5 px-2 py-1 rounded-md">
+          {item.consoMoyenne ? `${item.consoMoyenne} L` : "-"}
+        </span>
+      ),
+    },
+    {
+      key: "coutTotal",
+      header: "Total Dépenses",
+      render: (item: any) => <span className="text-sm font-black text-rose-600">{formatMontant(item.coutTotal)}</span>,
     },
   ];
 
@@ -149,44 +152,42 @@ export default function DashboardPage() {
       {/* 1. Stats Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 items-stretch">
         <StatCard
-          title="Chiffre d'Affaires"
-          value={formatAbbrev(data.chiffreAffaires)}
-          fullValue={formatMontant(data.chiffreAffaires)}
-          change={{ value: 12.5, isPositive: true }}
-          subtitle="vs mois dernier"
-          icon={
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          }
-        />
-        <StatCard
-          title="Bénéfice Net"
-          value={formatAbbrev(data.beneficeNet)}
-          fullValue={formatMontant(data.beneficeNet)}
-          change={{ value: 8.2, isPositive: data.beneficeNet >= 0 }}
-          subtitle="marge brute estimée"
-          icon={
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
-            </svg>
-          }
-        />
-        <StatCard
           title="Flotte Active"
           value={`${data.camionsEnService}/${data.totalCamions}`}
           subtitle="camions en service"
           icon={
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25" />
             </svg>
           }
         />
         <StatCard
-          title="Factures Impayées"
-          value={formatAbbrev(data.montantFacturesImpayees)}
-          fullValue={formatMontant(data.montantFacturesImpayees)}
-          subtitle={`${data.nbFacturesImpayees} facture(s) en attente`}
+          title="Dépenses Carburant"
+          value={formatAbbrev(data.coutCarburant)}
+          fullValue={formatMontant(data.coutCarburant)}
+          subtitle="consommation du mois"
+          icon={
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+            </svg>
+          }
+        />
+        <StatCard
+          title="Frais Maintenance"
+          value={formatAbbrev(data.coutReparations)}
+          fullValue={formatMontant(data.coutReparations)}
+          subtitle="réparations & pièces"
+          icon={
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.492-3.053c.217-.266.198-.654-.044-.897L11.5 8.85m-2.227 3.518l-3.053 2.492c-.266.217-.654.198-.897-.044L3.83 12.5" />
+            </svg>
+          }
+        />
+        <StatCard
+          title="Maintenance due"
+          value={String(data.nbAlertesMaintenance)}
+          subtitle="entretiens en retard"
+          change={{ value: data.nbAlertesMaintenance > 0 ? 100 : 0, isPositive: false }}
           icon={
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
@@ -197,23 +198,23 @@ export default function DashboardPage() {
 
       {/* 2. Charts Row: Evolution (2/3) + Doughnut (1/3) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* CA vs Bénéfice Area Chart */}
+        {/* Fuel vs Maintenance Area Chart */}
         <Card className="lg:col-span-2 p-6">
           <div className="mb-6">
-            <h3 className="text-sm font-black text-slate-800 tracking-tight">Évolution Annuelle</h3>
-            <p className="text-xs text-slate-400 font-medium mt-0.5">Chiffre d'affaires vs Bénéfice net</p>
+            <h3 className="text-sm font-black text-slate-800 tracking-tight">Évolution Annuelle des Charges</h3>
+            <p className="text-xs text-slate-400 font-medium mt-0.5">Dépenses de carburant vs Frais de maintenance</p>
           </div>
-          <div className="h-[280px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="h-[280px] w-full" style={{ minWidth: 0, minHeight: 0 }}>
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
               <AreaChart data={data.evolutionMensuelle} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
                 <defs>
-                  <linearGradient id="colorCA" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="colorCarb" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#0EA5E9" stopOpacity={0.15} />
                     <stop offset="95%" stopColor="#0EA5E9" stopOpacity={0} />
                   </linearGradient>
-                  <linearGradient id="colorBenefice" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10B981" stopOpacity={0.15} />
-                    <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
+                  <linearGradient id="colorMaint" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#EF4444" stopOpacity={0.15} />
+                    <stop offset="95%" stopColor="#EF4444" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
@@ -227,8 +228,8 @@ export default function DashboardPage() {
                   iconType="circle"
                   wrapperStyle={{ fontSize: "11px", fontWeight: 700 }}
                 />
-                <Area type="monotone" dataKey="Chiffre d'Affaires" stroke="#0EA5E9" strokeWidth={2.5} fill="url(#colorCA)" dot={{ r: 3, fill: "#0EA5E9" }} activeDot={{ r: 6, stroke: "#0EA5E9", strokeWidth: 2, fill: "white" }} />
-                <Area type="monotone" dataKey="Bénéfice" stroke="#10B981" strokeWidth={2.5} fill="url(#colorBenefice)" dot={{ r: 3, fill: "#10B981" }} activeDot={{ r: 6, stroke: "#10B981", strokeWidth: 2, fill: "white" }} />
+                <Area type="monotone" dataKey="Carburant" stroke="#0EA5E9" strokeWidth={2.5} fill="url(#colorCarb)" dot={{ r: 3, fill: "#0EA5E9" }} activeDot={{ r: 6, stroke: "#0EA5E9", strokeWidth: 2, fill: "white" }} />
+                <Area type="monotone" dataKey="Maintenance" stroke="#EF4444" strokeWidth={2.5} fill="url(#colorMaint)" dot={{ r: 3, fill: "#EF4444" }} activeDot={{ r: 6, stroke: "#EF4444", strokeWidth: 2, fill: "white" }} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -237,13 +238,13 @@ export default function DashboardPage() {
         {/* Doughnut - Répartition des charges */}
         <Card className="p-6 flex flex-col">
           <div className="mb-6">
-            <h3 className="text-sm font-black text-slate-800 tracking-tight">Répartition des Charges</h3>
-            <p className="text-xs text-slate-400 font-medium mt-0.5">Matériaux, carburant, réparations</p>
+            <h3 className="text-sm font-black text-slate-800 tracking-tight">Structure des Dépenses</h3>
+            <p className="text-xs text-slate-400 font-medium mt-0.5">Répartition carburant vs maintenance</p>
           </div>
           <div className="flex-1 flex flex-col items-center justify-center">
-            <div className="h-[180px] w-full">
+            <div className="h-[180px] w-full" style={{ minWidth: 0, minHeight: 0 }}>
               {data.repartitionCharges && data.repartitionCharges.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                   <PieChart>
                     <Pie
                       data={data.repartitionCharges}
@@ -275,7 +276,7 @@ export default function DashboardPage() {
                   </PieChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="h-full flex items-center justify-center text-xs text-slate-400 font-semibold">Aucune charge</div>
+                <div className="h-full flex items-center justify-center text-xs text-slate-400 font-semibold">Aucune dépense ce mois-ci</div>
               )}
             </div>
             {/* Legend */}
@@ -294,68 +295,55 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      {/* 3. Performance per truck (Top Performers Leaderboard) */}
+      {/* 3. Highlighted Fleet Cards */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-black text-slate-800 tracking-tight">Top Performance Véhicules</h3>
-            <p className="text-xs text-slate-400 font-medium mt-0.5">Classement des camions les plus rentables du mois</p>
+            <h3 className="text-sm font-black text-slate-800 tracking-tight">Véhicules les plus sollicités</h3>
+            <p className="text-xs text-slate-400 font-medium mt-0.5">Classement des camions par kilométrage actuel</p>
           </div>
           <Link href="/camions">
-            <span className="text-xs text-sky-500 font-bold hover:underline cursor-pointer px-3 py-1.5 rounded-xl hover:bg-sky-50 transition-colors">
+            <span className="text-xs text-fleet-blue font-bold hover:underline cursor-pointer px-3 py-1.5 rounded-xl hover:bg-fleet-blue/5 transition-colors">
               Voir toute la flotte →
             </span>
           </Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {[...(data.comparatifCamions || [])]
-            .sort((a: any, b: any) => b.benefice - a.benefice)
+            .sort((a: any, b: any) => b.kilometrage - a.kilometrage)
             .slice(0, 3)
             .map((camion: any, index: number) => {
-               const marginPercent = camion.chiffreAffaires > 0 ? (camion.benefice / camion.chiffreAffaires) * 100 : 0;
                return (
-                 <Card key={camion.id || index} className="p-6 relative overflow-hidden group hover:shadow-xl hover:shadow-sky-500/5 transition-all duration-300">
-                   {/* Medal/Rank Badge */}
-                   <div className={`absolute top-0 right-0 w-20 h-20 rounded-bl-[100%] flex items-start justify-end p-4 font-black text-white shadow-sm transition-transform group-hover:scale-110 ${index === 0 ? 'bg-amber-400 shadow-amber-400/20' : index === 1 ? 'bg-slate-300 shadow-slate-300/20' : 'bg-amber-600 shadow-amber-600/20'}`}>
+                 <Card key={camion.id || index} className="p-6 relative overflow-hidden group hover:shadow-xl hover:shadow-fleet-blue/5 transition-all duration-300">
+                   {/* Rank Badge */}
+                   <div className={`absolute top-0 right-0 w-20 h-20 rounded-bl-[100%] flex items-start justify-end p-4 font-black text-white shadow-sm transition-transform group-hover:scale-110 ${index === 0 ? 'bg-fleet-blue' : index === 1 ? 'bg-indigo-500' : 'bg-slate-400'}`}>
                      <span className="text-lg relative -top-1 -right-1">#{index + 1}</span>
                    </div>
                    
-                   <div className="flex items-center gap-4 mb-8">
-                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg ${index === 0 ? 'bg-gradient-to-br from-amber-300 to-amber-500 shadow-amber-400/30' : index === 1 ? 'bg-gradient-to-br from-slate-300 to-slate-400 shadow-slate-400/30' : 'bg-gradient-to-br from-amber-600 to-amber-700 shadow-amber-600/30'}`}>
+                   <div className="flex items-center gap-4 mb-6">
+                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg ${index === 0 ? 'bg-gradient-to-br from-fleet-blue to-fleet-blue-dark shadow-fleet-blue/30' : index === 1 ? 'bg-gradient-to-br from-indigo-400 to-indigo-600 shadow-indigo-400/30' : 'bg-gradient-to-br from-slate-400 to-slate-500 shadow-slate-400/30'}`}>
                         <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25" />
                         </svg>
                       </div>
                       <div>
                         <p className="text-xl font-black text-slate-800 tracking-tight">{camion.immatriculation}</p>
-                        <p className="text-xs font-bold text-slate-400 mt-0.5">{camion.marque}</p>
+                        <p className="text-xs font-bold text-slate-400 mt-0.5">{camion.marque} • Chauffeur : {camion.chauffeurNom}</p>
                       </div>
                    </div>
                    
-                   <div className="space-y-6">
-                     <div>
-                        <div className="flex justify-between text-xs font-bold mb-2">
-                           <span className="text-slate-500 uppercase tracking-wider">Chiffre d'Affaires</span>
-                           <span className="text-slate-800 text-sm">{formatAbbrev(camion.chiffreAffaires)}</span>
-                        </div>
-                        <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                           <div className="h-full bg-sky-500 rounded-full w-full"></div>
-                        </div>
+                   <div className="space-y-4">
+                     <div className="flex justify-between items-center text-xs">
+                       <span className="text-slate-400 font-bold uppercase tracking-wider">Kilométrage</span>
+                       <span className="text-slate-800 font-black">{camion.kilometrage.toLocaleString()} km</span>
                      </div>
-                     
-                     <div>
-                        <div className="flex justify-between text-xs font-bold mb-2">
-                           <span className="text-slate-500 uppercase tracking-wider">Bénéfice Net</span>
-                           <span className={`text-sm ${camion.benefice >= 0 ? "text-emerald-500" : "text-rose-500"}`}>
-                             {formatAbbrev(camion.benefice)}
-                           </span>
-                        </div>
-                        <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                           <div 
-                              className={`h-full rounded-full transition-all duration-1000 ${camion.benefice >= 0 ? 'bg-emerald-500' : 'bg-rose-500'}`} 
-                              style={{ width: `${Math.min(100, Math.max(5, Math.abs(marginPercent)))}%` }}
-                           ></div>
-                        </div>
+                     <div className="flex justify-between items-center text-xs">
+                       <span className="text-slate-400 font-bold uppercase tracking-wider">Consommation moyenne</span>
+                       <span className="text-fleet-blue font-black">{camion.consoMoyenne ? `${camion.consoMoyenne} L/100km` : "N/A"}</span>
+                     </div>
+                     <div className="flex justify-between items-center text-xs pt-2 border-t border-slate-100">
+                       <span className="text-slate-400 font-bold uppercase tracking-wider">Budget d'Exploitation</span>
+                       <span className="text-rose-600 font-black">{formatMontant(camion.coutTotal)}</span>
                      </div>
                    </div>
                  </Card>
@@ -364,16 +352,16 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* 4. Comparatif Camions Table */}
+      {/* 4. Global Fleet Summary Table */}
       <Card className="p-6 overflow-hidden">
         <div className="flex items-center justify-between mb-5">
           <div>
-            <h3 className="text-sm font-black text-slate-800 tracking-tight">Récapitulatif par Camion</h3>
-            <p className="text-xs text-slate-400 font-medium mt-0.5">Rentabilité mensuelle de chaque camion</p>
+            <h3 className="text-sm font-black text-slate-800 tracking-tight">Récapitulatif de la Flotte</h3>
+            <p className="text-xs text-slate-400 font-medium mt-0.5">Vue synthétique et coûts d'exploitation par véhicule</p>
           </div>
           <Link href="/camions">
-            <span className="text-xs text-sky-500 font-bold hover:underline cursor-pointer px-3 py-1.5 rounded-xl hover:bg-sky-50 transition-colors">
-              Détails →
+            <span className="text-xs text-fleet-blue font-bold hover:underline cursor-pointer px-3 py-1.5 rounded-xl hover:bg-fleet-blue/5 transition-colors">
+              Gérer les camions →
             </span>
           </Link>
         </div>

@@ -4,15 +4,15 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("Début du seeding...");
+  console.log("Début du seeding de la flotte...");
 
   // Nettoyage des anciennes données
-  await prisma.vente.deleteMany();
+  await prisma.maintenancePlanifiee.deleteMany();
+  await prisma.pieceChangee.deleteMany();
   await prisma.reparation.deleteMany();
   await prisma.carburant.deleteMany();
   await prisma.camion.deleteMany();
-  await prisma.client.deleteMany();
-  await prisma.produit.deleteMany();
+  await prisma.chauffeur.deleteMany();
   await prisma.user.deleteMany();
 
   // 1. Création de l'utilisateur Admin
@@ -27,65 +27,104 @@ async function main() {
   });
   console.log("Utilisateur admin créé:", admin.email);
 
-  // 2. Création des Produits (Matériaux)
-  const produits = await Promise.all([
-    prisma.produit.create({
-      data: { nom: "Sable 0/2", prixVente: 12000, prixAchat: 6000, unite: "tonne" },
+  // 2. Création des Chauffeurs
+  console.log("Création des chauffeurs...");
+  const chauffeurs = await Promise.all([
+    prisma.chauffeur.create({
+      data: { nom: "Diallo", prenom: "Moussa", telephone: "+221 77 123 45 67", numeroPermis: "DK-2022-876", statut: "actif" },
     }),
-    prisma.produit.create({
-      data: { nom: "Gravier 8/12", prixVente: 15000, prixAchat: 8000, unite: "tonne" },
+    prisma.chauffeur.create({
+      data: { nom: "Sow", prenom: "Ibrahima", telephone: "+221 78 543 21 09", numeroPermis: "DK-2021-342", statut: "actif" },
     }),
-    prisma.produit.create({
-      data: { nom: "Terre Végétale", prixVente: 18000, prixAchat: 9000, unite: "m3" },
+    prisma.chauffeur.create({
+      data: { nom: "Touré", prenom: "Sékou", telephone: "+221 76 999 88 77", numeroPermis: "DK-2020-009", statut: "actif" },
     }),
-    prisma.produit.create({
-      data: { nom: "Tout Venant 0/31.5", prixVente: 10000, prixAchat: 5000, unite: "tonne" },
+    prisma.chauffeur.create({
+      data: { nom: "Cissé", prenom: "Ousmane", telephone: "+221 70 444 33 22", numeroPermis: "DK-2023-111", statut: "actif" },
     }),
-  ]);
-  console.log(`${produits.length} produits créés.`);
-
-  // 3. Création des Clients
-  const clients = await Promise.all([
-    prisma.client.create({
-      data: { nom: "SOGEA TP", contact: "Michel Martin", adresse: "Zone Industrielle, Dakar", email: "contact@sogeatp.sn", typePrix: "preferentiel" },
-    }),
-    prisma.client.create({
-      data: { nom: "Eiffage Sénégal", contact: "Awa Ndiaye", adresse: "Route de Rufisque, Dakar", email: "awa.ndiaye@eiffage.com", typePrix: "preferentiel" },
-    }),
-    prisma.client.create({
-      data: { nom: "Entreprise Fall & Fils", contact: "Amadou Fall", adresse: "Mbour", email: "info@fallfils.sn", typePrix: "standard" },
-    }),
-    prisma.client.create({
-      data: { nom: "BTP Horizon", contact: "Pierre Gomez", adresse: "Thiès", email: "p.gomez@btphorizon.sn", typePrix: "standard" },
+    prisma.chauffeur.create({
+      data: { nom: "Ndiaye", prenom: "Abdoulaye", telephone: "+221 77 888 99 00", numeroPermis: "DK-2019-998", statut: "actif" },
     }),
   ]);
-  console.log(`${clients.length} clients créés.`);
+  console.log(`${chauffeurs.length} chauffeurs créés.`);
 
-  // 4. Création des Camions
+  // 3. Création des Camions
+  console.log("Création des camions...");
   const dateMiseService = new Date("2024-01-15");
   const prochaineVisite = new Date("2026-08-15");
 
   const camions = await Promise.all([
     prisma.camion.create({
-      data: { immatriculation: "AA-123-BB", marque: "Volvo", modele: "FMX 420", capaciteTonnes: 20, statut: "en_service", chauffeurNom: "Moussa Diallo", dateMiseService, prochaineVisite },
+      data: {
+        immatriculation: "AA-123-BB",
+        marque: "Volvo",
+        modele: "FMX 420",
+        capaciteTonnes: 20,
+        statut: "en_service",
+        kilometrageActuel: 125400,
+        dateMiseService,
+        prochaineVisite,
+        chauffeurId: chauffeurs[0].id,
+      },
     }),
     prisma.camion.create({
-      data: { immatriculation: "CC-456-DD", marque: "Mercedes-Benz", modele: "Arocs 3240", capaciteTonnes: 26, statut: "en_service", chauffeurNom: "Ibrahima Sow", dateMiseService, prochaineVisite },
+      data: {
+        immatriculation: "CC-456-DD",
+        marque: "Mercedes-Benz",
+        modele: "Arocs 3240",
+        capaciteTonnes: 26,
+        statut: "en_service",
+        kilometrageActuel: 84300,
+        dateMiseService,
+        prochaineVisite,
+        chauffeurId: chauffeurs[1].id,
+      },
     }),
     prisma.camion.create({
-      data: { immatriculation: "EE-789-FF", marque: "MAN", modele: "TGS 33.400", capaciteTonnes: 32, statut: "en_panne", chauffeurNom: "Sékou Touré", dateMiseService, prochaineVisite },
+      data: {
+        immatriculation: "EE-789-FF",
+        marque: "MAN",
+        modele: "TGS 33.400",
+        capaciteTonnes: 32,
+        statut: "en_panne",
+        kilometrageActuel: 165000,
+        dateMiseService,
+        prochaineVisite,
+        chauffeurId: chauffeurs[2].id,
+      },
     }),
     prisma.camion.create({
-      data: { immatriculation: "GG-012-HH", marque: "Renault", modele: "Kerax", capaciteTonnes: 18, statut: "en_attente", chauffeurNom: "Ousmane Cissé", dateMiseService, prochaineVisite },
+      data: {
+        immatriculation: "GG-012-HH",
+        marque: "Renault",
+        modele: "Kerax",
+        capaciteTonnes: 18,
+        statut: "en_attente",
+        kilometrageActuel: 98000,
+        dateMiseService,
+        prochaineVisite,
+        chauffeurId: chauffeurs[3].id,
+      },
     }),
     prisma.camion.create({
-      data: { immatriculation: "II-345-JJ", marque: "Scania", modele: "G410", capaciteTonnes: 24, statut: "en_service", chauffeurNom: "Abdoulaye Ndiaye", dateMiseService, prochaineVisite },
+      data: {
+        immatriculation: "II-345-JJ",
+        marque: "Scania",
+        modele: "G410",
+        capaciteTonnes: 24,
+        statut: "en_service",
+        kilometrageActuel: 112000,
+        dateMiseService,
+        prochaineVisite,
+        chauffeurId: chauffeurs[4].id,
+      },
     }),
   ]);
   console.log(`${camions.length} camions créés.`);
 
-  // 5. Ajout de l'historique de Carburant
-  console.log("Génération de l'historique carburant...");
+  // 4. Ajout de l'historique de Carburant (Tickets)
+  console.log("Génération de l'historique carburant (tickets)...");
+  const fuelStations = ["Shell Patte d'Oie", "Total Yoff", "Oilibya VDN", "Ola Energy Rufisque"];
   const carburants: any[] = [];
   const baseDates = [
     new Date("2026-05-02"),
@@ -95,13 +134,19 @@ async function main() {
     new Date("2026-05-30"),
   ];
 
-  for (const camion of camions) {
-    let km = 120000;
+  const initialKms = [123500, 82500, 163000, 96000, 110000];
+
+  for (let cIdx = 0; cIdx < camions.length; cIdx++) {
+    const camion = camions[cIdx];
+    let km = initialKms[cIdx];
+    const chauffeur = chauffeurs[cIdx];
+
     for (let i = 0; i < baseDates.length; i++) {
-      km += Math.floor(Math.random() * 400) + 250; // incrément km
-      const litres = Math.floor(Math.random() * 80) + 120; // 120 à 200L
+      km += Math.floor(Math.random() * 300) + 300; // incrément km (300 à 600 km)
+      const litres = Math.floor(Math.random() * 60) + 100; // 100 à 160L
       const prixLitre = 750; // Prix moyen du gasoil en FCFA
       const coutTotal = litres * prixLitre;
+      const numeroTicket = `TKT-202605-${camion.immatriculation.replace(/-/g, "")}-${i}`;
 
       carburants.push(
         prisma.carburant.create({
@@ -112,57 +157,161 @@ async function main() {
             litres,
             prixLitre,
             coutTotal,
+            numeroTicket,
+            stationService: fuelStations[i % fuelStations.length],
+            recuUrl: `/receipts/fuel-${camion.id}-${i}.jpg`,
+            chauffeurId: chauffeur.id,
           },
         })
       );
     }
   }
   await Promise.all(carburants);
+  console.log("Tickets carburant insérés.");
 
-  // 6. Ajout des Réparations
-  console.log("Génération des réparations...");
+  // 5. Ajout des Réparations et Pièces Changées
+  console.log("Génération des réparations et pièces changées...");
+  
+  // Réparation 1
+  const rep1 = await prisma.reparation.create({
+    data: {
+      camionId: camions[2].id, // MAN (en panne)
+      date: new Date("2026-05-12"),
+      type: "mecanique",
+      garage: "Garage BTP Pro",
+      description: "Changement kit d'embrayage complet et main d'œuvre",
+      cout: 450000,
+      kilometrage: 164000,
+    },
+  });
+  await prisma.pieceChangee.createMany({
+    data: [
+      { reparationId: rep1.id, nom: "Kit Embrayage MAN TGS", quantite: 1, prixUnitaire: 350000 },
+      { reparationId: rep1.id, nom: "Main d'œuvre mécanique", quantite: 1, prixUnitaire: 100000 },
+    ],
+  });
+
+  // Réparation 2
+  const rep2 = await prisma.reparation.create({
+    data: {
+      camionId: camions[0].id, // Volvo
+      date: new Date("2026-05-05"),
+      type: "pneus",
+      garage: "Pneumatiques Dakar",
+      description: "Remplacement de deux pneus arrière usés",
+      cout: 240000,
+      kilometrage: 124200,
+    },
+  });
+  await prisma.pieceChangee.createMany({
+    data: [
+      { reparationId: rep2.id, nom: "Pneu Michelin 13R22.5", quantite: 2, prixUnitaire: 120000 },
+    ],
+  });
+
+  // Réparation 3
+  const rep3 = await prisma.reparation.create({
+    data: {
+      camionId: camions[1].id, // Mercedes
+      date: new Date("2026-05-20"),
+      type: "vidange",
+      garage: "Volvo Service",
+      description: "Vidange moteur standard avec changement des filtres principaux",
+      cout: 85000,
+      kilometrage: 83800,
+    },
+  });
+  await prisma.pieceChangee.createMany({
+    data: [
+      { reparationId: rep3.id, nom: "Filtre à Huile Arocs", quantite: 1, prixUnitaire: 15000 },
+      { reparationId: rep3.id, nom: "Filtre à Carburant", quantite: 1, prixUnitaire: 20000 },
+      { reparationId: rep3.id, nom: "Huile moteur 15W40 (20L)", quantite: 1, prixUnitaire: 50000 },
+    ],
+  });
+  console.log("Réparations et pièces de rechange insérées.");
+
+  // 6. Ajout des Maintenances Planifiées (Echéances)
+  console.log("Planification des maintenances prédictives...");
   await Promise.all([
-    prisma.reparation.create({
-      data: { camionId: camions[2].id, date: new Date("2026-05-12"), type: "mecanique", garage: "Garage BTP Pro", description: "Changement kit d'embrayage et volant moteur", cout: 450000 },
+    // Volvo (125,400 km) - Prochaine vidange planifiée à 130k
+    prisma.maintenancePlanifiee.create({
+      data: {
+        camionId: camions[0].id,
+        type: "vidange",
+        description: "Vidange standard d'huile moteur et filtres",
+        frequenceKilometrage: 10000,
+        kilometrageDernier: 120000,
+        kilometrageCible: 130000,
+        statut: "planifie",
+      },
     }),
-    prisma.reparation.create({
-      data: { camionId: camions[0].id, date: new Date("2026-05-05"), type: "pneus", garage: "Pneumatiques Dakar", description: "Remplacement de 2 pneus arrières d'origine usés", cout: 240000 },
+    prisma.maintenancePlanifiee.create({
+      data: {
+        camionId: camions[0].id,
+        type: "freins",
+        description: "Changement des plaquettes et disques de frein",
+        frequenceKilometrage: 30000,
+        kilometrageDernier: 120000,
+        kilometrageCible: 150000,
+        statut: "planifie",
+      },
     }),
-    prisma.reparation.create({
-      data: { camionId: camions[1].id, date: new Date("2026-05-20"), type: "vidange", garage: "Volvo Service", description: "Vidange moteur + remplacement de tous les filtres", cout: 85000 },
+
+    // Mercedes (84,300 km) - Vidange planifiée à 90k
+    prisma.maintenancePlanifiee.create({
+      data: {
+        camionId: camions[1].id,
+        type: "vidange",
+        description: "Vidange huile moteur Mercedes Arocs",
+        frequenceKilometrage: 10000,
+        kilometrageDernier: 80000,
+        kilometrageCible: 90000,
+        statut: "planifie",
+      },
+    }),
+
+    // MAN (165,000 km) - Vidange EN RETARD (Cible 160,000 km)
+    prisma.maintenancePlanifiee.create({
+      data: {
+        camionId: camions[2].id,
+        type: "vidange",
+        description: "Vidange huile moteur MAN TGS",
+        frequenceKilometrage: 10000,
+        kilometrageDernier: 150000,
+        kilometrageCible: 160000,
+        statut: "en_retard",
+      },
+    }),
+
+    // Renault Kerax (98,000 km) - Remplacement pneus bientôt requis (Cible 100k)
+    prisma.maintenancePlanifiee.create({
+      data: {
+        camionId: camions[3].id,
+        type: "pneus",
+        description: "Contrôle et remplacement pneus train avant",
+        frequenceKilometrage: 50000,
+        kilometrageDernier: 50000,
+        kilometrageCible: 100000,
+        statut: "planifie",
+      },
+    }),
+
+    // Scania (112,000 km) - Visite technique planifiée à 120k
+    prisma.maintenancePlanifiee.create({
+      data: {
+        camionId: camions[4].id,
+        type: "visite_technique",
+        description: "Contrôle technique annuel obligatoire",
+        frequenceKilometrage: 20000,
+        kilometrageDernier: 100000,
+        kilometrageCible: 120000,
+        statut: "planifie",
+      },
     }),
   ]);
+  console.log("Planifications de maintenance créées.");
 
-  // 7. Ajout des Ventes (et facturation)
-  console.log("Génération des ventes...");
-  const ventesData = [
-    { camionId: camions[0].id, clientId: clients[0].id, produitId: produits[0].id, quantite: 20, prixUnitaire: 11000, statutPaiement: "paye", date: new Date("2026-05-02"), numeroFacture: "FACT-202605-0001" },
-    { camionId: camions[1].id, clientId: clients[1].id, produitId: produits[1].id, quantite: 26, prixUnitaire: 14000, statutPaiement: "paye", date: new Date("2026-05-04"), numeroFacture: "FACT-202605-0002" },
-    { camionId: camions[4].id, clientId: clients[2].id, produitId: produits[2].id, quantite: 24, prixUnitaire: 18000, statutPaiement: "en_attente", date: new Date("2026-05-15"), numeroFacture: "FACT-202605-0003" },
-    { camionId: camions[0].id, clientId: clients[3].id, produitId: produits[3].id, quantite: 20, prixUnitaire: 10000, statutPaiement: "en_attente", date: new Date("2026-05-18"), numeroFacture: "FACT-202605-0004" },
-    { camionId: camions[1].id, clientId: clients[0].id, produitId: produits[0].id, quantite: 25, prixUnitaire: 11000, statutPaiement: "paye", date: new Date("2026-05-22"), numeroFacture: "FACT-202605-0005" },
-    { camionId: camions[4].id, clientId: clients[1].id, produitId: produits[1].id, quantite: 24, prixUnitaire: 14000, statutPaiement: "paye", date: new Date("2026-05-28"), numeroFacture: "FACT-202605-0006" },
-  ];
-
-  await Promise.all(
-    ventesData.map((v) =>
-      prisma.vente.create({
-        data: {
-          camionId: v.camionId,
-          clientId: v.clientId,
-          produitId: v.produitId,
-          quantite: v.quantite,
-          prixUnitaire: v.prixUnitaire,
-          montantTotal: v.quantite * v.prixUnitaire,
-          statutPaiement: v.statutPaiement,
-          numeroFacture: v.numeroFacture,
-          date: v.date,
-        },
-      })
-    )
-  );
-
-  console.log("Seeding terminé avec succès !");
+  console.log("Seeding de gestion de flotte terminé avec succès !");
 }
 
 main()
