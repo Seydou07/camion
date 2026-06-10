@@ -426,46 +426,6 @@ export default function CamionsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Search + Add Button + Filter Pills
-       */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="flex-1 flex flex-wrap items-center gap-4">
-          <div className="w-full md:w-80">
-            <Input
-              placeholder="Rechercher un camion..."
-              value={search}
-              onChange={(e: any) => setSearch(e.target.value)}
-            />
-          </div>
-          <div className="flex items-center gap-2">
-            {[
-              { value: "tous", label: "Tous" },
-              { value: "en_service", label: "En service" },
-              { value: "en_panne", label: "En panne" },
-              { value: "en_attente", label: "En attente" },
-            ].map((btn) => (
-              <button
-                key={btn.value}
-                onClick={() => setFilterStatut(btn.value)}
-                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-colors flex-shrink-0 ${
-                  filterStatut === btn.value
-                    ? "bg-fleet-blue text-white shadow-lg shadow-fleet-blue/20"
-                    : "bg-slate-50 text-slate-500 hover:bg-slate-100"
-                }`}
-              >
-                {btn.label}
-              </button>
-            ))}
-          </div>
-        </div>
-        <Button onClick={handleOpenAddModal} className="h-10 px-6 flex items-center gap-2 shadow-xl shadow-fleet-blue/20 transition-all font-black text-xs uppercase tracking-widest shrink-0 rounded-xl">
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-          </svg>
-          Nouveau Véhicule
-        </Button>
-      </div>
-
       {/* Budget Global Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* Budget Global */}
@@ -535,6 +495,44 @@ export default function CamionsPage() {
 
       {/* Main Table */}
       <TableCard>
+        {/* Search + Add Button + Filter Pills */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 px-6 py-4">
+          <div className="flex-1 flex flex-wrap items-center gap-4">
+            <div className="w-full md:w-64">
+              <Input
+                placeholder="Rechercher un camion..."
+                value={search}
+                onChange={(e: any) => setSearch(e.target.value)}
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              {[
+                { value: "tous", label: "Tous" },
+                { value: "en_service", label: "En service" },
+                { value: "en_panne", label: "En panne" },
+                { value: "en_attente", label: "En attente" },
+              ].map((btn) => (
+                <button
+                  key={btn.value}
+                  onClick={() => setFilterStatut(btn.value)}
+                  className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-colors flex-shrink-0 ${
+                    filterStatut === btn.value
+                      ? "bg-fleet-blue text-white shadow-lg shadow-fleet-blue/20"
+                      : "bg-slate-50 text-slate-500 hover:bg-slate-100"
+                  }`}
+                >
+                  {btn.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <Button onClick={handleOpenAddModal} className="h-10 px-6 flex items-center gap-2 shadow-xl shadow-fleet-blue/20 transition-all font-black text-xs uppercase tracking-widest shrink-0 rounded-xl">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            Nouveau Véhicule
+          </Button>
+        </div>
 
         {/* Table */}
         {loading ? (

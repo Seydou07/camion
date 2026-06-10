@@ -207,39 +207,7 @@ export default function RapportsPage() {
 
   return (
     <div className="space-y-6">
-      {/* En-tête */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-bold text-gray-900">Rapports et Analyses</h1>
-          <p className="text-sm text-gray-400">Analysez l'efficacité du carburant, les coûts d'exploitation et la maintenance de votre flotte</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={exportToPdf}
-            disabled={exportingPdf}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-          >
-            {exportingPdf ? "Génération..." : "Exporter PDF"}
-          </button>
-          <button
-            onClick={exportToExcel}
-            disabled={exporting}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-fleet-blue text-fleet-blue font-semibold hover:bg-fleet-blue/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-          >
-          {exporting ? (
-            <svg className="animate-spin h-5 w-5 text-fleet-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-            </svg>
-          ) : (
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-          )}
-          {exporting ? "Génération de l'Excel..." : "Exporter Excel Premium"}
-          </button>
-        </div>
-      </div>
+
 
       {/* KPIs */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

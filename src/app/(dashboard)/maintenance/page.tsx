@@ -236,39 +236,26 @@ export default function MaintenancePage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-slate-800">Suivi des Interventions & Maintenance</h1>
-          <p className="text-sm text-slate-500 mt-1">Gérez le cycle de vie de toutes les opérations de maintenance de la flotte</p>
-        </div>
-        <Button onClick={handleOpenAdd}>
-          <svg className="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          Nouvelle intervention
-        </Button>
-      </div>
-
       {/* Table */}
       <TableCard>
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4">
-          <div className="relative flex-1 max-w-md">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+          <div className="flex-1 flex flex-wrap items-center gap-4">
+            <div className="relative max-w-md w-full">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                placeholder="Rechercher par camion, référence..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full h-10 pl-10 pr-4 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue"
+              />
             </div>
-            <input
-              type="text"
-              placeholder="Rechercher par camion, référence..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full h-10 pl-10 pr-4 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue"
-            />
-          </div>
-          <div className="flex items-center gap-2">
-            {[
+            <div className="flex items-center gap-2">
+              {[
               { value: "tous", label: "Tous" },
               { value: "planifiee", label: "Planifiée" },
               { value: "en_cours", label: "En cours" },
@@ -287,7 +274,14 @@ export default function MaintenancePage() {
                 {btn.label}
               </button>
             ))}
+            </div>
           </div>
+          <Button onClick={handleOpenAdd} className="flex items-center gap-2 h-10 px-4 rounded-xl font-bold text-xs">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            Nouvelle intervention
+          </Button>
         </div>
         {loading ? (
           <div className="space-y-4 px-6 py-6">

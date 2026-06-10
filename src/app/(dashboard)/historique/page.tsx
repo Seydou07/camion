@@ -7,28 +7,52 @@ import {
 } from "@/components/ui";
 
 const CATEGORIES = [
-  { id: "all", label: "Tout", icon: "🔍" },
-  { id: "camion", label: "Véhicules", icon: "🚚" },
-  { id: "chauffeur", label: "Chauffeurs", icon: "👤" },
-  { id: "carburant", label: "Finance", icon: "⛽" },
-  { id: "maintenance", label: "Maintenance", icon: "🔧" },
-  { id: "voyage", label: "Missions", icon: "📍" },
+  { id: "all", label: "Tout" },
+  { id: "camion", label: "Véhicules" },
+  { id: "chauffeur", label: "Chauffeurs" },
+  { id: "carburant", label: "Finance" },
+  { id: "maintenance", label: "Maintenance" },
+  { id: "voyage", label: "Missions" },
 ];
 
 const getEntityIcon = (entity: string) => {
   switch (entity) {
     case "camion":
-      return "🚚";
+      return (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+        </svg>
+      );
     case "chauffeur":
-      return "👤";
+      return (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+      );
     case "carburant":
-      return "⛽";
+      return (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+        </svg>
+      );
     case "maintenance":
-      return "🔧";
+      return (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.492-3.053c.217-.266.198-.654-.044-.897L11.5 8.85" />
+        </svg>
+      );
     case "voyage":
-      return "📍";
+      return (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+        </svg>
+      );
     default:
-      return "📋";
+      return (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      );
   }
 };
 
@@ -118,13 +142,12 @@ export default function HistoryPage() {
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`flex items-center gap-2 h-11 px-6 rounded-2xl text-xs font-black uppercase transition-all duration-300 border ${
+                className={`flex items-center gap-2 h-10 px-4 rounded-xl text-[10px] font-black uppercase transition-all duration-300 border ${
                   selectedCategory === cat.id
                     ? "bg-fleet-blue text-white shadow-lg shadow-fleet-blue/20"
-                    : "bg-white border-slate-200 text-fleet-blue hover:bg-fleet-blue/10 hover:border-fleet-blue/30"
+                    : "bg-slate-50 text-slate-500 hover:bg-slate-100"
                 }`}
               >
-                <span className="text-lg">{cat.icon}</span>
                 {cat.label}
               </button>
             ))}
@@ -183,7 +206,7 @@ export default function HistoryPage() {
             {logs.map((log) => (
               <div key={log.id} className="flex gap-6">
                 <div className="flex flex-col items-center z-10">
-                  <div className="w-12 h-12 rounded-full bg-white border-4 border-slate-100 flex items-center justify-center text-xl hover:bg-fleet-blue hover:border-fleet-blue/20 transition-all duration-300 shadow-sm">
+                  <div className="w-12 h-12 rounded-full bg-white border-4 border-slate-100 flex items-center justify-center text-fleet-blue hover:bg-fleet-blue hover:text-white hover:border-fleet-blue/20 transition-all duration-300 shadow-sm">
                     {getEntityIcon(log.entity)}
                   </div>
                 </div>
@@ -254,7 +277,7 @@ export default function HistoryPage() {
         {selectedLog && (
           <div className="space-y-6">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-3xl bg-fleet-blue/10 flex items-center justify-center text-2xl">
+              <div className="w-14 h-14 rounded-3xl bg-fleet-blue/10 flex items-center justify-center text-fleet-blue">
                 {getEntityIcon(selectedLog.entity)}
               </div>
               <div>

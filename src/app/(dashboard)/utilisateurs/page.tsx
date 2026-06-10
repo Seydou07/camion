@@ -8,6 +8,7 @@ import {
   Modal,
   Toast,
   ConfirmModal,
+  TableCard,
 } from "@/components/ui";
 
 export default function UsersPage() {
@@ -217,134 +218,138 @@ export default function UsersPage() {
 
   return (
     <div className="space-y-6">
-      {/* Top bar: search + add button */}
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-        <div className="w-full md:w-96">
-          <div className="relative">
-            <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-            </svg>
-            <input
-              type="text"
-              placeholder="Rechercher un membre..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full h-11 pl-12 pr-4 rounded-2xl border border-slate-200 bg-white text-sm font-semibold text-slate-800 placeholder:text-slate-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue"
-            />
+      {/* Users section wrapped in TableCard */}
+      <TableCard>
+        {/* Search + add button */}
+        <div className="flex flex-col md:flex-row gap-4 items-center justify-between px-6 py-4">
+          <div className="w-full md:w-72">
+            <div className="relative">
+              <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Rechercher un membre..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full h-10 pl-12 pr-4 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-800 placeholder:text-slate-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue"
+              />
+            </div>
           </div>
+          <Button onClick={handleOpenAddModal} className="flex items-center gap-2 h-10 px-6 rounded-xl font-bold text-sm">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            Nouveau compte
+          </Button>
         </div>
-        <Button onClick={handleOpenAddModal} className="flex items-center gap-2 h-11 px-6 rounded-2xl font-bold text-sm">
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-          </svg>
-          Nouveau compte
-        </Button>
-      </div>
 
-      {/* Users grid */}
-      {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 rounded-2xl bg-slate-100 animate-pulse" />
-                <div className="flex-1">
-                  <div className="h-4 bg-slate-100 rounded w-3/4 mb-2" />
-                  <div className="h-3 bg-slate-100 rounded w-1/2" />
-                </div>
-              </div>
-              <div className="h-3 bg-slate-100 rounded w-full mb-2" />
-              <div className="h-3 bg-slate-100 rounded w-5/6 mb-4" />
-              <div className="border-t border-slate-100 pt-4">
-                <div className="h-3 bg-slate-100 rounded w-1/3 mb-3" />
-                <div className="flex gap-2">
-                  {[...Array(3)].map((_, j) => (
-                    <div key={j} className="w-9 h-9 rounded-xl bg-slate-100" />
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {users.map((user) => (
-            <div
-              key={user.id}
-              className="group bg-white border border-slate-200 rounded-3xl p-6 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative overflow-hidden"
-            >
-              {/* Top section: avatar + role */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-fleet-blue/10 to-fleet-blue/5 text-fleet-blue flex items-center justify-center font-black text-lg shadow-sm group-hover:from-fleet-blue group-hover:to-fleet-blue-dark group-hover:text-white transition-all duration-300">
-                    {getInitials(user.name)}
+        {/* Users grid */}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-6 pb-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-slate-50 border border-slate-100 rounded-3xl p-6 shadow-sm">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 rounded-2xl bg-slate-200 animate-pulse" />
+                  <div className="flex-1">
+                    <div className="h-4 bg-slate-200 rounded w-3/4 mb-2" />
+                    <div className="h-3 bg-slate-200 rounded w-1/2" />
                   </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight">{user.name}</h3>
-                      {user.role === "admin" && (
-                        <svg className="w-4 h-4 text-rose-500" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.351-.166-2A11.954 11.954 0 0110 1.944z" clipRule="evenodd" />
-                        </svg>
-                      )}
+                </div>
+                <div className="h-3 bg-slate-200 rounded w-full mb-2" />
+                <div className="h-3 bg-slate-200 rounded w-5/6 mb-4" />
+                <div className="border-t border-slate-100 pt-4">
+                  <div className="h-3 bg-slate-200 rounded w-1/3 mb-3" />
+                  <div className="flex gap-2">
+                    {[...Array(3)].map((_, j) => (
+                      <div key={j} className="w-9 h-9 rounded-xl bg-slate-200" />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-6 pb-6">
+            {users.map((user) => (
+              <div
+                key={user.id}
+                className="group bg-white border border-slate-100 rounded-3xl p-6 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden"
+              >
+                {/* Top section: avatar + role */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-fleet-blue/10 to-fleet-blue/5 text-fleet-blue flex items-center justify-center font-black text-lg shadow-sm group-hover:from-fleet-blue group-hover:to-fleet-blue-dark group-hover:text-white transition-all duration-300">
+                      {getInitials(user.name)}
                     </div>
-                    <p className="text-xs text-fleet-blue font-semibold mt-1">@{user.email.split("@")[0]}</p>
-                    <p className="text-xs text-slate-400 font-medium">{user.email}</p>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight">{user.name}</h3>
+                      </div>
+                      <p className="text-xs text-fleet-blue font-semibold mt-1">@{user.email.split("@")[0]}</p>
+                      <p className="text-xs text-slate-400 font-medium">{user.email}</p>
+                    </div>
                   </div>
+
+                  {/* Role badge */}
+                  <span className={
+                      user.role === "superadmin" 
+                        ? "bg-purple-100 text-purple-600 text-[10px] font-black px-3 py-1.5 rounded-xl uppercase" 
+                        : user.role === "admin"
+                          ? "bg-blue-100 text-blue-600 text-[10px] font-black px-3 py-1.5 rounded-xl uppercase"
+                          : "bg-fleet-blue/10 text-fleet-blue text-[10px] font-black px-3 py-1.5 rounded-xl uppercase"
+                    }>
+                    {user.role === "superadmin" ? "Super Admin" : user.role === "admin" ? "Admin" : "Gestionnaire"}
+                  </span>
                 </div>
 
-                {/* Role badge */}
-                <span className={user.role === "admin" ? "bg-rose-100 text-rose-600 text-[10px] font-black px-3 py-1.5 rounded-xl uppercase" : "bg-fleet-blue/10 text-fleet-blue text-[10px] font-black px-3 py-1.5 rounded-xl uppercase"}>
-                  {user.role === "admin" ? "Super Admin" : "Gestionnaire"}
-                </span>
-              </div>
+                {/* Bottom section: status + actions */}
+                <div className="border-t border-slate-100 pt-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-sm" />
+                      <span className="text-xs font-semibold text-emerald-600">Connecté</span>
+                    </div>
+                  </div>
 
-              {/* Bottom section: status + actions */}
-              <div className="border-t border-slate-100 pt-4">
-                <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-sm" />
-                    <span className="text-xs font-semibold text-emerald-600">Connecté</span>
+                    <button
+                      onClick={() => handleOpenPwdModal(user)}
+                      className="flex-1 h-9 flex items-center justify-center rounded-xl border border-slate-200 bg-slate-50 hover:bg-fleet-blue/10 hover:border-fleet-blue/20 hover:text-fleet-blue text-slate-500 transition-all duration-300"
+                      title="Changer le mot de passe"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 21a3.375 3.375 0 003.375-3.375v-1.125A3.375 3.375 0 0015.75 13.125H8.25A3.375 3.375 0 004.875 16.5v1.125A3.375 3.375 0 008.25 21h7.5zM12 11.25a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => handleOpenEditModal(user)}
+                      className="flex-1 h-9 flex items-center justify-center rounded-xl border border-slate-200 bg-slate-50 hover:bg-amber-50 hover:border-amber-200 hover:text-amber-600 text-slate-500 transition-all duration-300"
+                      title="Modifier"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => handleDeleteUser(user.id)}
+                      className="flex-1 h-9 flex items-center justify-center rounded-xl border border-slate-200 bg-slate-50 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-600 text-slate-500 transition-all duration-300"
+                      title="Supprimer"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 0 00-1-1h-4a1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
                   </div>
                 </div>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleOpenPwdModal(user)}
-                    className="flex-1 h-9 flex items-center justify-center rounded-xl border border-slate-200 bg-slate-50 hover:bg-fleet-blue/10 hover:border-fleet-blue/20 hover:text-fleet-blue text-slate-500 transition-all duration-300"
-                    title="Changer le mot de passe"
-                  >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 21a3.375 3.375 0 003.375-3.375v-1.125A3.375 3.375 0 0015.75 13.125H8.25A3.375 3.375 0 004.875 16.5v1.125A3.375 3.375 0 008.25 21h7.5zM12 11.25a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z" />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => handleOpenEditModal(user)}
-                    className="flex-1 h-9 flex items-center justify-center rounded-xl border border-slate-200 bg-slate-50 hover:bg-amber-50 hover:border-amber-200 hover:text-amber-600 text-slate-500 transition-all duration-300"
-                    title="Modifier"
-                  >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => handleDeleteUser(user.id)}
-                    className="flex-1 h-9 flex items-center justify-center rounded-xl border border-slate-200 bg-slate-50 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-600 text-slate-500 transition-all duration-300"
-                    title="Supprimer"
-                  >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
-                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </TableCard>
 
       {/* Security warning */}
-      <div className="mt-8 bg-amber-50 border border-amber-200 rounded-3xl p-6 flex items-start gap-4">
+      <div className="bg-amber-50 border border-amber-200 rounded-3xl p-6 flex items-start gap-4">
         <div className="w-10 h-10 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-600 flex-shrink-0">
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
@@ -391,7 +396,8 @@ export default function UsersPage() {
               onChange={setRole}
               options={[
                 { value: "gestionnaire", label: "Gestionnaire" },
-                { value: "admin", label: "Super Admin" }
+                { value: "admin", label: "Admin" },
+                { value: "superadmin", label: "Super Admin" }
               ]}
             />
           </div>
