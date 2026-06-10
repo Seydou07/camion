@@ -8,11 +8,11 @@ import {
 
 const CATEGORIES = [
   { id: "all", label: "Tout" },
-  { id: "camion", label: "Véhicules" },
+  { id: "camion", label: "Camions" },
   { id: "chauffeur", label: "Chauffeurs" },
-  { id: "carburant", label: "Finance" },
+  { id: "carburant", label: "Carburant" },
   { id: "maintenance", label: "Maintenance" },
-  { id: "voyage", label: "Missions" },
+  { id: "voyage", label: "Voyages" },
 ];
 
 const getEntityIcon = (entity: string) => {
@@ -118,8 +118,8 @@ export default function HistoryPage() {
 
   return (
     <div className="space-y-6">
-      {/* Search + Filters + Export */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+      {/* Search + Filters */}
+      <div className="flex flex-col md:flex-row items-start gap-4">
         <div className="flex-1 flex flex-wrap items-center gap-4">
           {/* Search bar */}
           <div className="w-full md:w-80">
@@ -153,12 +153,6 @@ export default function HistoryPage() {
             ))}
           </div>
         </div>
-        <Button className="h-11 px-6 rounded-2xl font-bold text-sm flex items-center gap-2">
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 21l-5 5-5-5" />
-          </svg>
-          Exporter PDF
-        </Button>
       </div>
 
 

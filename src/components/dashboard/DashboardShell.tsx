@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -184,6 +184,7 @@ export function DashboardShell({
   const pathname = usePathname();
   const router = useRouter();
   const { data: session, status } = useSession();
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -210,7 +211,10 @@ export function DashboardShell({
   return (
     <div className="min-h-screen flex bg-[#F8FAFC]">
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 bottom-0 w-[270px] bg-white border-r border-slate-100/80 flex flex-col z-30">
+      <aside className={cn(
+        "fixed top-0 bottom-0 bg-white border-r border-slate-100/80 flex flex-col z-30 transition-all duration-300",
+        sidebarOpen ? "left-0 w-[270px]" : "-left-[270px] w-[270px]"
+      )}>
         {/* Logo */}
         <div className="px-6 py-6">
           <Link href="/" className="flex items-center gap-3 group">
@@ -277,11 +281,37 @@ export function DashboardShell({
         </div>
       </aside>
 
+      {/* Overlay for mobile */}
+      {!sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/20 z-20"
+          onClick={() => setSidebarOpen(true)}
+        />
+      )}
+
       {/* Main content area */}
-      <div className="flex-1 ml-[270px]">
+      <div className={cn(
+        "flex-1 transition-all duration-300",
+        sidebarOpen ? "ml-[270px]" : "ml-0"
+      )}>
         {/* Header */}
         <header className="sticky top-0 z-20 bg-white/70 backdrop-blur-2xl border-b border-slate-100/60">
-          <div className="px-8 py-4 flex items-center justify-end">
+          <div className="px-8 py-4 flex items-center justify-between">
+            {/* Header left: hamburger + page title */}
+            <div className="flex items-center gap-4">
+              {/* Hamburger button */}
+              <button
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="p-2.5 rounded-2xl hover:bg-slate-50 text-slate-500 hover:text-slate-700 transition-all cursor-pointer"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
+                </svg>
+              </button>
+              {/* Page title */}
+              <h1 className="text-lg font-bold text-slate-800">{pageTitle}</h1>
+            </div>
+
             {/* Header right */}
             <div className="flex items-center gap-3">
               {/* Search button */}

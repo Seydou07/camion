@@ -236,6 +236,14 @@ export default function MaintenancePage() {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-bold text-slate-800">Suivi des Interventions & Maintenance</h1>
+          <p className="text-sm text-slate-500 mt-1">Gérez le cycle de vie de toutes les opérations de maintenance de la flotte</p>
+        </div>
+      </div>
+
       {/* Table */}
       <TableCard>
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4">
