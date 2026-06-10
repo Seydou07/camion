@@ -95,6 +95,16 @@ export default function MaintenanceFormModal({
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    if (field === "camionId" && value) {
+      fetch(`/api/camions/${value}`)
+        .then((r) => r.json())
+        .then((camion) => {
+          if (camion?.kilometrageActuel) {
+            setFormData((prev) => ({ ...prev, kilometrage: String(camion.kilometrageActuel) }));
+          }
+        })
+        .catch(() => {});
+    }
   };
 
   const handlePieceChange = (index: number, field: string, value: string) => {
@@ -202,6 +212,7 @@ export default function MaintenanceFormModal({
               <div className="grid grid-cols-2 gap-4">
                 <Select
                   label="Camion *"
+                  placeholder="Sélectionner un véhicule"
                   value={formData.camionId}
                   onChange={(e) => handleChange("camionId", e.target.value)}
                   options={camions.map((c) => ({

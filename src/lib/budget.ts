@@ -68,15 +68,14 @@ export function calculImpactCarteCarburant(
 }
 
 export function calculBudgetConsomme(
-  carburants: { coutTotal: number }[],
+  carburantTotal: number,
   reparations: ReparationBudgetInput[]
 ): number {
-  const carb = carburants.reduce((acc, c) => acc + c.coutTotal, 0);
   const rep = reparations.reduce(
     (acc, r) => acc + calculImpactBudgetReparation(r),
     0
   );
-  return carb + rep;
+  return carburantTotal + rep;
 }
 
 export function calculerAlerteBudget(

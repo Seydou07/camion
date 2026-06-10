@@ -9,17 +9,18 @@ export async function GET(
   try {
     const { id } = await params;
     const camionId = parseInt(id);
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const startOfMonth = new Date(currentYear, now.getMonth(), 1);
+    const startOfYear = new Date(currentYear, 0, 1);
 
     const camion = await prisma.camion.findUnique({
       where: { id: camionId },
       include: {
         chauffeur: true,
-        carburants: { 
-          orderBy: { date: "desc" },
-          include: { chauffeur: true }
-        },
         reparations: { 
           orderBy: { date: "desc" },
+          take: 3,
           include: { piecesChangees: true }
         },
         maintenancesPlanifiees: {
@@ -35,94 +36,121 @@ export async function GET(
       );
     }
 
-    // Calcul des résumés d'exploitation du mois en cours
-    const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const startOfYear = new Date(now.getFullYear(), 0, 1);
+    const [
+      recentCarburants,
+      carburantCount,
+      carburantAnneeAgg,
+      reparationsMoisAgg,
+      reparationsMoisCount,
+      reparationsAnneeAgg,
+      reparationsAnneeCount,
+      maintenanceFrequency,
+    ] = await Promise.all([
+      prisma.carburant.findMany({
+        where: { camionId },
+        orderBy: { createdAt: "desc" },
+        take: 3,
+        include: {
+          chauffeur: {
+            select: {
+              id: true,
+              nom: true,
+              prenom: true,
+            },
+          },
+        },
+      }),
+      prisma.carburant.count({
+        where: { camionId },
+      }),
+      prisma.carburant.aggregate({
+        where: {
+          camionId,
+          createdAt: { gte: startOfYear },
+        },
+        _sum: {
+          totalDepenses: true,
+        },
+      }),
+      prisma.reparation.aggregate({
+        where: {
+          camionId,
+          date: { gte: startOfMonth },
+        },
+        _sum: {
+          cout: true,
+        },
+      }),
+      prisma.reparation.count({
+        where: {
+          camionId,
+          date: { gte: startOfMonth },
+        },
+      }),
+      prisma.reparation.aggregate({
+        where: {
+          camionId,
+          date: { gte: startOfYear },
+        },
+        _sum: {
+          cout: true,
+        },
+      }),
+      prisma.reparation.count({
+        where: {
+          camionId,
+          date: { gte: startOfYear },
+        },
+      }),
+      Promise.all(
+        Array.from({ length: 12 }, async (_, monthIndex) => {
+          const monthStart = new Date(currentYear, monthIndex, 1);
+          const nextMonthStart = new Date(currentYear, monthIndex + 1, 1);
+          const interventions = await prisma.reparation.count({
+            where: {
+              camionId,
+              date: {
+                gte: monthStart,
+                lt: nextMonthStart,
+              },
+            },
+          });
 
-    // Carburant du mois
-    const carburantMois = camion.carburants.filter(
-      (c) => new Date(c.date) >= startOfMonth
-    );
-    const totalCarburantMois = carburantMois.reduce(
-      (sum, c) => sum + c.coutTotal,
-      0
-    );
-    const totalLitresMois = carburantMois.reduce(
-      (sum, c) => sum + c.litres,
-      0
-    );
+          return {
+            label: monthStart
+              .toLocaleDateString("fr-FR", { month: "short" })
+              .replace(".", ""),
+            interventions,
+          };
+        })
+      ),
+    ]);
 
-    // Réparations du mois et de l'année
-    const reparationsMois = camion.reparations.filter(
-      (r) => new Date(r.date) >= startOfMonth
-    );
-    const totalReparationsMois = reparationsMois.reduce(
-      (sum, r) => sum + r.cout,
-      0
-    );
-
-    const reparationsAnnee = camion.reparations.filter(
-      (r) => new Date(r.date) >= startOfYear
-    );
-    const totalReparationsAnnee = reparationsAnnee.reduce(
-      (sum, r) => sum + r.cout,
-      0
-    );
-
-    // Calcul L/100km pour chaque plein (comparaison avec le plein précédent)
-    const carburantsTriés = [...camion.carburants].sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
-
-    const carburantsAvecConsommation = camion.carburants.map((c) => {
-      // Trouver le plein précédent chronologiquement pour ce véhicule
-      const indexDansTri = carburantsTriés.findIndex((ct) => ct.id === c.id);
-      let consommation: number | null = null;
-      if (indexDansTri > 0) {
-        const precedent = carburantsTriés[indexDansTri - 1];
-        const kmParcourus = c.kilometrage - precedent.kilometrage;
-        if (kmParcourus > 0) {
-          consommation = (c.litres / kmParcourus) * 100;
-        }
-      }
-      return { ...c, consommation };
-    });
-
-    // Consommation moyenne globale calculée sur tout l'historique
-    const consommations = carburantsAvecConsommation.filter(
-      (c) => c.consommation !== null
-    );
-    const consommationMoyenne =
-      consommations.length > 0
-        ? consommations.reduce((sum, c) => sum + (c.consommation || 0), 0) /
-          consommations.length
-        : null;
-
-    // Km parcourus dans le mois
-    const carburantsMoisTriés = [...carburantMois].sort(
-      (a, b) => a.kilometrage - b.kilometrage
-    );
-    const kmParcourus =
-      carburantsMoisTriés.length >= 2
-        ? carburantsMoisTriés[carburantsMoisTriés.length - 1].kilometrage -
-          carburantsMoisTriés[0].kilometrage
-        : 0;
+    const totalCarburantAnnee = carburantAnneeAgg._sum.totalDepenses || 0;
+    const totalReparationsMois = reparationsMoisAgg._sum.cout || 0;
+    const totalReparationsAnnee = reparationsAnneeAgg._sum.cout || 0;
 
     return NextResponse.json({
       ...camion,
-      carburants: carburantsAvecConsommation,
+      recentCarburants,
+      recentReparations: camion.reparations,
+      counts: {
+        carburants: carburantCount,
+        reparations: reparationsAnneeCount,
+        reparationsMois: reparationsMoisCount,
+      },
+      maintenanceFrequency,
+      stats: {
+        budgetCarburantConsomme: totalCarburantAnnee,
+        budgetMaintenanceConsomme: totalReparationsAnnee,
+      },
       resume: {
         mois: {
-          carburantTotal: totalCarburantMois,
-          litresTotal: totalLitresMois,
           reparationsTotal: totalReparationsMois,
-          kmParcourus,
-          consommationMoyenne,
         },
         annee: {
           reparationsTotal: totalReparationsAnnee,
-          nbInterventions: reparationsAnnee.length,
+          nbInterventions: reparationsAnneeCount,
         },
       },
     });

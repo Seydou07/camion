@@ -8,9 +8,12 @@ import {
 export async function getBudgetConsommeCamion(camionId: number, year?: number) {
   const dateFilter = getYearDateRange(year);
 
-  const [carburants, reparations] = await Promise.all([
-    prisma.carburant.findMany({
-      where: { camionId, date: dateFilter },
+  const [mvs, reparations] = await Promise.all([
+    prisma.mouvementCarburant.findMany({
+      where: {
+        carburant: { camionId },
+        dateOperation: dateFilter,
+      },
     }),
     prisma.reparation.findMany({
       where: { camionId, date: dateFilter },
@@ -18,7 +21,8 @@ export async function getBudgetConsommeCamion(camionId: number, year?: number) {
     }),
   ]);
 
-  return calculBudgetConsomme(carburants, reparations);
+  const fuelTotal = mvs.reduce((sum, m) => sum + m.montant, 0);
+  return calculBudgetConsomme(fuelTotal, reparations);
 }
 
 export async function validateBudgetCamion(camionId: number, montantAjout: number) {
@@ -41,6 +45,31 @@ export async function validateBudgetCamion(camionId: number, montantAjout: numbe
   }
 
   return { ok: true as const };
+}
+
+export async function recalculerBudgetCamion(camionId: number) {
+  const camion = await prisma.camion.findUnique({
+    where: { id: camionId },
+    select: { dotationAnnuelle: true },
+  });
+  if (!camion) return;
+
+  const mvs = await prisma.mouvementCarburant.findMany({
+    where: {
+      carburant: { camionId },
+    },
+  });
+
+  const fuelTotal = mvs.reduce((sum, m) => sum + m.montant, 0);
+  const dotation = camion.dotationAnnuelle || 0;
+
+  await prisma.camion.update({
+    where: { id: camionId },
+    data: {
+      budgetConsomme: fuelTotal,
+      budgetRestant: dotation - fuelTotal,
+    },
+  });
 }
 
 export async function appliquerVidangeSiNecessaire(

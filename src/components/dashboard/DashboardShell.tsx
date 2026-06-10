@@ -160,10 +160,6 @@ function NavItem({ item, isActive }: { item: typeof menuItems[0]; isActive: bool
         {item.icon}
       </span>
       <span className="flex-1 uppercase tracking-tight">{item.label}</span>
-      {/* Simulation de point de notification pour Maintenance si c'est le lien "Maintenance" et inactif */}
-      {item.label === "Maintenance" && !isActive && (
-        <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse ml-1" />
-      )}
     </Link>
   );
 }

@@ -1,6 +1,66 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id: idParam } = await params;
+    const id = parseInt(idParam);
+
+    if (isNaN(id)) {
+      return NextResponse.json({ error: "ID invalide" }, { status: 400 });
+    }
+
+    const voyage = await prisma.voyage.findUnique({
+      where: { id },
+      include: {
+        camion: {
+          select: {
+            id: true,
+            immatriculation: true,
+            marque: true,
+            modele: true,
+            budgetConsomme: true,
+            budgetRestant: true,
+            dotationAnnuelle: true,
+          },
+        },
+        chauffeur: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true,
+          },
+        },
+        carburant: {
+          include: {
+            mouvements: {
+              orderBy: { dateOperation: "desc" },
+              include: {
+                recus: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!voyage) {
+      return NextResponse.json({ error: "Voyage introuvable" }, { status: 404 });
+    }
+
+    return NextResponse.json(voyage);
+  } catch (error) {
+    console.error("Erreur GET /api/voyages/[id]:", error);
+    return NextResponse.json(
+      { error: "Erreur lors de la récupération du voyage" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -25,7 +85,7 @@ export async function PUT(
 
       const voyageExistant = await prisma.voyage.findUnique({
         where: { id },
-        include: { carburants: true },
+        include: { carburant: true },
       });
 
       if (!voyageExistant) {
@@ -44,12 +104,31 @@ export async function PUT(
       const voyage = await prisma.voyage.update({
         where: { id },
         data: {
-          statut: "termine",
+          statut: "CLOTURE",
           kilometrageArrivee: kmArrivee,
           dateFin: new Date(body.dateFin),
+          observations: body.observations || null,
         },
-        include: { carburants: true, camion: true, chauffeur: true },
+        include: {
+          carburant: {
+            include: {
+              mouvements: {
+                orderBy: { dateOperation: "desc" },
+                include: { recus: true },
+              },
+            },
+          },
+          camion: true,
+          chauffeur: true,
+        },
       });
+
+      if (voyage.carburant) {
+        await prisma.carburant.update({
+          where: { id: voyage.carburant.id },
+          data: { statut: "CLOTURE" },
+        });
+      }
 
       await prisma.camion.update({
         where: { id: voyage.camionId },
@@ -66,14 +145,11 @@ export async function PUT(
       });
 
       const distanceParcourue = kmArrivee - voyage.kilometrageDepart;
-      const totalLitres = voyage.carburants.reduce(
-        (sum, c) => sum + c.litres,
+      const totalLitres = voyage.carburant?.mouvements.reduce(
+        (sum, m) => sum + (m.montant / 750), // Fallback calculation or sum m.litres if populated
         0
-      );
-      const coutCarburant = voyage.carburants.reduce(
-        (sum, c) => sum + c.coutTotal,
-        0
-      );
+      ) || 0;
+      const coutCarburant = voyage.carburant ? voyage.carburant.totalDepenses : 0;
       const consommationMoyenne =
         distanceParcourue > 0 && totalLitres > 0
           ? Math.round((totalLitres / distanceParcourue) * 1000) / 10
@@ -86,7 +162,7 @@ export async function PUT(
           totalLitres: Math.round(totalLitres * 10) / 10,
           coutCarburant,
           consommationMoyenne,
-          nbPleins: voyage.carburants.length,
+          nbPleins: voyage.carburant?.mouvements.length || 0,
         },
       });
     }

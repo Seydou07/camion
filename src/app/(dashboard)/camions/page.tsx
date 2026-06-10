@@ -15,7 +15,7 @@ import {
   Textarea,
   ConfirmModal,
 } from "@/components/ui";
-import { formatDate, formatMontant, statutCamionColors, statutCamionLabels } from "@/lib/utils";
+import { formatDate, formatMontant, formatMontantAbrege, statutCamionColors, statutCamionLabels } from "@/lib/utils";
 
 export default function CamionsPage() {
   const [camions, setCamions] = useState<any[]>([]);
@@ -96,7 +96,7 @@ export default function CamionsPage() {
   };
 
   const fetchBudgetGlobal = () => {
-    fetch("/api/parametres?cle=budget_global_annuel")
+    fetch("/api/parametres?cle=budget_annuel_global")
       .then((res) => res.json())
       .then((data) => {
         if (data && data.valeur) {
@@ -119,8 +119,10 @@ export default function CamionsPage() {
   const budgetStats = useMemo(() => {
     const totalAlloue = camions.reduce((sum, c) => sum + (c.dotationAnnuelle || 0), 0);
     const totalConsomme = camions.reduce((sum, c) => sum + (c.budgetConsomme || 0), 0);
-    return { totalAlloue, totalConsomme };
-  }, [camions]);
+    const budgetRestant = budgetGlobal - totalAlloue;
+    const budgetReelRestant = budgetGlobal - totalConsomme;
+    return { totalAlloue, totalConsomme, budgetRestant, budgetReelRestant };
+  }, [camions, budgetGlobal]);
 
   // Pagination logic
   const paginatedCamions = useMemo(() => {
@@ -143,9 +145,9 @@ export default function CamionsPage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        cle: "budget_global_annuel",
+        cle: "budget_annuel_global",
         valeur: String(val),
-        description: "Budget global annuel de l'entreprise",
+        description: "Budget annuel total pour la flotte",
       }),
     })
       .then((res) => res.json())
@@ -444,7 +446,7 @@ export default function CamionsPage() {
         <div className="p-4 rounded-2xl border-l-4 border-fleet-blue bg-white shadow-sm relative overflow-hidden group">
           <div className="absolute inset-0 bg-fleet-blue/5 pointer-events-none" />
           <div className="relative z-10">
-            <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Budget Global Annuel</p>
+            <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Budget Global</p>
             {editingBudgetGlobal ? (
               <div className="flex items-center gap-2 mt-2">
                 <input
@@ -459,13 +461,17 @@ export default function CamionsPage() {
                 <button onClick={() => setEditingBudgetGlobal(false)} className="h-8 px-3 bg-slate-100 text-slate-500 text-xs font-bold rounded-lg hover:bg-slate-200 transition-colors">✕</button>
               </div>
             ) : (
-              <div className="flex items-end gap-3 mt-1">
-                <p className="text-2xl font-black leading-none text-fleet-blue tracking-tight">{formatMontant(budgetGlobal)}</p>
+              <div className="flex items-center justify-between mt-1">
+                <p className="text-2xl font-black leading-none text-fleet-blue tracking-tight">{formatMontantAbrege(budgetGlobal)}</p>
                 <button
                   onClick={() => { setBudgetGlobalInput(String(budgetGlobal)); setEditingBudgetGlobal(true); }}
-                  className="text-[10px] font-bold text-fleet-blue hover:underline cursor-pointer mb-0.5"
+                  className="p-1.5 rounded-lg bg-fleet-blue/10 text-fleet-blue hover:bg-fleet-blue hover:text-white transition-all group/btn flex items-center gap-1"
+                  title="Approvisionner le budget global"
                 >
-                  Modifier
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m8-8H4" />
+                  </svg>
+                  <span className="text-[9px] font-black uppercase tracking-tight">Ajouter</span>
                 </button>
               </div>
             )}
@@ -476,32 +482,27 @@ export default function CamionsPage() {
         <div className="p-4 rounded-2xl border-l-4 border-indigo-500 bg-white shadow-sm relative overflow-hidden">
           <div className="absolute inset-0 bg-indigo-50/50 pointer-events-none" />
           <div className="relative z-10">
-            <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Total Alloué aux Véhicules</p>
-            <p className="text-2xl font-black leading-none text-indigo-600 tracking-tight mt-1">{formatMontant(budgetStats.totalAlloue)}</p>
+            <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Total Alloué</p>
+            <p className="text-2xl font-black leading-none text-indigo-600 tracking-tight mt-1">{formatMontantAbrege(budgetStats.totalAlloue)}</p>
             {budgetGlobal > 0 && (
               <p className="text-[10px] text-slate-500 font-semibold mt-1.5">
-                {Math.round((budgetStats.totalAlloue / budgetGlobal) * 100)}% du budget global
+                {Math.round((budgetStats.totalAlloue / budgetGlobal) * 100)}% du global
               </p>
             )}
           </div>
         </div>
 
-        {/* Total Consommé */}
-        <div className={`p-4 rounded-2xl border-l-4 bg-white shadow-sm relative overflow-hidden ${budgetStats.totalConsomme > budgetGlobal && budgetGlobal > 0 ? 'border-red-500' : 'border-emerald-500'}`}>
-          <div className={`absolute inset-0 pointer-events-none ${budgetStats.totalConsomme > budgetGlobal && budgetGlobal > 0 ? 'bg-red-50/50' : 'bg-emerald-50/50'}`} />
+        {/* Budget Restant */}
+        <div className="p-4 rounded-2xl border-l-4 border-emerald-500 bg-white shadow-sm relative overflow-hidden">
+          <div className="absolute inset-0 bg-emerald-50/50 pointer-events-none" />
           <div className="relative z-10">
-            <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Total Consommé (Année)</p>
-            <p className={`text-2xl font-black leading-none tracking-tight mt-1 ${budgetStats.totalConsomme > budgetGlobal && budgetGlobal > 0 ? 'text-red-600' : 'text-emerald-600'}`}>
-              {formatMontant(budgetStats.totalConsomme)}
+            <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Budget Restant</p>
+            <p className={`text-2xl font-black leading-none tracking-tight mt-1 ${budgetStats.budgetRestant < 0 ? 'text-red-600' : 'text-emerald-600'}`}>
+              {formatMontantAbrege(budgetStats.budgetRestant)}
             </p>
-            {budgetGlobal > 0 && (
-              <div className="w-full bg-slate-100 rounded-full h-1.5 mt-2">
-                <div
-                  className={`h-1.5 rounded-full transition-all ${budgetStats.totalConsomme > budgetGlobal ? 'bg-red-500' : 'bg-emerald-500'}`}
-                  style={{ width: `${Math.min(100, Math.round((budgetStats.totalConsomme / budgetGlobal) * 100))}%` }}
-                />
-              </div>
-            )}
+            <p className="text-[10px] text-slate-500 font-semibold mt-1.5">
+              Disponible pour affectation
+            </p>
           </div>
         </div>
       </div>
@@ -651,7 +652,12 @@ export default function CamionsPage() {
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Allocation & Entretien
                 </h4>
                 <div className="grid grid-cols-2 gap-4">
-                  <Input label="Dotation annuelle (F)" type="number" value={dotationAnnuelle} onChange={(e) => setDotationAnnuelle(e.target.value)} />
+                  <div className="space-y-1">
+                    <Input label="Dotation annuelle (F) *" type="number" value={dotationAnnuelle} onChange={(e) => setDotationAnnuelle(e.target.value)} required />
+                    <p className={`text-[10px] font-bold px-1 ${budgetStats.budgetRestant < 0 ? 'text-red-500' : 'text-slate-400'}`}>
+                      Budget dispo : {formatMontant(budgetStats.budgetRestant)}
+                    </p>
+                  </div>
                   <Input label="Fréquence vidange (km)" type="number" value={frequenceVidange} onChange={(e) => setFrequenceVidange(e.target.value)} />
                 </div>
               </div>

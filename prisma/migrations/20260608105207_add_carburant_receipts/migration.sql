@@ -37,6 +37,8 @@ CREATE TABLE `camions` (
     `numero_police_assurance` VARCHAR(191) NULL,
     `transmission` VARCHAR(191) NULL DEFAULT 'Manuelle',
     `dernier_kilometrage_vidange` INTEGER NOT NULL DEFAULT 0,
+    `budget_consomme` DOUBLE NOT NULL DEFAULT 0,
+    `budget_restant` DOUBLE NOT NULL DEFAULT 0,
 
     UNIQUE INDEX `camions_immatriculation_key`(`immatriculation`),
     UNIQUE INDEX `camions_chauffeur_id_key`(`chauffeur_id`),
@@ -59,54 +61,78 @@ CREATE TABLE `chauffeurs` (
 -- CreateTable
 CREATE TABLE `carburants` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `camion_id` INTEGER NOT NULL,
-    `date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `kilometrage` INTEGER NOT NULL,
-    `litres` DOUBLE NOT NULL,
-    `cout_total` DOUBLE NOT NULL,
-    `prix_litre` DOUBLE NOT NULL,
-    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `chauffeur_id` INTEGER NULL,
-    `numero_ticket` VARCHAR(191) NULL,
-    `recu_url` VARCHAR(191) NULL,
-    `station_service` VARCHAR(191) NULL,
-    `est_plein` BOOLEAN NOT NULL DEFAULT true,
-    `typeOperation` VARCHAR(191) NOT NULL DEFAULT 'plein_depot',
     `voyage_id` INTEGER NULL,
+    `camion_id` INTEGER NOT NULL,
+    `chauffeur_id` INTEGER NULL,
+    `montant_prevision` DOUBLE NOT NULL DEFAULT 0,
+    `total_complements` DOUBLE NOT NULL DEFAULT 0,
+    `total_depenses` DOUBLE NOT NULL DEFAULT 0,
+    `total_recu_valide` DOUBLE NOT NULL DEFAULT 0,
+    `statut` VARCHAR(191) NOT NULL DEFAULT 'EN_COURS',
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updated_at` DATETIME(3) NOT NULL,
 
+    UNIQUE INDEX `carburants_voyage_id_key`(`voyage_id`),
     INDEX `carburants_camion_id_fkey`(`camion_id`),
     INDEX `carburants_chauffeur_id_fkey`(`chauffeur_id`),
-    INDEX `carburants_voyage_id_fkey`(`voyage_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `carburant_receipts` (
+CREATE TABLE `mouvements_carburant` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `carburant_id` INTEGER NOT NULL,
-    `url` VARCHAR(191) NOT NULL,
-    `file_name` VARCHAR(191) NOT NULL,
-    `mime_type` VARCHAR(191) NOT NULL,
-    `size` INTEGER NOT NULL,
+    `date_operation` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `type_operation` VARCHAR(191) NOT NULL,
+    `montant` DOUBLE NOT NULL,
+    `station_service` VARCHAR(191) NULL,
+    `numero_ticket` VARCHAR(191) NULL,
+    `kilometrage` INTEGER NULL,
+    `litres` DOUBLE NULL,
+    `prix_litre` DOUBLE NULL,
+    `commentaire` TEXT NULL,
+    `utilisateur_id` INTEGER NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
-    INDEX `carburant_receipts_carburant_id_fkey`(`carburant_id`),
+    INDEX `mouvements_carburant_carburant_id_fkey`(`carburant_id`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `recu_carburants` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `mouvement_id` INTEGER NOT NULL,
+    `chemin_image` VARCHAR(191) NOT NULL,
+    `nom_fichier` VARCHAR(191) NULL,
+    `mime_type` VARCHAR(191) NULL,
+    `taille_octets` INTEGER NULL,
+    `montant_recu` DOUBLE NOT NULL,
+    `date_recu` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `commentaire` TEXT NULL,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    INDEX `recu_carburants_mouvement_id_fkey`(`mouvement_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `voyages` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `numero_voyage` VARCHAR(191) NOT NULL,
     `camion_id` INTEGER NOT NULL,
     `chauffeur_id` INTEGER NULL,
     `date_debut` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `date_fin` DATETIME(3) NULL,
     `kilometrage_depart` INTEGER NOT NULL,
     `kilometrage_arrivee` INTEGER NULL,
+    `montant_prevision_carburant` DOUBLE NOT NULL DEFAULT 0,
+    `observations` TEXT NULL,
+    `statut` VARCHAR(191) NOT NULL DEFAULT 'EN_COURS',
     `destination` VARCHAR(191) NOT NULL,
-    `statut` VARCHAR(191) NOT NULL DEFAULT 'en_cours',
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updated_at` DATETIME(3) NOT NULL,
 
+    UNIQUE INDEX `voyages_numero_voyage_key`(`numero_voyage`),
     INDEX `voyages_camion_id_fkey`(`camion_id`),
     INDEX `voyages_chauffeur_id_fkey`(`chauffeur_id`),
     PRIMARY KEY (`id`)
@@ -193,16 +219,19 @@ CREATE TABLE `parametres_globaux` (
 ALTER TABLE `camions` ADD CONSTRAINT `camions_chauffeur_id_fkey` FOREIGN KEY (`chauffeur_id`) REFERENCES `chauffeurs`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `carburants` ADD CONSTRAINT `carburants_voyage_id_fkey` FOREIGN KEY (`voyage_id`) REFERENCES `voyages`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `carburants` ADD CONSTRAINT `carburants_camion_id_fkey` FOREIGN KEY (`camion_id`) REFERENCES `camions`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `carburants` ADD CONSTRAINT `carburants_chauffeur_id_fkey` FOREIGN KEY (`chauffeur_id`) REFERENCES `chauffeurs`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `carburants` ADD CONSTRAINT `carburants_voyage_id_fkey` FOREIGN KEY (`voyage_id`) REFERENCES `voyages`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `mouvements_carburant` ADD CONSTRAINT `mouvements_carburant_carburant_id_fkey` FOREIGN KEY (`carburant_id`) REFERENCES `carburants`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `carburant_receipts` ADD CONSTRAINT `carburant_receipts_carburant_id_fkey` FOREIGN KEY (`carburant_id`) REFERENCES `carburants`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `recu_carburants` ADD CONSTRAINT `recu_carburants_mouvement_id_fkey` FOREIGN KEY (`mouvement_id`) REFERENCES `mouvements_carburant`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `voyages` ADD CONSTRAINT `voyages_camion_id_fkey` FOREIGN KEY (`camion_id`) REFERENCES `camions`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

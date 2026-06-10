@@ -23,19 +23,19 @@ export async function GET(request: NextRequest) {
       dateFilter.lt = new Date(annee + 1, 0, 1);
     }
 
-    const whereCarburant: any = { date: dateFilter };
+    const whereCarburant: any = { dateOperation: dateFilter };
     const whereReparation: any = { date: dateFilter };
 
     if (camionId && camionId !== "tous") {
       const cid = parseInt(camionId);
-      whereCarburant.camionId = cid;
+      whereCarburant.carburant = { camionId: cid };
       whereReparation.camionId = cid;
     }
 
     // ========================================================
     // 2. RÉCUPÉRATION DES COÛTS ET DONNÉES
     // ========================================================
-    const carburants = await prisma.carburant.findMany({
+    const mouvementsCarburant = await prisma.mouvementCarburant.findMany({
       where: whereCarburant,
     });
 
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Coût carburant
-    const coutCarburant = carburants.reduce((sum, c) => sum + c.coutTotal, 0);
+    const coutCarburant = mouvementsCarburant.reduce((sum, m) => sum + m.montant, 0);
 
     // Coût réparations
     const coutReparations = reparations.reduce((sum, r) => sum + r.cout, 0);
@@ -79,10 +79,10 @@ export async function GET(request: NextRequest) {
       const debutMois = new Date(annee, i, 1);
       const finMois = new Date(annee, i + 1, 1);
 
-      const cMois = await prisma.carburant.findMany({
+      const mMois = await prisma.mouvementCarburant.findMany({
         where: {
-          date: { gte: debutMois, lt: finMois },
-          ...(camionId && camionId !== "tous" ? { camionId: parseInt(camionId) } : {}),
+          dateOperation: { gte: debutMois, lt: finMois },
+          ...(camionId && camionId !== "tous" ? { carburant: { camionId: parseInt(camionId) } } : {}),
         },
       });
 
@@ -93,7 +93,7 @@ export async function GET(request: NextRequest) {
         },
       });
 
-      const carbMois = cMois.reduce((sum, c) => sum + c.coutTotal, 0);
+      const carbMois = mMois.reduce((sum, m) => sum + m.montant, 0);
       const repMois = rMois.reduce((sum, r) => sum + r.cout, 0);
 
       evolutionMensuelle.push({
@@ -109,17 +109,16 @@ export async function GET(request: NextRequest) {
     const camions = await prisma.camion.findMany({
       include: {
         chauffeur: true,
-        carburants: true,
       },
     });
     const comparatifCamions = [];
 
     for (const camion of camions) {
       // Filtrage carburants et réparations sur la période spécifiée
-      const cCamion = await prisma.carburant.findMany({
+      const mMoisCamion = await prisma.mouvementCarburant.findMany({
         where: {
-          camionId: camion.id,
-          date: dateFilter,
+          carburant: { camionId: camion.id },
+          dateOperation: dateFilter,
         },
       });
 
@@ -131,27 +130,12 @@ export async function GET(request: NextRequest) {
         include: { piecesChangees: true },
       });
 
-      const carbC = cCamion.reduce((sum, c) => sum + c.coutTotal, 0);
+      const carbC = mMoisCamion.reduce((sum, m) => sum + m.montant, 0);
       const repC = rCamion.reduce((sum, r) => sum + r.cout, 0);
-      const budgetConsomme = calculBudgetConsomme(cCamion, rCamion);
       const coutTotalC = carbC + repC;
-      const litresC = cCamion.reduce((sum, c) => sum + c.litres, 0);
-
-      // Calcul consommation moyenne sur l'historique complet de ce camion
-      const carburantsTriés = [...camion.carburants].sort(
-        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-      );
-      const consommations = [];
-      for (let idx = 1; idx < carburantsTriés.length; idx++) {
-        const kmParcourus = carburantsTriés[idx].kilometrage - carburantsTriés[idx - 1].kilometrage;
-        if (kmParcourus > 0) {
-          consommations.push((carburantsTriés[idx].litres / kmParcourus) * 100);
-        }
-      }
-      const consoMoyenne =
-        consommations.length > 0
-          ? consommations.reduce((sum, val) => sum + val, 0) / consommations.length
-          : null;
+      
+      // budgetConsomme based on the current calculation rules
+      const budgetConsomme = calculBudgetConsomme(carbC, rCamion);
 
       comparatifCamions.push({
         id: camion.id,
@@ -166,10 +150,10 @@ export async function GET(request: NextRequest) {
           : "Non assigné",
         kilometrage: camion.kilometrageActuel,
         carburant: carbC,
-        litres: litresC,
+        litres: 0, // Obsolete
         reparation: repC,
         coutTotal: coutTotalC,
-        consoMoyenne: consoMoyenne ? Math.round(consoMoyenne * 10) / 10 : 0,
+        consoMoyenne: 0, // Obsolete
       });
     }
 
@@ -182,27 +166,27 @@ export async function GET(request: NextRequest) {
     ].filter((c) => c.value > 0);
 
     // ========================================================
-    // 6. FRÉQUENCE CARBURANT (nombre de pleins + litres / mois)
+    // 6. FRÉQUENCE CARBURANT (nombre de mouvements / mois)
     // ========================================================
     const frequenceCarburant = [];
     for (let i = 0; i < 12; i++) {
       const debutMois = new Date(annee, i, 1);
       const finMois = new Date(annee, i + 1, 1);
 
-      const cMois = await prisma.carburant.findMany({
+      const mMois = await prisma.mouvementCarburant.findMany({
         where: {
-          date: { gte: debutMois, lt: finMois },
+          dateOperation: { gte: debutMois, lt: finMois },
           ...(camionId && camionId !== "tous"
-            ? { camionId: parseInt(camionId) }
+            ? { carburant: { camionId: parseInt(camionId) } }
             : {}),
         },
       });
 
       frequenceCarburant.push({
         name: moisLabels[i],
-        pleins: cMois.length,
-        litres: Math.round(cMois.reduce((s, c) => s + c.litres, 0)),
-        montant: cMois.reduce((s, c) => s + c.coutTotal, 0),
+        pleins: mMois.length,
+        litres: 0, // Obsolete
+        montant: mMois.reduce((s, m) => s + m.montant, 0),
       });
     }
 
@@ -273,3 +257,4 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+

@@ -30,7 +30,8 @@ export async function GET(request: NextRequest) {
       include: {
         chauffeur: true,
         carburants: {
-          where: { date: dateFilter },
+          where: { createdAt: dateFilter },
+          select: { totalDepenses: true },
         },
         reparations: {
           where: { date: dateFilter },
@@ -48,8 +49,12 @@ export async function GET(request: NextRequest) {
     });
 
     const enrichedCamions = camions.map((camion) => {
+      const totalCarburant = camion.carburants.reduce(
+        (sum, c) => sum + c.totalDepenses,
+        0
+      );
       const budgetConsomme = calculBudgetConsomme(
-        camion.carburants,
+        totalCarburant,
         camion.reparations
       );
 

@@ -43,6 +43,8 @@ model Camion {
   numeroPoliceAssurance String?   @map("numero_police_assurance")
   transmission          String?   @default("Manuelle")
   dernierKilometrageVidange Int   @default(0) @map("dernier_kilometrage_vidange")
+  budgetConsomme        Float     @default(0) @map("budget_consomme")
+  budgetRestant         Float     @default(0) @map("budget_restant")
 
   chauffeur              Chauffeur?           @relation(fields: [chauffeurId], references: [id], onDelete: SetNull)
   carburants             Carburant[]
@@ -70,61 +72,86 @@ model Chauffeur {
 }
 
 model Carburant {
-  id             Int        @id @default(autoincrement())
-  camionId       Int        @map("camion_id")
-  camion         Camion     @relation(fields: [camionId], references: [id], onDelete: Cascade)
-  date           DateTime   @default(now())
-  kilometrage    Int
-  litres         Float
-  coutTotal      Float      @map("cout_total")
-  prixLitre      Float      @map("prix_litre")
-  createdAt      DateTime   @default(now()) @map("created_at")
-  chauffeurId    Int?       @map("chauffeur_id")
-  chauffeur      Chauffeur? @relation(fields: [chauffeurId], references: [id], onDelete: SetNull)
-  numeroTicket   String?    @map("numero_ticket")
-  recuUrl        String?    @map("recu_url")
-  stationService String?    @map("station_service")
-  estPlein       Boolean    @default(true) @map("est_plein")
-  typeOperation  String     @default("plein_depot")
-  voyageId       Int?       @map("voyage_id")
-  voyage         Voyage?    @relation(fields: [voyageId], references: [id], onDelete: SetNull)
-  receipts       CarburantReceipt[]
+  id               Int                  @id @default(autoincrement())
+  voyageId         Int?                 @unique @map("voyage_id")
+  voyage           Voyage?              @relation(fields: [voyageId], references: [id], onDelete: Cascade)
+  camionId         Int                  @map("camion_id")
+  camion           Camion               @relation(fields: [camionId], references: [id], onDelete: Cascade)
+  chauffeurId      Int?                 @map("chauffeur_id")
+  chauffeur        Chauffeur?           @relation(fields: [chauffeurId], references: [id], onDelete: SetNull)
+  montantPrevision Float                @default(0) @map("montant_prevision")
+  totalComplements Float                @default(0) @map("total_complements")
+  totalDepenses    Float                @default(0) @map("total_depenses")
+  totalRecuValide  Float                @default(0) @map("total_recu_valide")
+  statut           String               @default("EN_COURS") @map("statut")
+  createdAt        DateTime             @default(now()) @map("created_at")
+  updatedAt        DateTime             @updatedAt @map("updated_at")
+
+  mouvements       MouvementCarburant[]
 
   @@index([camionId], map: "carburants_camion_id_fkey")
   @@index([chauffeurId], map: "carburants_chauffeur_id_fkey")
-  @@index([voyageId], map: "carburants_voyage_id_fkey")
   @@map("carburants")
 }
 
-model CarburantReceipt {
-  id          Int       @id @default(autoincrement())
-  carburantId Int       @map("carburant_id")
-  carburant   Carburant @relation(fields: [carburantId], references: [id], onDelete: Cascade)
-  url         String
-  fileName    String    @map("file_name")
-  mimeType    String    @map("mime_type")
-  size        Int
-  createdAt   DateTime  @default(now()) @map("created_at")
+model MouvementCarburant {
+  id            Int             @id @default(autoincrement())
+  carburantId   Int             @map("carburant_id")
+  carburant     Carburant       @relation(fields: [carburantId], references: [id], onDelete: Cascade)
+  dateOperation DateTime        @default(now()) @map("date_operation")
+  typeOperation String          @map("type_operation") // "PREVISION", "COMPLEMENT", "DEPENSE", "AJUSTEMENT"
+  montant       Float           @map("montant")
+  stationService String?        @map("station_service")
+  numeroTicket  String?         @map("numero_ticket")
+  kilometrage   Int?            @map("kilometrage")
+  litres        Float?          @map("litres")
+  prixLitre     Float?          @map("prix_litre")
+  commentaire   String?         @db.Text @map("commentaire")
+  utilisateurId Int?            @map("utilisateur_id")
+  createdAt     DateTime        @default(now()) @map("created_at")
 
-  @@index([carburantId], map: "carburant_receipts_carburant_id_fkey")
-  @@map("carburant_receipts")
+  recus         RecuCarburant[]
+
+  @@index([carburantId], map: "mouvements_carburant_carburant_id_fkey")
+  @@map("mouvements_carburant")
+}
+
+model RecuCarburant {
+  id          Int                @id @default(autoincrement())
+  mouvementId Int                @map("mouvement_id")
+  mouvement   MouvementCarburant @relation(fields: [mouvementId], references: [id], onDelete: Cascade)
+  cheminImage String             @map("chemin_image")
+  nomFichier  String?            @map("nom_fichier")
+  mimeType    String?            @map("mime_type")
+  tailleOctets Int?              @map("taille_octets")
+  montantRecu Float              @map("montant_recu")
+  dateRecu    DateTime           @default(now()) @map("date_recu")
+  commentaire String?            @db.Text @map("commentaire")
+  createdAt   DateTime           @default(now()) @map("created_at")
+
+  @@index([mouvementId], map: "recu_carburants_mouvement_id_fkey")
+  @@map("recu_carburants")
 }
 
 model Voyage {
-  id                 Int        @id @default(autoincrement())
-  camionId           Int        @map("camion_id")
-  camion             Camion     @relation(fields: [camionId], references: [id], onDelete: Cascade)
-  chauffeurId        Int?       @map("chauffeur_id")
-  chauffeur          Chauffeur? @relation(fields: [chauffeurId], references: [id], onDelete: SetNull)
-  dateDebut          DateTime   @default(now()) @map("date_debut")
-  dateFin            DateTime?  @map("date_fin")
-  kilometrageDepart  Int        @map("kilometrage_depart")
-  kilometrageArrivee Int?       @map("kilometrage_arrivee")
-  destination        String
-  statut             String     @default("en_cours")
-  createdAt          DateTime   @default(now()) @map("created_at")
+  id                         Int        @id @default(autoincrement())
+  numeroVoyage               String     @unique @map("numero_voyage")
+  camionId                   Int        @map("camion_id")
+  camion                     Camion     @relation(fields: [camionId], references: [id], onDelete: Cascade)
+  chauffeurId                Int?       @map("chauffeur_id")
+  chauffeur                  Chauffeur? @relation(fields: [chauffeurId], references: [id], onDelete: SetNull)
+  dateDebut                  DateTime   @default(now()) @map("date_debut")
+  dateFin                    DateTime?  @map("date_fin")
+  kilometrageDepart          Int        @map("kilometrage_depart")
+  kilometrageArrivee         Int?       @map("kilometrage_arrivee")
+  montantPrevisionCarburant  Float      @default(0) @map("montant_prevision_carburant")
+  observations               String?    @db.Text @map("observations")
+  statut                     String     @default("EN_COURS") @map("statut")
+  destination                String
+  createdAt                  DateTime   @default(now()) @map("created_at")
+  updatedAt                  DateTime   @updatedAt @map("updated_at")
 
-  carburants         Carburant[]
+  carburant                  Carburant?
 
   @@index([camionId], map: "voyages_camion_id_fkey")
   @@index([chauffeurId], map: "voyages_chauffeur_id_fkey")

@@ -1,209 +1,221 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { validateBudgetCamion } from "@/lib/budget-server";
+import { recalculerBudgetCamion, validateBudgetCamion } from "@/lib/budget-server";
 
-// GET /api/carburant - Liste les tickets carburant
+function toNumber(value: unknown) {
+  if (value === null || value === undefined || value === "") return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+// GET /api/carburant - Liste les dossiers carburant
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const camionId = searchParams.get("camionId");
+    const statut = searchParams.get("statut");
+    const search = searchParams.get("search");
 
-    const where: Record<string, unknown> = {};
+    const where: Prisma.CarburantWhereInput = {};
     if (camionId && camionId !== "tous") {
       where.camionId = parseInt(camionId);
     }
+    if (statut && statut !== "tous") {
+      where.statut = statut;
+    }
 
-    const carburantsRaw = await prisma.carburant.findMany({
+    if (search) {
+      where.OR = [
+        { voyage: { numeroVoyage: { contains: search } } },
+        { voyage: { destination: { contains: search } } },
+        { camion: { immatriculation: { contains: search } } },
+        { chauffeur: { nom: { contains: search } } },
+        { chauffeur: { prenom: { contains: search } } },
+      ];
+    }
+
+    const carburants = await prisma.carburant.findMany({
       where,
-      orderBy: { date: "desc" },
-      include: { receipts: true },
+      orderBy: { createdAt: "desc" },
+      include: {
+        voyage: true,
+        camion: {
+          select: {
+            id: true,
+            immatriculation: true,
+            marque: true,
+            modele: true,
+            budgetConsomme: true,
+            dotationAnnuelle: true,
+          },
+        },
+        chauffeur: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true,
+          },
+        },
+        mouvements: {
+          orderBy: { dateOperation: "desc" },
+          include: {
+            recus: true,
+          },
+        },
+      },
     });
-
-    const camionIds = [...new Set(carburantsRaw.map((c) => c.camionId))];
-    const chauffeurIds = [
-      ...new Set(
-        carburantsRaw.map((c) => c.chauffeurId).filter((id): id is number => id != null)
-      ),
-    ];
-
-    const [camionsList, chauffeursList] = await Promise.all([
-      camionIds.length
-        ? prisma.camion.findMany({
-            where: { id: { in: camionIds } },
-            select: {
-              id: true,
-              immatriculation: true,
-              marque: true,
-              modele: true,
-            },
-          })
-        : Promise.resolve([]),
-      chauffeurIds.length
-        ? prisma.chauffeur.findMany({
-            where: { id: { in: chauffeurIds } },
-            select: { id: true, nom: true, prenom: true },
-          })
-        : Promise.resolve([]),
-    ]);
-
-    const camionMap = new Map(camionsList.map((c) => [c.id, c]));
-    const chauffeurMap = new Map(chauffeursList.map((ch) => [ch.id, ch]));
-
-    const carburants = carburantsRaw.map((c) => ({
-      ...c,
-      camion: camionMap.get(c.camionId) || null,
-      chauffeur: c.chauffeurId
-        ? chauffeurMap.get(c.chauffeurId) || null
-        : null,
-    }));
 
     return NextResponse.json(carburants);
   } catch (error) {
     console.error("Erreur GET /api/carburant:", error);
     return NextResponse.json(
-      { error: "Erreur lors de la récupération des tickets carburant" },
+      { error: "Erreur lors de la récupération des dossiers carburant" },
       { status: 500 }
     );
   }
 }
 
-// POST /api/carburant - Ajouter un ticket carburant
+// POST /api/carburant - Crée un dossier carburant hors voyage avec un premier ticket
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    if (!body.camionId || !body.kilometrage || !body.litres || !body.prixLitre) {
+    const camionId = toNumber(body.camionId);
+    const chauffeurId = toNumber(body.chauffeurId);
+    const kilometrage = toNumber(body.kilometrage);
+    const litres = toNumber(body.litres);
+    const prixLitre = toNumber(body.prixLitre);
+    const montant = toNumber(body.montant) ?? (
+      litres !== null && prixLitre !== null ? litres * prixLitre : null
+    );
+
+    if (!camionId || !kilometrage || montant === null || montant <= 0) {
       return NextResponse.json(
-        {
-          error:
-            "Champs obligatoires manquants : camionId, kilometrage, litres, prixLitre",
-        },
+        { error: "camionId, kilometrage et montant valide sont requis" },
         { status: 400 }
       );
     }
 
-    const camionId = parseInt(body.camionId);
-    const nouveauKm = parseInt(body.kilometrage);
-    const litres = parseFloat(body.litres);
-    const prixLitre = parseFloat(body.prixLitre);
-    const coutTotal = body.coutTotal
-      ? parseFloat(body.coutTotal)
-      : litres * prixLitre;
-    const estPlein = body.estPlein !== undefined ? Boolean(body.estPlein) : true;
-    const typeOperation = body.typeOperation || "plein_depot";
-    const voyageId = body.voyageId ? parseInt(body.voyageId) : null;
-
     const camion = await prisma.camion.findUnique({
       where: { id: camionId },
-      select: {
-        kilometrageActuel: true,
-        chauffeurId: true,
-        dotationAnnuelle: true,
-      },
+      select: { id: true, kilometrageActuel: true },
     });
 
     if (!camion) {
       return NextResponse.json({ error: "Camion introuvable" }, { status: 404 });
     }
 
-    if (nouveauKm <= 0) {
-      return NextResponse.json(
-        { error: "Le kilométrage doit être supérieur à 0" },
-        { status: 400 }
-      );
-    }
-
-    const budgetCheck = await validateBudgetCamion(camionId, coutTotal);
+    const budgetCheck = await validateBudgetCamion(camionId, montant);
     if (!budgetCheck.ok) {
       return NextResponse.json({ error: budgetCheck.error }, { status: 400 });
     }
 
-    if (voyageId) {
-      const voyage = await prisma.voyage.findFirst({
-        where: { id: voyageId, camionId, statut: "en_cours" },
+    const receipts: {
+      cheminImage: string;
+      nomFichier: string | null;
+      mimeType: string | null;
+      tailleOctets: number | null;
+      montantRecu: number;
+      commentaire: string;
+    }[] = body.recuUrl
+      ? [
+          {
+            cheminImage: body.recuUrl,
+            nomFichier: body.recuName || null,
+            mimeType: body.recuMimeType || null,
+            tailleOctets: toNumber(body.recuSize),
+            montantRecu: montant,
+            commentaire: body.commentaire || "Ticket ajouté depuis la fiche camion",
+          },
+        ]
+      : [];
+
+    const dossier = await prisma.$transaction(async (tx) => {
+      const createdDossier = await tx.carburant.create({
+        data: {
+          camionId,
+          chauffeurId,
+          montantPrevision: 0,
+          totalComplements: 0,
+          totalDepenses: montant,
+          totalRecuValide: receipts.length > 0 ? montant : 0,
+          statut: "CLOTURE",
+        },
       });
-      if (!voyage) {
-        return NextResponse.json(
-          { error: "Voyage en cours introuvable pour ce véhicule" },
-          { status: 400 }
+
+      const mouvement = await tx.mouvementCarburant.create({
+        data: {
+          carburantId: createdDossier.id,
+          dateOperation: body.date ? new Date(body.date) : new Date(),
+          typeOperation: "DEPENSE",
+          montant,
+          stationService: body.stationService || null,
+          numeroTicket: body.numeroTicket || null,
+          kilometrage,
+          litres,
+          prixLitre,
+          commentaire: body.commentaire || null,
+        },
+      });
+
+      if (receipts.length > 0) {
+        await Promise.all(
+          receipts.map((receipt) =>
+            tx.recuCarburant.create({
+              data: {
+                mouvementId: mouvement.id,
+                cheminImage: receipt.cheminImage,
+                nomFichier: receipt.nomFichier,
+                mimeType: receipt.mimeType,
+                tailleOctets: receipt.tailleOctets,
+                montantRecu: receipt.montantRecu,
+                commentaire: receipt.commentaire,
+              },
+            })
+          )
         );
       }
-    }
 
-    const receiptData = body.recuUrl
-      ? {
-          create: {
-            url: body.recuUrl,
-            fileName: body.recuName || "recu",
-            mimeType: body.recuMimeType || "application/octet-stream",
-            size: body.recuSize ? parseInt(body.recuSize) : 0,
-          },
-        }
-      : undefined;
+      if (kilometrage > camion.kilometrageActuel) {
+        await tx.camion.update({
+          where: { id: camionId },
+          data: { kilometrageActuel: kilometrage },
+        });
+      }
 
-    const carburant = await prisma.carburant.create({
-      data: {
-        camionId,
-        date: body.date ? new Date(body.date) : new Date(),
-        kilometrage: nouveauKm,
-        litres,
-        prixLitre,
-        coutTotal,
-        numeroTicket: body.numeroTicket || null,
-        stationService: body.stationService || null,
-        recuUrl: body.recuUrl || null,
-        chauffeurId: body.chauffeurId
-          ? parseInt(body.chauffeurId)
-          : camion.chauffeurId,
-        estPlein,
-        typeOperation,
-        voyageId,
-        receipts: receiptData,
-      },
-    });
-
-    if (nouveauKm > camion.kilometrageActuel) {
-      await prisma.camion.update({
-        where: { id: camionId },
-        data: { kilometrageActuel: nouveauKm },
-      });
-
-      await prisma.maintenancePlanifiee.updateMany({
+      await tx.maintenancePlanifiee.updateMany({
         where: {
           camionId,
           statut: "planifie",
-          kilometrageCible: { lte: nouveauKm },
+          kilometrageCible: { lte: kilometrage },
         },
         data: { statut: "en_retard" },
       });
-    }
 
-    return NextResponse.json(carburant, { status: 201 });
+      return createdDossier;
+    });
+
+    await recalculerBudgetCamion(camionId);
+
+    const dossierComplet = await prisma.carburant.findUnique({
+      where: { id: dossier.id },
+      include: {
+        voyage: true,
+        camion: true,
+        chauffeur: true,
+        mouvements: {
+          orderBy: { dateOperation: "desc" },
+          include: { recus: true },
+        },
+      },
+    });
+
+    return NextResponse.json(dossierComplet, { status: 201 });
   } catch (error) {
     console.error("Erreur POST /api/carburant:", error);
     return NextResponse.json(
-      { error: "Erreur lors de l'ajout du ticket carburant" },
-      { status: 500 }
-    );
-  }
-}
-
-// DELETE /api/carburant - Supprimer un ticket carburant
-export async function DELETE(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
-
-    if (!id) {
-      return NextResponse.json({ error: "id requis" }, { status: 400 });
-    }
-
-    await prisma.carburant.delete({ where: { id: parseInt(id) } });
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Erreur DELETE /api/carburant:", error);
-    return NextResponse.json(
-      { error: "Erreur lors de la suppression du ticket" },
+      { error: "Erreur lors de la création du ticket carburant" },
       { status: 500 }
     );
   }

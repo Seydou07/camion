@@ -3,6 +3,39 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 
+let openOverlayCount = 0;
+let lockedScrollY = 0;
+
+function lockPageScroll() {
+  if (typeof window === "undefined") return;
+
+  if (openOverlayCount === 0) {
+    lockedScrollY = window.scrollY;
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${lockedScrollY}px`;
+    document.body.style.width = "100%";
+  }
+
+  openOverlayCount += 1;
+}
+
+function unlockPageScroll() {
+  if (typeof window === "undefined" || openOverlayCount === 0) return;
+
+  openOverlayCount -= 1;
+
+  if (openOverlayCount === 0) {
+    document.documentElement.style.overflow = "";
+    document.body.style.overflow = "";
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.width = "";
+    window.scrollTo(0, lockedScrollY);
+  }
+}
+
 // ==========================================
 // BUTTON
 // ==========================================
@@ -237,13 +270,11 @@ interface ModalProps {
 export function Modal({ isOpen, onClose, title, children, size = "md", noScroll = false }: ModalProps) {
   React.useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
+      lockPageScroll();
+      return () => {
+        unlockPageScroll();
+      };
     }
-    return () => {
-      document.body.style.overflow = "unset";
-    };
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -322,13 +353,11 @@ export function ConfirmModal({
 }: ConfirmModalProps) {
   React.useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
+      lockPageScroll();
+      return () => {
+        unlockPageScroll();
+      };
     }
-    return () => {
-      document.body.style.overflow = "unset";
-    };
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -563,7 +592,7 @@ export function TableCard({ children, className }: { children: React.ReactNode, 
   );
 }
 
-export function DataTable<T extends Record<string, unknown>>({
+export function DataTable<T>({
   columns,
   data,
   onRowClick,
@@ -610,7 +639,7 @@ export function DataTable<T extends Record<string, unknown>>({
             >
               {columns.map((col) => (
                 <td key={col.key} className={cn("px-5 py-3 align-middle text-sm text-slate-600 dark:text-slate-300", col.className)}>
-                  {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                  {col.render ? col.render(item) : String((item as Record<string, unknown>)[col.key] ?? "")}
                 </td>
               ))}
             </tr>

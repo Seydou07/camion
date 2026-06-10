@@ -15,7 +15,7 @@ export async function GET(
       include: {
         camion: true,
         carburants: {
-          orderBy: { date: "desc" },
+          orderBy: { createdAt: "desc" },
           take: 10,
         },
       },

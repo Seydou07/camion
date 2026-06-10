@@ -16,22 +16,17 @@ import {
   formatDate,
   statutCamionColors,
   statutCamionLabels,
-  typeReparationColors,
   typeReparationLabels,
 } from "@/lib/utils";
 import {
   BarChart,
   Bar,
+  CartesianGrid,
   XAxis,
   YAxis,
   Tooltip as RechartsTooltip,
   ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
 } from "recharts";
-
-const COLORS = ["#0EA5E9", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#64748B"];
 
 export default function CamionDetailPage({
   params: paramsPromise,
@@ -44,6 +39,7 @@ export default function CamionDetailPage({
   const [data, setData] = useState<any>(null);
   const [chauffeurs, setChauffeurs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [alerts, setAlerts] = useState<any[]>([]);
 
   // Modals & Submitting
   const [isFuelModalOpen, setIsFuelModalOpen] = useState(false);
@@ -104,6 +100,13 @@ export default function CamionDetailPage({
   useEffect(() => {
     fetchCamionDetails();
     fetchChauffeurs();
+  }, [id]);
+
+  useEffect(() => {
+    fetch("/api/alertes")
+      .then((r) => r.json())
+      .then((d) => setAlerts((d.alerts || []).filter((a: any) => a.camionId === parseInt(id))))
+      .catch(() => {});
   }, [id]);
 
   const uploadFuelReceipt = async (file: File) => {
@@ -306,24 +309,6 @@ export default function CamionDetailPage({
     );
   }
 
-  const carburantChartData = [...(data.carburants || [])]
-    .reverse()
-    .slice(-6)
-    .map((c: any) => ({
-      date: formatDate(c.date).split("/").slice(0, 2).join("/"),
-      "Consommation (L/100km)": c.consommation ? Math.round(c.consommation * 10) / 10 : 0,
-    }));
-
-  const categoriesReparation = (data.reparations || []).reduce((acc: any, curr: any) => {
-    acc[curr.type] = (acc[curr.type] || 0) + curr.cout;
-    return acc;
-  }, {});
-
-  const reparationPieData = Object.keys(categoriesReparation).map((key) => ({
-    name: typeReparationLabels[key] || key,
-    value: categoriesReparation[key],
-  }));
-
   const typeLabels: Record<string, string> = {
     vidange: "Vidange Moteur",
     pneus: "Remplacement Pneus",
@@ -333,6 +318,48 @@ export default function CamionDetailPage({
     visite_technique: "Visite Technique",
     autre: "Autre Entretien",
   };
+
+  const formatDateSafe = (value?: Date | string | null) => {
+    if (!value) return "-";
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return "-";
+    return formatDate(parsed);
+  };
+
+  const currentYear = new Date().getFullYear();
+
+  const carburantDossiers = Array.isArray(data.recentCarburants) ? data.recentCarburants : [];
+  const reparations = Array.isArray(data.recentReparations) ? data.recentReparations : [];
+
+  const budgetCarburantConsomme = data.stats?.budgetCarburantConsomme || 0;
+  const budgetMaintenanceConsomme = data.stats?.budgetMaintenanceConsomme || 0;
+  const budgetVehiculeTotal = data.dotationAnnuelle || 0;
+  const budgetVehiculeConsomme =
+    budgetCarburantConsomme + budgetMaintenanceConsomme;
+  const budgetVehiculeRestant = budgetVehiculeTotal - budgetVehiculeConsomme;
+  const budgetVehiculePercent =
+    budgetVehiculeTotal > 0
+      ? Math.min(100, Math.round((budgetVehiculeConsomme / budgetVehiculeTotal) * 100))
+      : 0;
+
+  const carburantChartData = [...carburantDossiers]
+    .slice(0, 6)
+    .reverse()
+    .map((c: any, index: number) => ({
+      label: formatDateSafe(c.createdAt).slice(0, 5) || `D${index + 1}`,
+      depenses: c.totalDepenses || 0,
+    }));
+
+  const carburantRows = carburantDossiers.slice(0, 3);
+  const carburantRowsRestants = Math.max(0, (data.counts?.carburants || 0) - carburantRows.length);
+
+  const maintenanceFrequencyData = Array.isArray(data.maintenanceFrequency)
+    ? data.maintenanceFrequency
+    : [];
+
+  const derniereMaintenance = reparations.length > 0 ? reparations[0] : null;
+  const recentReparations = reparations.slice(0, 3);
+  const reparationsRestantes = Math.max(0, (data.counts?.reparations || 0) - recentReparations.length);
 
   return (
     <div className="space-y-8 page-enter pb-10">
@@ -377,6 +404,37 @@ export default function CamionDetailPage({
            </div>
         </div>
       </div>
+
+      {/* Alertes */}
+      {alerts.length > 0 && (
+        <div className="space-y-2">
+          {alerts.map((alert: any, i: number) => {
+            const isCritique = alert.severity === "critique";
+            const isHaute = alert.severity === "haute";
+            return (
+              <div
+                key={i}
+                className={`flex items-center gap-3 px-5 py-3 rounded-2xl border ${
+                  isCritique ? "border-rose-200 bg-rose-50" : isHaute ? "border-amber-200 bg-amber-50" : "border-yellow-200 bg-yellow-50"
+                }`}
+              >
+                <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${isCritique ? "bg-rose-500" : isHaute ? "bg-amber-500" : "bg-yellow-400"}`} />
+                <span className="text-xs font-black uppercase tracking-widest text-slate-400 w-28 shrink-0">
+                  {alert.type === "vidange" ? "Vidange" : alert.type === "assurance" ? "Assurance" : "Visite Technique"}
+                </span>
+                <span className="text-sm font-bold text-slate-700">{alert.message}</span>
+                <span
+                  className={`ml-auto text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md ${
+                    isCritique ? "bg-rose-200 text-rose-700" : isHaute ? "bg-amber-200 text-amber-700" : "bg-yellow-200 text-yellow-700"
+                  }`}
+                >
+                  {isCritique ? "Critique" : isHaute ? "Haute" : "Moyenne"}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
          {/* Left Column */}
@@ -428,9 +486,6 @@ export default function CamionDetailPage({
                         <p className="text-xs text-slate-400 font-medium">Suivi des alertes kilométriques pour ce camion</p>
                      </div>
                   </div>
-                  <Button variant="secondary" onClick={() => window.location.href = `/maintenance?camionId=${data.id}`} className="text-xs py-2 h-auto shadow-sm">
-                     Gérer le planning
-                  </Button>
                </div>
 
                <div className="overflow-x-auto rounded-2xl border border-slate-100">
@@ -495,12 +550,9 @@ export default function CamionDetailPage({
                      </div>
                      <div>
                         <h3 className="text-lg font-black text-slate-800 tracking-tight">Suivi Carburant</h3>
-                        <p className="text-xs text-slate-400 font-medium">Consommation moyenne et historique des tickets d'essence</p>
+                        <p className="text-xs text-slate-400 font-medium">Evolution des dépenses carburant du véhicule dans le temps</p>
                      </div>
                   </div>
-                  <Button variant="secondary" onClick={handleOpenFuelModal} className="text-xs py-2 h-auto shadow-sm">
-                     + Ticket Carburant
-                  </Button>
                </div>
 
                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -509,69 +561,75 @@ export default function CamionDetailPage({
                      {carburantChartData.length > 0 ? (
                         <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={carburantChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                           <XAxis dataKey="date" fontSize={10} stroke="#94A3B8" axisLine={false} tickLine={false} />
+                           <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
+                           <XAxis dataKey="label" fontSize={10} stroke="#94A3B8" axisLine={false} tickLine={false} />
                            <YAxis fontSize={10} stroke="#94A3B8" axisLine={false} tickLine={false} />
-                           <RechartsTooltip cursor={{ fill: '#F1F5F9' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
-                           <Bar dataKey="Consommation (L/100km)" fill="#0EA5E9" radius={[6, 6, 0, 0]} />
+                           <RechartsTooltip
+                             cursor={{ fill: '#F1F5F9' }}
+                             contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                              formatter={(value: any) => formatMontant(Number(value))}
+                           />
+                           <Bar dataKey="depenses" name="Dépenses carburant" fill="#0EA5E9" radius={[6, 6, 0, 0]} />
                         </BarChart>
                         </ResponsiveContainer>
                      ) : (
                         <div className="h-full flex items-center justify-center text-sm font-medium text-slate-400 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-                           Aucun ticket pour la consommation
+                           Aucun dossier carburant enregistré
                         </div>
                      )}
                   </div>
                   {/* KPI List */}
                   <div className="space-y-3">
                      <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100">
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Conso Moyenne</p>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Budget Carburant Consommé</p>
                         <p className="text-xl font-black text-fleet-blue mt-0.5">
-                           {data.resume.mois.consommationMoyenne ? `${Math.round(data.resume.mois.consommationMoyenne * 10) / 10} L/100` : "-"}
+                           {formatMontant(budgetCarburantConsomme)}
                         </p>
                      </div>
                      <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100">
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Dépenses carburant</p>
-                        <p className="text-lg font-black text-slate-800 mt-0.5">{formatMontant(data.resume.mois.carburantTotal)}</p>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Dernier dossier</p>
+                        <p className="text-lg font-black text-slate-800 mt-0.5">
+                           {carburantDossiers[0] ? formatDateSafe(carburantDossiers[0].createdAt) : "-"}
+                        </p>
                      </div>
                      <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100">
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Litres Ravitaillés</p>
-                        <p className="text-lg font-black text-slate-800 mt-0.5">{data.resume.mois.litresTotal} Litres</p>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Dossiers Carburant</p>
+                        <p className="text-lg font-black text-slate-800 mt-0.5">{data.counts?.carburants || 0}</p>
                      </div>
                   </div>
                </div>
 
-               {/* Fuel Tickets Table */}
-               <div className="overflow-x-auto rounded-2xl border border-slate-100 mt-4">
-                  <table className="w-full text-left">
-                     <thead>
-                        <tr className="bg-slate-50/80">
-                           <th className="px-4 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Date</th>
-                           <th className="px-4 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Kilométrage</th>
-                           <th className="px-4 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Litres</th>
-                           <th className="px-4 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Coût</th>
-                           <th className="px-4 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Consommation</th>
-                        </tr>
-                     </thead>
-                     <tbody className="divide-y divide-slate-50 text-xs">
-                        {data.carburants && data.carburants.length > 0 ? (
-                           data.carburants.slice(0, 5).map((c: any) => (
-                              <tr key={c.id} className="hover:bg-slate-50/50 transition-colors">
-                                 <td className="px-4 py-2.5 font-medium text-slate-600">{formatDate(c.date)}</td>
-                                 <td className="px-4 py-2.5 text-slate-800 font-semibold">{c.kilometrage.toLocaleString()} km</td>
-                                 <td className="px-4 py-2.5 font-bold text-fleet-blue">{c.litres} L</td>
-                                 <td className="px-4 py-2.5 font-black text-slate-700">{formatMontant(c.coutTotal)}</td>
-                                 <td className="px-4 py-2.5 font-bold text-slate-500">
-                                    {c.consommation ? `${Math.round(c.consommation * 10) / 10} L/100km` : "-"}
-                                 </td>
-                              </tr>
-                           ))
-                        ) : (
-                           <tr>
-                              <td colSpan={5} className="px-4 py-6 text-center text-slate-400 italic">Aucun ticket carburant.</td>
-                           </tr>
-                        )}
-                     </tbody>
-                  </table>
+               <div className="space-y-3 mt-4">
+                  <div className="flex items-center justify-between">
+                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Derniers dossiers carburant</p>
+                     {carburantRowsRestants > 0 && (
+                        <span className="text-[10px] font-bold text-slate-500">
+                           + {carburantRowsRestants} autre(s) non affiché(s)
+                        </span>
+                     )}
+                  </div>
+                  {carburantRows.length > 0 ? (
+                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        {carburantRows.map((c: any) => (
+                           <div key={c.id} className="rounded-2xl border border-slate-100 bg-slate-50/70 p-4 space-y-2">
+                              <div className="flex items-center justify-between gap-3">
+                                 <span className="text-xs font-black text-slate-800">{formatDateSafe(c.createdAt)}</span>
+                                 <span className="text-[10px] font-bold text-slate-500">
+                                    {c.statut === "CLOTURE" ? "Clôturé" : "En cours"}
+                                 </span>
+                              </div>
+                              <p className="text-xs text-slate-500 font-semibold truncate">
+                                 {c.chauffeur ? `${c.chauffeur.prenom || ""} ${c.chauffeur.nom}`.trim() : "Non assigné"}
+                              </p>
+                              <p className="text-lg font-black text-slate-800">{formatMontant(c.totalDepenses || 0)}</p>
+                           </div>
+                        ))}
+                     </div>
+                  ) : (
+                     <div className="px-4 py-6 text-center text-slate-400 italic rounded-2xl border border-slate-100 bg-slate-50/70">
+                        Aucun dossier carburant.
+                     </div>
+                  )}
                </div>
             </div>
 
@@ -589,80 +647,77 @@ export default function CamionDetailPage({
                         <p className="text-xs text-slate-400 font-medium">Réparations mécaniques, pièces changées et entretiens</p>
                      </div>
                   </div>
-                  <Button variant="secondary" onClick={handleOpenReparationModal} className="text-xs py-2 h-auto shadow-sm">
-                     + Nouvelle Réparation
-                  </Button>
                </div>
 
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center mb-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center mb-6">
                   <div className="h-[200px]">
-                     {reparationPieData.length > 0 ? (
+                      {maintenanceFrequencyData.some((item: any) => item.interventions > 0) ? (
                         <ResponsiveContainer width="100%" height="100%">
-                           <PieChart>
-                              <Pie data={reparationPieData} cx="50%" cy="50%" innerRadius={55} outerRadius={80} paddingAngle={4} dataKey="value" strokeWidth={0}>
-                                 {reparationPieData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                 ))}
-                              </Pie>
-                              <RechartsTooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
-                           </PieChart>
+                           <BarChart data={maintenanceFrequencyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                              <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
+                              <XAxis dataKey="label" fontSize={10} stroke="#94A3B8" axisLine={false} tickLine={false} />
+                              <YAxis allowDecimals={false} fontSize={10} stroke="#94A3B8" axisLine={false} tickLine={false} />
+                              <RechartsTooltip
+                                cursor={{ fill: '#F8FAFC' }}
+                                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                                 formatter={(value: any) => [`${value} intervention(s)`, "Fréquence"]}
+                              />
+                              <Bar dataKey="interventions" name="Interventions" fill="#EF4444" radius={[6, 6, 0, 0]} />
+                           </BarChart>
                         </ResponsiveContainer>
                      ) : (
                         <div className="h-full flex items-center justify-center text-sm font-medium text-slate-400 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-                           Aucune réparation mécanique enregistrée
+                           Aucune intervention cette année
                         </div>
                      )}
                   </div>
                   <div className="space-y-4">
                      <div className="flex justify-between items-center pb-3 border-b border-slate-100">
-                        <span className="text-sm font-bold text-slate-500">Total du mois</span>
-                        <span className="text-lg font-black text-rose-500">{formatMontant(data.resume.mois.reparationsTotal)}</span>
+                        <span className="text-sm font-bold text-slate-500">Interventions ce mois</span>
+                        <span className="text-lg font-black text-rose-500">{data.counts?.reparationsMois || 0}</span>
                      </div>
                      <div className="flex justify-between items-center pb-3 border-b border-slate-100">
-                        <span className="text-sm font-bold text-slate-500">Total de l'année</span>
-                        <span className="text-lg font-black text-slate-800">{formatMontant(data.resume.annee.reparationsTotal)}</span>
+                        <span className="text-sm font-bold text-slate-500">Budget maintenance consommé</span>
+                        <span className="text-lg font-black text-slate-800">{formatMontant(budgetMaintenanceConsomme)}</span>
                      </div>
                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-bold text-slate-500">Nombre d'interventions</span>
-                        <span className="text-sm font-black text-slate-800 bg-slate-100 px-3 py-1 rounded-full">{data.resume.annee.nbInterventions}</span>
+                        <span className="text-sm font-bold text-slate-500">Dernière maintenance</span>
+                        <span className="text-sm font-black text-slate-800 bg-slate-100 px-3 py-1 rounded-full">
+                           {derniereMaintenance ? formatDateSafe(derniereMaintenance.date) : "-"}
+                        </span>
                      </div>
                   </div>
                </div>
 
-               {/* Repairs Log List with Replaced Parts */}
-               <div className="space-y-4">
-                  {data.reparations && data.reparations.length > 0 ? (
-                     data.reparations.map((rep: any) => (
-                        <div key={rep.id} className="p-4 bg-slate-50/50 hover:bg-slate-50 rounded-2xl border border-slate-100 transition-colors">
-                           <div className="flex justify-between items-start mb-2">
-                              <div>
+               <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Dernières interventions</p>
+                     {reparationsRestantes > 0 && (
+                        <span className="text-[10px] font-bold text-slate-500">
+                           + {reparationsRestantes} autre(s) non affichée(s)
+                        </span>
+                     )}
+                  </div>
+                  {recentReparations.length > 0 ? (
+                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        {recentReparations.map((rep: any) => (
+                           <div key={rep.id} className="rounded-2xl border border-slate-100 bg-slate-50/70 p-4 space-y-2">
+                              <div className="flex items-center justify-between gap-3">
                                  <Badge variant={rep.type === "vidange" ? "bg-purple-50 text-purple-700" : rep.type === "pneus" ? "bg-gray-50 text-gray-700" : "bg-blue-50 text-blue-700"}>
                                     {typeReparationLabels[rep.type] || rep.type}
                                  </Badge>
-                                 <span className="text-xs text-slate-400 font-semibold ml-3">{formatDate(rep.date)} • Odomètre : {rep.kilometrage?.toLocaleString() || 0} km</span>
+                                 <span className="text-xs font-black text-rose-600">{formatMontant(rep.cout)}</span>
                               </div>
-                              <span className="font-black text-sm text-rose-600">{formatMontant(rep.cout)}</span>
+                              <p className="text-xs text-slate-500 font-semibold">{formatDateSafe(rep.date)}</p>
+                              <p className="text-sm text-slate-800 font-bold truncate">{rep.garage}</p>
+                              <p className="text-xs text-slate-500 line-clamp-2">{rep.description}</p>
                            </div>
-                           <p className="text-xs text-slate-800 font-bold mb-1">Garage : {rep.garage}</p>
-                           <p className="text-sm text-slate-600 font-medium leading-relaxed mb-3">{rep.description}</p>
-                           
-                           {/* Pièces changées */}
-                           {rep.piecesChangees && rep.piecesChangees.length > 0 && (
-                              <div className="mt-2.5 pt-2.5 border-t border-slate-100">
-                                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Pièces de rechange / Prestations :</p>
-                                 <div className="flex flex-wrap gap-2">
-                                    {rep.piecesChangees.map((p: any) => (
-                                       <span key={p.id} className="text-xs font-semibold text-slate-700 bg-white border border-slate-200 px-2.5 py-1 rounded-lg">
-                                          {p.nom} <span className="text-fleet-blue font-bold">x{p.quantite}</span> ({formatMontant(p.prixUnitaire)})
-                                       </span>
-                                    ))}
-                                 </div>
-                              </div>
-                           )}
-                        </div>
-                     ))
+                        ))}
+                     </div>
                   ) : (
-                     <div className="text-center py-6 text-slate-400 italic text-sm">Aucune réparation enregistrée.</div>
+                     <div className="text-center py-6 text-slate-400 italic text-sm rounded-2xl border border-slate-100 bg-slate-50/70">
+                        Aucune réparation enregistrée.
+                     </div>
                   )}
                </div>
             </div>
@@ -680,37 +735,45 @@ export default function CamionDetailPage({
                         </svg>
                      </div>
                      <h4 className="text-xs font-black tracking-widest text-slate-400 uppercase">
-                        Bilan Exploitation
+                        Budget Véhicule
                      </h4>
-                     <p className="text-lg font-black text-slate-800 mt-1">Dépenses du mois</p>
+                     <p className="text-lg font-black text-slate-800 mt-1">Vue globale du camion</p>
                   </div>
 
                   <div className="space-y-3 text-xs">
                      <div className="flex justify-between items-center p-3 rounded-xl bg-white border border-slate-100">
-                        <span className="font-bold text-slate-500">Kilomètres Parcourus</span>
-                        <span className="font-black text-slate-800">{data.resume.mois.kmParcourus.toLocaleString()} km</span>
+                        <span className="font-bold text-slate-500">Budget véhicule</span>
+                        <span className="font-black text-slate-800">{formatMontant(budgetVehiculeTotal)}</span>
                      </div>
                      <div className="flex justify-between items-center p-3 rounded-xl bg-white border border-slate-100">
-                        <span className="font-bold text-slate-500">Carburant</span>
-                        <span className="font-black text-rose-500">-{formatMontant(data.resume.mois.carburantTotal)}</span>
+                        <span className="font-bold text-slate-500">Budget consommé</span>
+                        <span className="font-black text-rose-500">{formatMontant(budgetVehiculeConsomme)}</span>
                      </div>
                      <div className="flex justify-between items-center p-3 rounded-xl bg-white border border-slate-100">
-                        <span className="font-bold text-slate-500">Consommation moyenne</span>
-                        <span className="font-black text-fleet-blue">{data.resume.mois.consommationMoyenne ? `${Math.round(data.resume.mois.consommationMoyenne * 10) / 10} L/100` : "-"}</span>
+                        <span className="font-bold text-slate-500">Budget restant</span>
+                        <span className={`font-black ${budgetVehiculeRestant < 0 ? "text-rose-500" : "text-emerald-600"}`}>
+                           {formatMontant(budgetVehiculeRestant)}
+                        </span>
                      </div>
                      <div className="flex justify-between items-center p-3 rounded-xl bg-white border border-slate-100">
-                        <span className="font-bold text-slate-500">Réparations & Filtres</span>
-                        <span className="font-black text-rose-500">-{formatMontant(data.resume.mois.reparationsTotal)}</span>
+                        <span className="font-bold text-slate-500">Consommé carburant</span>
+                        <span className="font-black text-fleet-blue">{formatMontant(budgetCarburantConsomme)}</span>
+                     </div>
+                     <div className="flex justify-between items-center p-3 rounded-xl bg-white border border-slate-100">
+                        <span className="font-bold text-slate-500">Consommé maintenance</span>
+                        <span className="font-black text-amber-600">{formatMontant(budgetMaintenanceConsomme)}</span>
                      </div>
                   </div>
 
                   <div className="mt-6 pt-5 border-t border-slate-200">
-                     <p className="text-[10px] font-bold tracking-widest text-slate-400 uppercase text-center mb-1">Total Dépenses</p>
-                     <div className="text-center">
-                        <span className="text-2xl font-black text-rose-500">
-                           {formatMontant(data.resume.mois.carburantTotal + data.resume.mois.reparationsTotal)}
-                        </span>
+                     <p className="text-[10px] font-bold tracking-widest text-slate-400 uppercase text-center mb-2">Utilisation du budget</p>
+                     <div className="w-full h-2 bg-white rounded-full overflow-hidden shadow-inner">
+                        <div
+                           className={`h-full transition-all duration-700 ${budgetVehiculePercent >= 100 ? "bg-rose-500" : "bg-fleet-blue"}`}
+                           style={{ width: `${budgetVehiculePercent}%` }}
+                        />
                      </div>
+                     <p className="text-center text-xs font-black mt-3 text-slate-700">{budgetVehiculePercent}% consommé</p>
                   </div>
                </div>
             </div>

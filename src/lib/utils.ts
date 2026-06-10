@@ -15,6 +15,17 @@ export function formatMontant(montant: number): string {
   }).format(montant) + " F";
 }
 
+/** Formate un montant de manière abrégée (ex: 1.2 M F, 15 k F) */
+export function formatMontantAbrege(montant: number): string {
+  if (montant >= 1000000) {
+    return (montant / 1000000).toFixed(1) + " M F";
+  }
+  if (montant >= 1000) {
+    return (montant / 1000).toFixed(0) + " k F";
+  }
+  return montant + " F";
+}
+
 /** Formate une date en français (JJ/MM/AAAA) */
 export function formatDate(date: Date | string): string {
   const d = new Date(date);
