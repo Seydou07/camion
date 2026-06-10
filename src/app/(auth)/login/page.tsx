@@ -58,7 +58,7 @@ export default function LoginPage() {
         <div className="relative z-10 flex items-center gap-3 self-start">
           <div className="w-12 h-12 rounded-2xl bg-fleet-blue text-white flex items-center justify-center shadow-lg shadow-fleet-blue/20">
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
             </svg>
           </div>
           <span className="text-xl font-bold tracking-tight text-white">
@@ -109,10 +109,10 @@ export default function LoginPage() {
 
         {/* Footer info */}
         <div className="relative z-10 flex items-center justify-between text-xs text-slate-400 font-medium">
-          <p>© 2026 TruckManager Inc. Tous droits réservés.</p>
+          <p className="font-semibold text-white/70">Developed by INOVATECH.MEIS</p>
           <div className="flex gap-4">
-            <span className="hover:text-slate-600 transition-colors cursor-pointer">Conditions</span>
-            <span className="hover:text-slate-600 transition-colors cursor-pointer">Confidentialité</span>
+            <span className="hover:text-slate-200 transition-colors cursor-pointer">Conditions</span>
+            <span className="hover:text-slate-200 transition-colors cursor-pointer">Confidentialité</span>
           </div>
         </div>
       </div>
@@ -125,34 +125,26 @@ export default function LoginPage() {
         <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-indigo-50/40 rounded-full blur-[100px] pointer-events-none" />
         <div className="absolute top-1/3 left-0 w-px h-64 bg-gradient-to-b from-transparent via-slate-200 to-transparent pointer-events-none" />
 
-        {/* Brand - visible on all sizes */}
-        <div className="flex items-center gap-3 mb-12 self-start">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-fleet-blue to-fleet-blue-dark flex items-center justify-center text-white shadow-lg shadow-fleet-blue/20 ring-1 ring-white/20">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+        {/* Brand - centered */}
+        <div className="flex flex-col items-center gap-4 mb-10">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-fleet-blue to-fleet-blue-dark flex items-center justify-center text-white shadow-xl shadow-fleet-blue/30 ring-2 ring-white/30">
+            <svg className="w-9 h-9" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
             </svg>
           </div>
-          <div>
-            <span className="text-lg font-bold text-slate-800 tracking-tight">TruckManager</span>
-            <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Portail entreprise</span>
+          <div className="text-center">
+            <span className="text-2xl font-black text-slate-900 tracking-tight">TruckManager</span>
+            <span className="block text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Portail entreprise</span>
           </div>
         </div>
 
         <div className="w-full max-w-sm relative z-10">
-          
-          {/* Header */}
-          <div className="mb-8">
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight">Connexion</h2>
-            <p className="text-slate-400 text-sm mt-1.5 font-medium leading-relaxed">
-              Accédez à votre tableau de bord et gérez votre flotte.
-            </p>
-          </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-6">
             
             {/* Email */}
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">
                 Adresse email
               </label>
@@ -168,13 +160,13 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full bg-white border border-slate-200 text-slate-800 placeholder:text-slate-400 pl-10 pr-4 py-3 rounded-xl text-sm transition-all duration-300 focus:outline-none focus:border-fleet-blue focus:ring-4 focus:ring-fleet-blue/10 hover:border-slate-300 shadow-sm"
+                  className="w-full bg-white border border-slate-200 text-slate-800 placeholder:text-slate-400 pl-10 pr-4 py-3.5 rounded-xl text-sm transition-all duration-300 focus:outline-none focus:border-fleet-blue focus:ring-4 focus:ring-fleet-blue/10 hover:border-slate-300 shadow-sm"
                 />
               </div>
             </div>
 
             {/* Password */}
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">
                 Mot de passe
               </label>
@@ -190,7 +182,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full bg-white border border-slate-200 text-slate-800 placeholder:text-slate-400 pl-10 pr-10 py-3 rounded-xl text-sm transition-all duration-300 focus:outline-none focus:border-fleet-blue focus:ring-4 focus:ring-fleet-blue/10 hover:border-slate-300 shadow-sm"
+                  className="w-full bg-white border border-slate-200 text-slate-800 placeholder:text-slate-400 pl-10 pr-10 py-3.5 rounded-xl text-sm transition-all duration-300 focus:outline-none focus:border-fleet-blue focus:ring-4 focus:ring-fleet-blue/10 hover:border-slate-300 shadow-sm"
                 />
                 <button
                   type="button"
@@ -225,7 +217,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full relative py-3 px-4 bg-gradient-to-r from-fleet-blue to-fleet-blue-dark hover:from-fleet-blue-dark hover:to-fleet-blue disabled:from-fleet-blue/50 disabled:to-fleet-blue/50 text-white rounded-xl text-sm font-bold tracking-wide shadow-lg shadow-fleet-blue/20 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-fleet-blue/20 active:scale-[0.98] disabled:cursor-not-allowed flex items-center justify-center overflow-hidden group cursor-pointer"
+              className="w-full relative py-3.5 px-4 bg-gradient-to-r from-fleet-blue to-fleet-blue-dark hover:from-fleet-blue-dark hover:to-fleet-blue disabled:from-fleet-blue/50 disabled:to-fleet-blue/50 text-white rounded-xl text-sm font-bold tracking-wide shadow-lg shadow-fleet-blue/20 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-fleet-blue/20 active:scale-[0.98] disabled:cursor-not-allowed flex items-center justify-center overflow-hidden group cursor-pointer"
             >
               {loading ? (
                 <div className="flex items-center gap-2">
@@ -249,8 +241,8 @@ export default function LoginPage() {
         </div>
 
         {/* Copyright */}
-        <p className="text-center text-[10px] text-slate-400 mt-12 font-medium">
-          &copy; 2026 TruckManager &middot; Tous droits réservés.
+        <p className="text-center text-[10px] text-slate-400 mt-10 font-medium">
+          © 2026 TruckManager · Tous droits réservés.
         </p>
 
       </div>
