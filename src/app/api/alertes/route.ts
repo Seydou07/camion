@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+// Activer le caching pour les alertes (30 secondes)
+export const revalidate = 30;
+
 export async function GET() {
   try {
     const camions = await prisma.camion.findMany({

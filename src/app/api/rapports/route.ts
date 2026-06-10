@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { calculBudgetConsomme } from "@/lib/budget";
 
+// Activer le caching Vercel pour que la réponse soit instantanée (60 secondes)
+export const revalidate = 60;
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
