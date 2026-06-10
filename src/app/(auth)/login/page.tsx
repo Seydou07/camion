@@ -38,10 +38,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col md:flex-row overflow-hidden relative bg-[#F8FAFC] font-sans">
+    <div className="h-screen w-full flex flex-col md:flex-row overflow-hidden relative bg-[#F8FAFC] font-sans">
       
       {/* LEFT SIDE: Visual Showcase (Hidden on Mobile) */}
-      <div className="hidden md:flex md:w-1/2 relative overflow-hidden flex-col justify-between p-12 lg:p-20">
+      <div className="hidden md:flex md:w-1/2 relative overflow-hidden flex-col justify-between p-6 lg:p-10">
         
         {/* Background Image with soft contrast */}
         <div 
@@ -67,11 +67,7 @@ export default function LoginPage() {
         </div>
 
         {/* Hero Middle Description */}
-        <div className="relative z-10 max-w-xl my-auto pt-20">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-fleet-blue/20 border border-fleet-blue-light/30 text-fleet-blue-light text-xs font-bold uppercase tracking-wider mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-fleet-blue-light" />
-            Portail Entreprise v2.0
-          </div>
+        <div className="relative z-10 max-w-xl my-auto pt-10">
           <h1 className="text-4xl lg:text-5xl font-black text-white leading-tight tracking-tight">
             La performance au cœur de votre <span className="text-fleet-blue-light">logistique</span>.
           </h1>
@@ -109,7 +105,7 @@ export default function LoginPage() {
 
         {/* Footer info */}
         <div className="relative z-10 flex items-center justify-between text-xs text-slate-400 font-medium">
-          <p className="font-semibold text-white/70">Developed by INOVATECH.MEIS</p>
+          <p className="font-semibold text-white/70">Developed by INOVATECH</p>
           <div className="flex gap-4">
             <span className="hover:text-slate-200 transition-colors cursor-pointer">Conditions</span>
             <span className="hover:text-slate-200 transition-colors cursor-pointer">Confidentialité</span>
@@ -118,17 +114,19 @@ export default function LoginPage() {
       </div>
 
       {/* RIGHT SIDE: Modern clean form */}
-      <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-6 sm:p-8 lg:p-12 relative bg-gradient-to-br from-white via-slate-50/60 to-white overflow-hidden">
+      <div className="w-full md:w-1/2 flex flex-col justify-between items-center p-6 sm:p-8 lg:p-10 relative bg-gradient-to-br from-white via-slate-50/60 to-white overflow-hidden">
         
         {/* Subtle decorative elements */}
         <div className="absolute -top-20 -right-20 w-80 h-80 bg-fleet-blue/[0.03] rounded-full blur-[80px] pointer-events-none" />
         <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-indigo-50/40 rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute top-1/3 left-0 w-px h-64 bg-gradient-to-b from-transparent via-slate-200 to-transparent pointer-events-none" />
+
+        {/* Spacer */}
+        <div className="h-6" />
 
         {/* Brand - centered */}
-        <div className="flex flex-col items-center gap-4 mb-10">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-fleet-blue to-fleet-blue-dark flex items-center justify-center text-white shadow-xl shadow-fleet-blue/30 ring-2 ring-white/30">
-            <svg className="w-9 h-9" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-fleet-blue to-fleet-blue-dark flex items-center justify-center text-white shadow-2xl shadow-fleet-blue/30 ring-2 ring-white/30">
+            <svg className="w-14 h-14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
             </svg>
           </div>
@@ -241,7 +239,7 @@ export default function LoginPage() {
         </div>
 
         {/* Copyright */}
-        <p className="text-center text-[10px] text-slate-400 mt-10 font-medium">
+        <p className="text-center text-[10px] text-slate-400 mt-4 font-medium">
           © 2026 TruckManager · Tous droits réservés.
         </p>
 
