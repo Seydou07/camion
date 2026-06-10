@@ -281,34 +281,7 @@ export function DashboardShell({
       <div className="flex-1 ml-[270px]">
         {/* Header */}
         <header className="sticky top-0 z-20 bg-white/70 backdrop-blur-2xl border-b border-slate-100/60">
-          <div className="px-8 py-4 flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-black text-slate-800 tracking-tight">{pageTitle}</h2>
-              {/* Breadcrumb */}
-              <nav className="flex items-center gap-1.5 mt-1">
-                {breadcrumbs.map((crumb, index) => (
-                  <span key={crumb.href} className="flex items-center gap-1.5">
-                    {index > 0 && (
-                      <svg className="w-3.5 h-3.5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    )}
-                    <Link
-                      href={crumb.href}
-                      className={cn(
-                        "text-xs font-semibold transition-colors",
-                        index === breadcrumbs.length - 1
-                          ? "text-fleet-blue"
-                          : "text-slate-400 hover:text-slate-600"
-                      )}
-                    >
-                      {crumb.label}
-                    </Link>
-                  </span>
-                ))}
-              </nav>
-            </div>
-
+          <div className="px-8 py-4 flex items-center justify-end">
             {/* Header right */}
             <div className="flex items-center gap-3">
               {/* Search button */}
