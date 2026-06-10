@@ -311,14 +311,14 @@ export default function RapportsPage() {
           <Select
             label="Mois"
             value={filterMois}
-            onChange={(e) => setFilterMois(e.target.value)}
+            onChange={(value) => setFilterMois(value)}
             placeholder="Toute l'année"
             options={moisFrancais.map((m, idx) => ({ value: String(idx + 1), label: m }))}
           />
           <Select
             label="Année"
             value={filterAnnee}
-            onChange={(e) => setFilterAnnee(e.target.value)}
+            onChange={(value) => setFilterAnnee(value)}
             options={[
               { value: "2026", label: "2026" },
               { value: "2025", label: "2025" },

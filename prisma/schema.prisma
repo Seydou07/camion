@@ -13,10 +13,27 @@ model User {
   email     String   @unique
   password  String
   name      String
-  role      String   @default("admin")
+  role      String   @default("gestionnaire") // "admin" or "gestionnaire"
   createdAt DateTime @default(now()) @map("created_at")
 
+  historyLogs HistoryLog[]
+
   @@map("users")
+}
+
+model HistoryLog {
+  id          Int      @id @default(autoincrement())
+  action      String   // "create", "update", "delete"
+  entity      String   // "camion", "chauffeur", "carburant", "user", etc.
+  entityId    Int?
+  details     String?  @db.Text // Details of the action
+  userId      Int?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([entity])
+  @@map("history_logs")
 }
 
 model Camion {

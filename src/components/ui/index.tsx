@@ -126,51 +126,141 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
 Input.displayName = "Input";
 
 // ==========================================
-// SELECT
+// SELECT (SEARCHABLE)
 // ==========================================
-interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+interface SelectProps {
   label?: string;
   error?: string;
   options: { value: string; label: string }[];
   placeholder?: string;
+  value?: string;
+  defaultValue?: string;
+  onChange?: (value: string) => void;
+  disabled?: boolean;
+  required?: boolean;
+  className?: string;
 }
 
-export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
-  ({ label, error, options, placeholder, className, ...props }, ref) => (
-    <div className="space-y-1.5 w-full">
-      {label && (
-        <label className="block text-[10px] font-black uppercase text-slate-400 ml-1">
-          {label}
-        </label>
-      )}
-      <div className="relative">
-        <select
-          ref={ref}
-          className={cn(
-            "w-full appearance-none h-9 px-4 pr-10 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue hover:border-slate-300 cursor-pointer",
-            error && "border-red-300 focus:border-red-500 focus:ring-red-500/10",
-            className
+export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
+  ({ label, error, options, placeholder, value, defaultValue, onChange, disabled, required, className }, ref) => {
+    const [isOpen, setIsOpen] = React.useState(false);
+    const [searchTerm, setSearchTerm] = React.useState("");
+    const [internalValue, setInternalValue] = React.useState(value ?? defaultValue ?? "");
+
+    // If value prop changes, update internalValue
+    React.useEffect(() => {
+      if (value !== undefined) {
+        setInternalValue(value);
+      }
+    }, [value]);
+
+    // Filter options based on search term
+    const filteredOptions = options.filter(opt =>
+      opt.label.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    // Find the selected option
+    const currentValue = value ?? internalValue;
+    const selectedOption = options.find(opt => opt.value === currentValue);
+
+    // Close dropdown when clicking outside
+    const dropdownRef = React.useRef<HTMLDivElement>(null);
+    React.useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+          setIsOpen(false);
+          setSearchTerm("");
+        }
+      };
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const handleSelect = (optValue: string) => {
+      if (value === undefined) {
+        setInternalValue(optValue);
+      }
+      onChange?.(optValue);
+      setIsOpen(false);
+      setSearchTerm("");
+    };
+
+    return (
+      <div className="space-y-1.5 w-full" ref={ref}>
+        {label && (
+          <label className="block text-[10px] font-black uppercase text-slate-400 ml-1">
+            {label}
+          </label>
+        )}
+        <div className="relative" ref={dropdownRef}>
+          {/* Trigger */}
+          <button
+            type="button"
+            onClick={() => !disabled && setIsOpen(!isOpen)}
+            disabled={disabled}
+            className={cn(
+              "w-full h-9 px-4 pr-10 rounded-xl border text-left transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue hover:border-slate-300 cursor-pointer",
+              disabled ? "bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed" : "bg-white border-slate-200 text-slate-800",
+              error && "border-red-300 focus:border-red-500 focus:ring-red-500/10",
+              className
+            )}
+          >
+            <span className="text-xs font-bold truncate">
+              {selectedOption?.label || placeholder || "Sélectionner..."}
+            </span>
+          </button>
+          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+
+          {/* Dropdown */}
+          {isOpen && !disabled && (
+            <div className="absolute z-50 w-full mt-1 bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden">
+              {/* Search Input */}
+              <div className="p-2 border-b border-slate-100">
+                <input
+                  type="text"
+                  autoFocus
+                  placeholder="Rechercher..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full h-8 px-3 text-xs rounded-lg border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20"
+                />
+              </div>
+              
+              {/* Options List */}
+              <div className="max-h-60 overflow-y-auto">
+                {filteredOptions.length === 0 ? (
+                  <div className="px-4 py-3 text-xs text-slate-500 text-center">
+                    Aucune option trouvée
+                  </div>
+                ) : (
+                  filteredOptions.map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => handleSelect(opt.value)}
+                      className={cn(
+                        "w-full px-4 py-2.5 text-left text-xs font-medium transition-colors",
+                        opt.value === value
+                          ? "bg-fleet-blue/10 text-fleet-blue"
+                          : "text-slate-700 hover:bg-slate-50"
+                      )}
+                    >
+                      {opt.label}
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
           )}
-          {...props}
-        >
-          {placeholder && (
-            <option value="">{placeholder}</option>
-          )}
-          {options.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
         </div>
+        {error && <p className="text-xs text-red-500 font-medium">{error}</p>}
       </div>
-      {error && <p className="text-xs text-red-500 font-medium">{error}</p>}
-    </div>
-  )
+    );
+  }
 );
 Select.displayName = "Select";
 

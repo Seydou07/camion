@@ -214,7 +214,7 @@ export default function MaintenanceFormModal({
                   label="Camion *"
                   placeholder="Sélectionner un véhicule"
                   value={formData.camionId}
-                  onChange={(e) => handleChange("camionId", e.target.value)}
+                  onChange={(value) => handleChange("camionId", value)}
                   options={camions.map((c) => ({
                     value: String(c.id),
                     label: c.immatriculation,
@@ -231,14 +231,14 @@ export default function MaintenanceFormModal({
                 <Select
                   label="Type d'intervention *"
                   value={formData.type}
-                  onChange={(e) => handleChange("type", e.target.value)}
+                  onChange={(value) => handleChange("type", value)}
                   options={typeOptions}
                   required
                 />
                 <Select
                   label="Statut *"
                   value={formData.statut}
-                  onChange={(e) => handleChange("statut", e.target.value)}
+                  onChange={(value) => handleChange("statut", value)}
                   options={statusOptions}
                   required
                 />
@@ -302,7 +302,7 @@ export default function MaintenanceFormModal({
                 <Select
                   label="Source Paiement"
                   value={formData.mainOeuvreSource}
-                  onChange={(e) => handleChange("mainOeuvreSource", e.target.value)}
+                  onChange={(value) => handleChange("mainOeuvreSource", value)}
                   options={paymentOptions}
                 />
               </div>
@@ -352,7 +352,7 @@ export default function MaintenanceFormModal({
                 <Select
                   label="Source Paiement"
                   value={piece.sourcePaiement}
-                  onChange={(e) => handlePieceChange(index, "sourcePaiement", e.target.value)}
+                  onChange={(value) => handlePieceChange(index, "sourcePaiement", value)}
                   options={paymentOptions}
                 />
               </div>
@@ -376,7 +376,7 @@ export default function MaintenanceFormModal({
             <Select
               label="Sélectionner la Carte Carburant utilisée *"
               value={formData.carteCarburantId}
-              onChange={(e) => handleChange("carteCarburantId", e.target.value)}
+              onChange={(value) => handleChange("carteCarburantId", value)}
               options={cartesCarburant.map((c) => ({
                 value: String(c.id),
                 label: `${c.numeroCarte} (Solde: ${c.solde} F)`,

@@ -788,7 +788,7 @@ export default function CarburantPage() {
             <Select
               label="Type d'opération *"
               value={typeOperation}
-              onChange={(e) => setTypeOperation(e.target.value)}
+              onChange={(value) => setTypeOperation(value)}
               options={[
                 { value: "DEPENSE", label: "Dépense" },
                 { value: "COMPLEMENT", label: "Complément" },

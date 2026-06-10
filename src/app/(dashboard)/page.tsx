@@ -351,7 +351,7 @@ export default function DashboardPage() {
                      </div>
                      <div className="flex justify-between items-center text-xs">
                        <span className="text-slate-400 font-bold uppercase tracking-wider">Consommation moyenne</span>
-                       <span className="text-fleet-blue font-black">{camion.consoMoyenne ? `${camion.consoMoyenne} L/100km` : "N/A"}</span>
+                       <span className="text-fleet-blue font-black">{camion.consoMoyenne && camion.consoMoyenne > 0 ? `${camion.consoMoyenne} L/100km` : "-"}</span>
                      </div>
                      <div className="flex justify-between items-center text-xs pt-2 border-t border-slate-100">
                        <span className="text-slate-400 font-bold uppercase tracking-wider">Budget d'Exploitation</span>

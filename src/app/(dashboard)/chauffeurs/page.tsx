@@ -395,7 +395,7 @@ export default function ChauffeursPage() {
             <Select
               label="Statut actuel *"
               value={statut}
-              onChange={(e) => setStatut(e.target.value)}
+              onChange={(value) => setStatut(value)}
               options={[
                 { value: "actif", label: "Actif" },
                 { value: "inactif", label: "Inactif" },
@@ -404,7 +404,7 @@ export default function ChauffeursPage() {
             <Select
               label="Camion assigné *"
               value={camionId}
-              onChange={(e) => setCamionId(e.target.value)}
+              onChange={(value) => setCamionId(value)}
               options={getCamionsOptions()}
             />
           </div>

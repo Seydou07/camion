@@ -788,7 +788,7 @@ export default function CamionDetailPage({
             <Select
               label="Chauffeur"
               value={fuelChauffeurId}
-              onChange={(e) => setFuelChauffeurId(e.target.value)}
+              onChange={(value) => setFuelChauffeurId(value)}
               placeholder="Chauffeur qui a fait le plein"
               options={chauffeurs.map(ch => ({
                 value: String(ch.id),
@@ -866,7 +866,7 @@ export default function CamionDetailPage({
             <Select
               label="Type d'intervention *"
               value={repType}
-              onChange={(e) => setRepType(e.target.value)}
+              onChange={(value) => setRepType(value)}
               options={Object.keys(typeLabels).map(k => ({
                 value: k,
                 label: typeLabels[k],

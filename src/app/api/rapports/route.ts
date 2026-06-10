@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { calculBudgetConsomme } from "@/lib/budget";
 
+export const dynamic = "force-dynamic";
 // Activer le caching Vercel pour que la réponse soit instantanée (60 secondes)
 export const revalidate = 60;
 

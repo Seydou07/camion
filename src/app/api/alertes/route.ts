@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
 // Activer le caching pour les alertes (30 secondes)
 export const revalidate = 30;
 

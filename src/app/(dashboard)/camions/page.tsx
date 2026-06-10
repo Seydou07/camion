@@ -627,20 +627,20 @@ export default function CamionsPage() {
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> État & Technique
                 </h4>
                 <div className="grid grid-cols-2 gap-4">
-                  <Select label="Statut *" value={statut} onChange={(e) => setStatut(e.target.value)} options={[
+                  <Select label="Statut *" value={statut} onChange={(value) => setStatut(value)} options={[
                     { value: "en_service", label: "En service" }, { value: "en_panne", label: "En panne" }, { value: "en_attente", label: "En attente" }, { value: "hors_service", label: "Hors service" }
                   ]} />
-                  <Select label="Chauffeur" value={chauffeurId} onChange={(e) => setChauffeurId(e.target.value)} options={getChauffeursOptions()} />
+                  <Select label="Chauffeur" value={chauffeurId} onChange={(value) => setChauffeurId(value)} options={getChauffeursOptions()} />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <Input label="Kilométrage actuel" type="number" value={kilometrageActuel} onChange={(e) => setKilometrageActuel(e.target.value)} disabled={!!editingCamion} />
                   <Input label="Capacité (tonnes) *" type="number" step="0.1" value={capaciteTonnes} onChange={(e) => setCapaciteTonnes(e.target.value)} required />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <Select label="Carburant *" value={carburant} onChange={(e) => setCarburant(e.target.value)} options={[
+                  <Select label="Carburant *" value={carburant} onChange={(value) => setCarburant(value)} options={[
                     { value: "Essence", label: "Essence" }, { value: "Diesel", label: "Diesel" }, { value: "Électrique", label: "Électrique" }, { value: "Hybride", label: "Hybride" }
                   ]} />
-                  <Select label="Transmission" value={transmission} onChange={(e) => setTransmission(e.target.value)} options={[
+                  <Select label="Transmission" value={transmission} onChange={(value) => setTransmission(value)} options={[
                     { value: "Manuelle", label: "Manuelle" }, { value: "Automatique", label: "Automatique" }
                   ]} />
                 </div>

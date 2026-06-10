@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { logHistory, checkRole } from "@/lib/history";
 
 // GET /api/chauffeurs - Liste tous les chauffeurs
 export async function GET(request: NextRequest) {
@@ -49,6 +50,14 @@ export async function GET(request: NextRequest) {
 // POST /api/chauffeurs - Créer un chauffeur
 export async function POST(request: NextRequest) {
   try {
+    const { authorized } = await checkRole();
+    if (!authorized) {
+      return NextResponse.json(
+        { error: "Non autorisé" },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
 
     if (!body.nom) {
@@ -78,6 +87,8 @@ export async function POST(request: NextRequest) {
         data: { chauffeurId: chauffeur.id },
       });
     }
+
+    await logHistory("create", "chauffeur", chauffeur.id, `Création du chauffeur ${body.prenom || ''} ${body.nom}`);
 
     return NextResponse.json(chauffeur, { status: 201 });
   } catch (error) {

@@ -696,7 +696,7 @@ export default function VoyagesPage() {
             <Select
               label="Camion *"
               value={camionId}
-              onChange={(e) => setCamionId(e.target.value)}
+              onChange={(value) => setCamionId(value)}
               placeholder="Sélectionner le camion"
               options={camions.map((c) => ({
                 value: String(c.id),
@@ -707,7 +707,7 @@ export default function VoyagesPage() {
             <Select
               label="Chauffeur"
               value={chauffeurId}
-              onChange={(e) => setChauffeurId(e.target.value)}
+              onChange={(value) => setChauffeurId(value)}
               placeholder="Sélectionner le chauffeur"
               options={chauffeurs.map((ch) => ({
                 value: String(ch.id),

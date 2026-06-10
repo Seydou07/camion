@@ -53,6 +53,15 @@ const menuItems = [
     ),
   },
   {
+    label: "Utilisateurs",
+    href: "/utilisateurs",
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    ),
+  },
+  {
     label: "Maintenance",
     href: "/maintenance",
     icon: (
@@ -115,6 +124,8 @@ function getBreadcrumbs(pathname: string) {
     crumbs.push({ label: "Voyages", href: "/voyages" });
   } else if (segments[0] === "chauffeurs") {
     crumbs.push({ label: "Chauffeurs", href: "/chauffeurs" });
+  } else if (segments[0] === "utilisateurs") {
+    crumbs.push({ label: "Utilisateurs", href: "/utilisateurs" });
   } else if (segments[0] === "maintenance") {
     crumbs.push({ label: "Maintenance", href: "/maintenance" });
   } else if (segments[0] === "rapports") {
@@ -135,6 +146,7 @@ function getPageTitle(pathname: string) {
   if (pathname === "/carburant") return "Suivi carburant";
   if (pathname === "/voyages") return "Suivi des voyages";
   if (pathname === "/chauffeurs") return "Gestion des chauffeurs";
+  if (pathname === "/utilisateurs") return "Gestion des utilisateurs";
   if (pathname === "/maintenance") return "Planification de la maintenance";
   if (pathname === "/rapports") return "Rapports et analyses";
   if (pathname === "/historique") return "Historique des activités";

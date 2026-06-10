@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { logHistory, checkRole } from "@/lib/history";
 
 // GET /api/chauffeurs/[id] - Récupérer un chauffeur par ID
 export async function GET(
@@ -44,6 +45,14 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { authorized } = await checkRole();
+    if (!authorized) {
+      return NextResponse.json(
+        { error: "Non autorisé" },
+        { status: 401 }
+      );
+    }
+
     const { id } = await params;
     const chauffeurId = parseInt(id);
     const body = await request.json();
@@ -92,6 +101,8 @@ export async function PUT(
       }
     }
 
+    await logHistory("update", "chauffeur", chauffeur.id, `Modification du chauffeur ${body.prenom || ''} ${body.nom}`);
+
     return NextResponse.json(chauffeur);
   } catch (error) {
     console.error("Erreur PUT /api/chauffeurs/[id]:", error);
@@ -108,8 +119,20 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { authorized } = await checkRole("admin");
+    if (!authorized) {
+      return NextResponse.json(
+        { error: "Seul un administrateur peut supprimer des chauffeurs" },
+        { status: 403 }
+      );
+    }
+
     const { id } = await params;
     const chauffeurId = parseInt(id);
+
+    const chauffeurToDelete = await prisma.chauffeur.findUnique({
+      where: { id: chauffeurId }
+    });
 
     // Supprimer le lien dans la table camions avant de supprimer le chauffeur
     await prisma.camion.updateMany({
@@ -120,6 +143,8 @@ export async function DELETE(
     await prisma.chauffeur.delete({
       where: { id: chauffeurId },
     });
+
+    await logHistory("delete", "chauffeur", chauffeurId, `Suppression du chauffeur ${chauffeurToDelete?.prenom || ''} ${chauffeurToDelete?.nom}`);
 
     return NextResponse.json({ success: true });
   } catch (error) {
