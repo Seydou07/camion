@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -89,8 +90,8 @@ model Carburant {
 
   mouvements       MouvementCarburant[]
 
-  @@index([camionId], map: "carburants_camion_id_fkey")
-  @@index([chauffeurId], map: "carburants_chauffeur_id_fkey")
+  @@index([camionId])
+  @@index([chauffeurId])
   @@map("carburants")
 }
 
@@ -112,7 +113,7 @@ model MouvementCarburant {
 
   recus         RecuCarburant[]
 
-  @@index([carburantId], map: "mouvements_carburant_carburant_id_fkey")
+  @@index([carburantId])
   @@map("mouvements_carburant")
 }
 
@@ -129,7 +130,7 @@ model RecuCarburant {
   commentaire String?            @db.Text @map("commentaire")
   createdAt   DateTime           @default(now()) @map("created_at")
 
-  @@index([mouvementId], map: "recu_carburants_mouvement_id_fkey")
+  @@index([mouvementId])
   @@map("recu_carburants")
 }
 
@@ -153,8 +154,8 @@ model Voyage {
 
   carburant                  Carburant?
 
-  @@index([camionId], map: "voyages_camion_id_fkey")
-  @@index([chauffeurId], map: "voyages_chauffeur_id_fkey")
+  @@index([camionId])
+  @@index([chauffeurId])
   @@map("voyages")
 }
 
@@ -178,7 +179,7 @@ model Reparation {
 
   piecesChangees PieceChangee[]
 
-  @@index([camionId], map: "reparations_camion_id_fkey")
+  @@index([camionId])
   @@map("reparations")
 }
 
@@ -191,7 +192,7 @@ model PieceChangee {
   prixUnitaire   Float      @map("prix_unitaire")
   sourcePaiement String?    @map("source_paiement")
 
-  @@index([reparationId], map: "pieces_changees_reparation_id_fkey")
+  @@index([reparationId])
   @@map("pieces_changees")
 }
 
@@ -218,7 +219,7 @@ model MaintenancePlanifiee {
   statut               String    @default("planifie")
   createdAt            DateTime  @default(now()) @map("created_at")
 
-  @@index([camionId], map: "maintenances_planifiees_camion_id_fkey")
+  @@index([camionId])
   @@map("maintenances_planifiees")
 }
 

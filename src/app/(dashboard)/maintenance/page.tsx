@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button, Select, DataTable, Toast, Skeleton, ConfirmModal } from "@/components/ui";
+import { Button, Select, DataTable, Toast, Skeleton, ConfirmModal, TableCard, Pagination } from "@/components/ui";
 import { formatDate } from "@/lib/utils";
 import MaintenanceFormModal from "@/components/maintenance/MaintenanceFormModal";
 import MaintenanceDetailModal from "@/components/maintenance/MaintenanceDetailModal";
@@ -11,10 +11,14 @@ export default function MaintenancePage() {
   const [camions, setCamions] = useState<any[]>([]);
   const [cartesCarburant, setCartesCarburant] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
   // Filters
   const [filterStatut, setFilterStatut] = useState("tous");
-  const [filterCamion, setFilterCamion] = useState("tous");
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   // Modals state
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -33,7 +37,6 @@ export default function MaintenancePage() {
     setLoading(true);
     const query = new URLSearchParams();
     if (filterStatut && filterStatut !== "tous") query.append("statut", filterStatut);
-    if (filterCamion && filterCamion !== "tous") query.append("camionId", filterCamion);
 
     fetch(`/api/reparations?${query.toString()}`)
       .then((res) => res.json())
@@ -46,6 +49,27 @@ export default function MaintenancePage() {
         setLoading(false);
       });
   };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, filterStatut]);
+
+  const filteredInterventions = (interventions || []).filter((item) => {
+    if (!search) return true;
+    const q = search.toLowerCase();
+    return (
+      (item.camion?.immatriculation?.toLowerCase() || "").includes(q) ||
+      (item.reference?.toLowerCase() || "").includes(q) ||
+      (item.type?.toLowerCase() || "").includes(q) ||
+      (item.garage?.toLowerCase() || "").includes(q)
+    );
+  });
+
+  const totalPages = Math.ceil(filteredInterventions.length / pageSize);
+  const paginatedInterventions = filteredInterventions.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   const fetchReferences = () => {
     fetch("/api/camions")
@@ -65,7 +89,7 @@ export default function MaintenancePage() {
 
   useEffect(() => {
     fetchInterventions();
-  }, [filterStatut, filterCamion]);
+  }, [filterStatut]);
 
   const handleOpenAdd = () => {
     setSelectedIntervention(null);
@@ -226,51 +250,69 @@ export default function MaintenancePage() {
         </Button>
       </div>
 
-      {/* Barre de filtrage */}
-      <div className="flex flex-col sm:flex-row gap-4 bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
-        <div className="w-full sm:w-1/3">
-          <Select
-            label="Filtrer par camion"
-            value={filterCamion}
-            onChange={(e) => setFilterCamion(e.target.value)}
-            options={[
-              { value: "tous", label: "Tous les camions" },
-              ...camions.map((c) => ({ value: String(c.id), label: c.immatriculation })),
-            ]}
-          />
-        </div>
-        <div className="w-full sm:w-1/3">
-          <Select
-            label="Filtrer par statut"
-            value={filterStatut}
-            onChange={(e) => setFilterStatut(e.target.value)}
-            options={[
-              { value: "tous", label: "Tous les statuts" },
+      {/* Table */}
+      <TableCard>
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4">
+          <div className="relative flex-1 max-w-md">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              placeholder="Rechercher par camion, référence..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full h-10 pl-10 pr-4 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            {[
+              { value: "tous", label: "Tous" },
               { value: "planifiee", label: "Planifiée" },
-              { value: "en_cours", label: "En Cours" },
+              { value: "en_cours", label: "En cours" },
               { value: "terminee", label: "Terminée" },
               { value: "annulee", label: "Annulée" },
-            ]}
-          />
+            ].map((btn) => (
+              <button
+                key={btn.value}
+                onClick={() => setFilterStatut(btn.value)}
+                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-colors flex-shrink-0 ${
+                  filterStatut === btn.value
+                    ? "bg-fleet-blue text-white shadow-lg shadow-fleet-blue/20"
+                    : "bg-slate-50 text-slate-500 hover:bg-slate-100"
+                }`}
+              >
+                {btn.label}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
-
-      {/* Tableau des interventions */}
-      <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-6 overflow-hidden">
         {loading ? (
-          <div className="space-y-4">
-            <Skeleton className="h-10 w-full rounded-lg" />
-            <Skeleton className="h-10 w-full rounded-lg" />
-            <Skeleton className="h-10 w-full rounded-lg" />
+          <div className="space-y-4 px-6 py-6">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
           </div>
         ) : (
-          <DataTable
-            columns={columns}
-            data={interventions}
-            emptyMessage="Aucune intervention trouvée."
-          />
+          <>
+            <DataTable
+              columns={columns}
+              data={paginatedInterventions}
+              emptyMessage="Aucune intervention trouvée."
+            />
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              pageSize={pageSize}
+              totalItems={filteredInterventions.length}
+              onPageChange={setCurrentPage}
+              onPageSizeChange={setPageSize}
+            />
+          </>
         )}
-      </div>
+      </TableCard>
 
       {/* Modals */}
       {isFormOpen && (

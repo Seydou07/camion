@@ -5,10 +5,11 @@ import { calculBudgetConsomme } from "@/lib/budget";
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const mois = searchParams.get("mois"); // optionnel ex: "6" (juin)
+    const mois = searchParams.get("mois");
     const anneeStr = searchParams.get("annee") || String(new Date().getFullYear());
     const annee = parseInt(anneeStr);
-    const camionId = searchParams.get("camionId");
+    const camionIdsRaw = searchParams.get("camionIds");
+    const camionIds = camionIdsRaw ? camionIdsRaw.split(",").map(Number).filter((n) => !isNaN(n)) : [];
 
     // ========================================================
     // 1. FILTRE TEMPOREL ET CAMION
@@ -26,10 +27,9 @@ export async function GET(request: NextRequest) {
     const whereCarburant: any = { dateOperation: dateFilter };
     const whereReparation: any = { date: dateFilter };
 
-    if (camionId && camionId !== "tous") {
-      const cid = parseInt(camionId);
-      whereCarburant.carburant = { camionId: cid };
-      whereReparation.camionId = cid;
+    if (camionIds.length > 0) {
+      whereCarburant.carburant = { camionId: { in: camionIds } };
+      whereReparation.camionId = { in: camionIds };
     }
 
     // ========================================================
@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
     const nbAlertesMaintenance = await prisma.maintenancePlanifiee.count({
       where: {
         statut: "en_retard",
-        ...(camionId && camionId !== "tous" ? { camionId: parseInt(camionId) } : {}),
+        ...(camionIds.length > 0 ? { camionId: { in: camionIds } } : {}),
       },
     });
 
@@ -82,14 +82,14 @@ export async function GET(request: NextRequest) {
       const mMois = await prisma.mouvementCarburant.findMany({
         where: {
           dateOperation: { gte: debutMois, lt: finMois },
-          ...(camionId && camionId !== "tous" ? { carburant: { camionId: parseInt(camionId) } } : {}),
+          ...(camionIds.length > 0 ? { carburant: { camionId: { in: camionIds } } } : {}),
         },
       });
 
       const rMois = await prisma.reparation.findMany({
         where: {
           date: { gte: debutMois, lt: finMois },
-          ...(camionId && camionId !== "tous" ? { camionId: parseInt(camionId) } : {}),
+          ...(camionIds.length > 0 ? { camionId: { in: camionIds } } : {}),
         },
       });
 
@@ -176,9 +176,7 @@ export async function GET(request: NextRequest) {
       const mMois = await prisma.mouvementCarburant.findMany({
         where: {
           dateOperation: { gte: debutMois, lt: finMois },
-          ...(camionId && camionId !== "tous"
-            ? { carburant: { camionId: parseInt(camionId) } }
-            : {}),
+          ...(camionIds.length > 0 ? { carburant: { camionId: { in: camionIds } } } : {}),
         },
       });
 
@@ -201,9 +199,7 @@ export async function GET(request: NextRequest) {
       const rMois = await prisma.reparation.findMany({
         where: {
           date: { gte: debutMois, lt: finMois },
-          ...(camionId && camionId !== "tous"
-            ? { camionId: parseInt(camionId) }
-            : {}),
+          ...(camionIds.length > 0 ? { camionId: { in: camionIds } } : {}),
         },
       });
 

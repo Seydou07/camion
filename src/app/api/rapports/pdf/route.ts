@@ -7,12 +7,12 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const mois = searchParams.get("mois");
     const annee = searchParams.get("annee") || String(new Date().getFullYear());
-    const camionId = searchParams.get("camionId") || "tous";
+    const camionIds = searchParams.get("camionIds") || "";
 
     const query = new URLSearchParams();
     if (mois) query.append("mois", mois);
     query.append("annee", annee);
-    if (camionId !== "tous") query.append("camionId", camionId);
+    if (camionIds) query.append("camionIds", camionIds);
 
     const baseUrl = request.nextUrl.origin;
     const rapportRes = await fetch(`${baseUrl}/api/rapports?${query.toString()}`);

@@ -37,4 +37,49 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 
 
-supabase pass : Fleet_camion123 
+## Informations de Déploiement (Privé)
+
+### Identifiants Supabase
+- **Projet ID** : `noojdhgabseaannyeenl`
+- **Mot de passe DB** : `Camion_Manager_123`
+- **Clé API Anon** : `sb_publishable_WdvPRG_s8N_AQVW4MboM5A_QtY1Ehw2`
+
+### Configuration NextAuth
+- **NEXTAUTH_SECRET** : `app_mounir_camion`
+- **NEXTAUTH_URL** : `https://camion-tau.vercel.app`
+
+---
+
+## Déploiement Supabase + Vercel
+
+### Base de données Supabase (PostgreSQL)
+
+1. Va sur [supabase.com](https://supabase.com) → **New project**
+2. Copie le mot de passe ci-dessous quand Supabase le demande
+
+```
+Supabase DB Password : Camion_Manager_123///
+```
+
+3. Une fois le projet créé, va dans **Project Settings → Database → Connection string → URI**
+4. Copie l'URI et remplace `[YOUR-PASSWORD]` par `Camion_Manager_123///`
+5. Ajoute `?pgbouncer=true&connection_limit=1` à la fin pour Supabase
+
+### Variables d'environnement Vercel
+
+| Variable | Valeur |
+|----------|--------|
+| `DATABASE_URL` | `postgresql://postgres:Camion_Manager_123///@db.xxx.supabase.co:5432/postgres?pgbouncer=true&connection_limit=1` |
+| `NEXTAUTH_SECRET` | `openssl rand -base64 32` (génère une chaîne) |
+| `NEXTAUTH_URL` | `https://ton-projet.vercel.app` |
+
+### Build
+
+Le `package.json` doit contenir :
+
+```json
+"scripts": {
+  "postinstall": "prisma generate",
+  "vercel-build": "prisma generate && prisma db push && next build"
+}
+``` 

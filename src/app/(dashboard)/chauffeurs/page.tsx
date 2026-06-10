@@ -11,6 +11,8 @@ import {
   Toast,
   Skeleton,
   ConfirmModal,
+  TableCard,
+  Pagination,
 } from "@/components/ui";
 
 export default function ChauffeursPage() {
@@ -41,6 +43,10 @@ export default function ChauffeursPage() {
   const [deleteTarget, setDeleteTarget] = useState<number | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
   const fetchChauffeurs = () => {
     setLoading(true);
     const query = new URLSearchParams();
@@ -67,8 +73,15 @@ export default function ChauffeursPage() {
   };
 
   useEffect(() => {
+    setCurrentPage(1);
     fetchChauffeurs();
   }, [search, filterStatut]);
+
+  const totalPages = Math.ceil(chauffeurs.length / pageSize);
+  const paginatedChauffeurs = chauffeurs.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   useEffect(() => {
     fetchCamions();
@@ -281,51 +294,66 @@ export default function ChauffeursPage() {
         </Button>
       </div>
 
-      {/* Recherche et filtres */}
-      <div className="flex flex-col sm:flex-row gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-        <div className="flex-1">
-          <Input
-            placeholder="Rechercher par nom ou prénom..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+      {/* Table */}
+      <TableCard>
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4">
+          <div className="relative flex-1 max-w-md">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              placeholder="Rechercher par nom ou prénom..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full h-10 pl-10 pr-4 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            {[
+              { value: "tous", label: "Tous" },
+              { value: "actif", label: "Actifs" },
+              { value: "inactif", label: "Inactifs" },
+            ].map((btn) => (
+              <button
+                key={btn.value}
+                onClick={() => setFilterStatut(btn.value)}
+                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-colors flex-shrink-0 ${
+                  filterStatut === btn.value
+                    ? "bg-fleet-blue text-white shadow-lg shadow-fleet-blue/20"
+                    : "bg-slate-50 text-slate-500 hover:bg-slate-100"
+                }`}
+              >
+                {btn.label}
+              </button>
+            ))}
+          </div>
         </div>
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
-          {[
-            { value: "tous", label: "Tous" },
-            { value: "actif", label: "Actifs" },
-            { value: "inactif", label: "Inactifs" },
-          ].map((btn) => (
-            <button
-              key={btn.value}
-              onClick={() => setFilterStatut(btn.value)}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex-shrink-0 ${
-                filterStatut === btn.value
-                  ? "bg-fleet-blue text-white"
-                  : "bg-gray-50 text-gray-600 hover:bg-gray-100"
-              }`}
-            >
-              {btn.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Liste des Chauffeurs */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 overflow-hidden">
         {loading ? (
-          <div className="space-y-4">
+          <div className="space-y-4 px-6 py-6">
             <Skeleton className="h-10 w-full" />
             <Skeleton className="h-10 w-full" />
             <Skeleton className="h-10 w-full" />
           </div>
         ) : (
-          <DataTable
-            columns={columns}
-            data={chauffeurs}
-          />
+          <>
+            <DataTable
+              columns={columns}
+              data={paginatedChauffeurs}
+            />
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              pageSize={pageSize}
+              totalItems={chauffeurs.length}
+              onPageChange={setCurrentPage}
+              onPageSizeChange={setPageSize}
+            />
+          </>
         )}
-      </div>
+      </TableCard>
 
       {/* Modal Ajout/Modification */}
       <Modal

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { promises as fs } from "fs";
-import path from "path";
+import { supabase } from "@/lib/supabase";
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,20 +16,33 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Format de fichier non pris en charge" }, { status: 400 });
     }
 
-    const uploadsDir = path.join(process.cwd(), "public", "uploads", "receipts");
-    await fs.mkdir(uploadsDir, { recursive: true });
-
     const safeName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
-    const filePath = path.join(uploadsDir, safeName);
-    const buffer = Buffer.from(await file.arrayBuffer());
+    const buffer = await file.arrayBuffer();
 
-    await fs.writeFile(filePath, buffer);
+    // Upload vers Supabase Storage
+    const { data, error } = await supabase.storage
+      .from("receipts")
+      .upload(safeName, buffer, {
+        contentType: file.type,
+        cacheControl: "3600",
+        upsert: false,
+      });
+
+    if (error) {
+      console.error("Erreur Supabase Storage:", error);
+      throw error;
+    }
+
+    // Récupérer l'URL publique
+    const { data: { publicUrl } } = supabase.storage
+      .from("receipts")
+      .getPublicUrl(safeName);
 
     return NextResponse.json({
-      url: `/uploads/receipts/${safeName}`,
+      url: publicUrl,
       fileName: file.name,
       mimeType: file.type,
-      size: buffer.byteLength,
+      size: file.size,
     });
   } catch (error) {
     console.error("Erreur POST /api/uploads/receipts:", error);

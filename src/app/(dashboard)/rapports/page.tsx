@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Card,
   Select,
@@ -46,16 +46,40 @@ export default function RapportsPage() {
   // Filtres
   const [filterMois, setFilterMois] = useState("");
   const [filterAnnee, setFilterAnnee] = useState(String(new Date().getFullYear()));
-  const [filterCamion, setFilterCamion] = useState("tous");
+  const [reportTypes, setReportTypes] = useState({ carburant: true, maintenance: true });
+  const [selectedCamionIds, setSelectedCamionIds] = useState<number[]>([]);
+  const [vehicleDropdownOpen, setVehicleDropdownOpen] = useState(false);
+  const vehicleDropdownRef = useRef<HTMLDivElement>(null);
 
-  const fetchRapport = () => {
-    setLoading(true);
+  const toggleCamion = (id: number) => {
+    setSelectedCamionIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (vehicleDropdownRef.current && !vehicleDropdownRef.current.contains(e.target as Node)) {
+        setVehicleDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  const buildQuery = () => {
     const query = new URLSearchParams();
     if (filterMois) query.append("mois", filterMois);
     if (filterAnnee) query.append("annee", filterAnnee);
-    if (filterCamion && filterCamion !== "tous") query.append("camionId", filterCamion);
+    if (selectedCamionIds.length > 0) {
+      query.append("camionIds", selectedCamionIds.join(","));
+    }
+    return query.toString();
+  };
 
-    fetch(`/api/rapports?${query.toString()}`)
+  const fetchRapport = () => {
+    setLoading(true);
+    fetch(`/api/rapports?${buildQuery()}`)
       .then((res) => res.json())
       .then((resData) => {
         setData(resData);
@@ -76,11 +100,16 @@ export default function RapportsPage() {
 
   useEffect(() => {
     fetchRapport();
-  }, [filterMois, filterAnnee, filterCamion]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterMois, filterAnnee, selectedCamionIds]);
 
   useEffect(() => {
     fetchCamions();
   }, []);
+
+  const selectedVehicleLabels = selectedCamionIds.length === 0
+    ? "Tous les camions"
+    : selectedCamionIds.map((id) => camions.find((c) => c.id === id)?.immatriculation).filter(Boolean).join(", ");
 
   // Fonction d'export au format Excel Premium
   const exportToExcel = () => {
@@ -88,7 +117,13 @@ export default function RapportsPage() {
     const query = new URLSearchParams();
     if (filterMois) query.append("mois", filterMois);
     if (filterAnnee) query.append("annee", filterAnnee);
-    if (filterCamion && filterCamion !== "tous") query.append("camionId", filterCamion);
+    if (selectedCamionIds.length > 0) {
+      query.append("camionIds", selectedCamionIds.join(","));
+    }
+    const types = [];
+    if (reportTypes.carburant) types.push("carburant");
+    if (reportTypes.maintenance) types.push("maintenance");
+    if (types.length > 0) query.append("types", types.join(","));
 
     fetch(`/api/rapports/excel?${query.toString()}`)
       .then(async (res) => {
@@ -102,7 +137,7 @@ export default function RapportsPage() {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `Rapport_Flotte_Premium_${new Date().getFullYear()}.xlsx`;
+        a.download = `Rapport_Flotte_${filterAnnee}.xlsx`;
         document.body.appendChild(a);
         a.click();
         a.remove();
@@ -120,7 +155,13 @@ export default function RapportsPage() {
     const query = new URLSearchParams();
     if (filterMois) query.append("mois", filterMois);
     if (filterAnnee) query.append("annee", filterAnnee);
-    if (filterCamion && filterCamion !== "tous") query.append("camionId", filterCamion);
+    if (selectedCamionIds.length > 0) {
+      query.append("camionIds", selectedCamionIds.join(","));
+    }
+    const types = [];
+    if (reportTypes.carburant) types.push("carburant");
+    if (reportTypes.maintenance) types.push("maintenance");
+    if (types.length > 0) query.append("types", types.join(","));
 
     fetch(`/api/rapports/pdf?${query.toString()}`)
       .then(async (res) => {
@@ -244,31 +285,87 @@ export default function RapportsPage() {
       </div>
 
       {/* Filtres */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-        <Select
-          label="Mois"
-          value={filterMois}
-          onChange={(e) => setFilterMois(e.target.value)}
-          placeholder="Toute l'année"
-          options={moisFrancais.map((m, idx) => ({ value: String(idx + 1), label: m }))}
-        />
-        <Select
-          label="Année"
-          value={filterAnnee}
-          onChange={(e) => setFilterAnnee(e.target.value)}
-          options={[
-            { value: "2026", label: "2026" },
-            { value: "2025", label: "2025" },
-            { value: "2024", label: "2024" },
-          ]}
-        />
-        <Select
-          label="Camion"
-          value={filterCamion}
-          onChange={(e) => setFilterCamion(e.target.value)}
-          placeholder="Tous les camions"
-          options={camions.map((c) => ({ value: String(c.id), label: c.immatriculation }))}
-        />
+      <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-4">
+        <div className="flex items-center gap-6">
+          <span className="text-[10px] font-black uppercase text-slate-400">Type de rapport</span>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={reportTypes.carburant}
+              onChange={(e) => setReportTypes((prev) => ({ ...prev, carburant: e.target.checked }))}
+              className="w-4 h-4 rounded border-slate-300 text-fleet-blue focus:ring-fleet-blue/20"
+            />
+            <span className="text-xs font-bold text-slate-700">Carburant</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={reportTypes.maintenance}
+              onChange={(e) => setReportTypes((prev) => ({ ...prev, maintenance: e.target.checked }))}
+              className="w-4 h-4 rounded border-slate-300 text-fleet-blue focus:ring-fleet-blue/20"
+            />
+            <span className="text-xs font-bold text-slate-700">Maintenance</span>
+          </label>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <Select
+            label="Mois"
+            value={filterMois}
+            onChange={(e) => setFilterMois(e.target.value)}
+            placeholder="Toute l'année"
+            options={moisFrancais.map((m, idx) => ({ value: String(idx + 1), label: m }))}
+          />
+          <Select
+            label="Année"
+            value={filterAnnee}
+            onChange={(e) => setFilterAnnee(e.target.value)}
+            options={[
+              { value: "2026", label: "2026" },
+              { value: "2025", label: "2025" },
+              { value: "2024", label: "2024" },
+            ]}
+          />
+          <div className="relative" ref={vehicleDropdownRef}>
+            <div className="space-y-1.5 w-full">
+              <label className="block text-[10px] font-black uppercase text-slate-400 ml-1">Véhicules</label>
+              <button
+                type="button"
+                onClick={() => setVehicleDropdownOpen((prev) => !prev)}
+                className="w-full flex items-center justify-between h-9 px-4 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue hover:border-slate-300 cursor-pointer"
+              >
+                <span className="truncate">{selectedVehicleLabels}</span>
+                <svg className={`w-4 h-4 text-slate-400 transition-transform ${vehicleDropdownOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+            {vehicleDropdownOpen && (
+              <div className="absolute top-full mt-1 left-0 right-0 z-20 bg-white border border-slate-200 rounded-xl shadow-xl max-h-60 overflow-y-auto p-2 space-y-1">
+                <label className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedCamionIds.length === 0}
+                    onChange={() => setSelectedCamionIds([])}
+                    className="w-4 h-4 rounded border-slate-300 text-fleet-blue focus:ring-fleet-blue/20"
+                  />
+                  <span className="text-xs font-bold text-slate-700">Tous les véhicules</span>
+                </label>
+                <div className="border-t border-slate-100 my-1" />
+                {camions.map((c) => (
+                  <label key={c.id} className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedCamionIds.includes(c.id)}
+                      onChange={() => toggleCamion(c.id)}
+                      className="w-4 h-4 rounded border-slate-300 text-fleet-blue focus:ring-fleet-blue/20"
+                    />
+                    <span className="text-xs font-bold text-slate-700">{c.immatriculation}</span>
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Section 1 - Graphique Dépenses Mensuelles */}
