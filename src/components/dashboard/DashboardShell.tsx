@@ -193,11 +193,23 @@ export function DashboardShell({
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
 
+  // Call all hooks BEFORE any conditional returns!
+  const breadcrumbs = getBreadcrumbs(pathname);
+  const pageTitle = getPageTitle(pathname);
+
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
     }
   }, [status, router]);
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
 
   if (status === "loading") {
     return (
@@ -211,17 +223,6 @@ export function DashboardShell({
   }
 
   if (!session) return null;
-
-  const breadcrumbs = getBreadcrumbs(pathname);
-  const pageTitle = getPageTitle(pathname);
-
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [darkMode]);
 
   return (
     <div className={cn("min-h-screen flex", darkMode ? "bg-slate-900" : "bg-[#F8FAFC]")}>
