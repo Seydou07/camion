@@ -33,30 +33,39 @@ export async function GET(request: NextRequest) {
     }
 
     // ========================================================
-    // 2. RÉCUPÉRATION DES COÛTS ET DONNÉES
+    // 2. RÉCUPÉRATION DE TOUTES LES DONNÉES EN 1 SEUL PASSAGE (OPTIMISATION)
     // ========================================================
+
+    // Fetch TOUS les mouvements carburants en une requête
     const mouvementsCarburant = await prisma.mouvementCarburant.findMany({
       where: whereCarburant,
+      include: { carburant: { select: { camionId: true } } },
     });
 
+    // Fetch TOUTES les réparations en une requête
     const reparations = await prisma.reparation.findMany({
       where: whereReparation,
+      include: { piecesChangees: true },
     });
 
-    // Coût carburant
+    // Fetch TOUS les camions en une requête
+    const camions = await prisma.camion.findMany({
+      include: { chauffeur: true },
+      where: camionIds.length > 0 ? { id: { in: camionIds } } : {},
+    });
+
+    // Coût carburant total
     const coutCarburant = mouvementsCarburant.reduce((sum, m) => sum + m.montant, 0);
 
-    // Coût réparations
+    // Coût réparations total
     const coutReparations = reparations.reduce((sum, r) => sum + r.cout, 0);
 
     // Coût Total Exploitation
     const coutTotalExploitation = coutCarburant + coutReparations;
 
     // Camions en service
-    const totalCamions = await prisma.camion.count();
-    const camionsEnService = await prisma.camion.count({
-      where: { statut: "en_service" },
-    });
+    const totalCamions = camions.length;
+    const camionsEnService = camions.filter((c) => c.statut === "en_service").length;
 
     // Nombre d'alertes de maintenance (en retard)
     const nbAlertesMaintenance = await prisma.maintenancePlanifiee.count({
@@ -75,26 +84,34 @@ export async function GET(request: NextRequest) {
       "Juil", "Aoû", "Sep", "Oct", "Nov", "Déc"
     ];
 
+    // Créer un index pour grouper les mouvements et réparations par mois
+    const mouvementsParMois: Record<number, number[]> = {};
+    const reparationsParMois: Record<number, number[]> = {};
+
     for (let i = 0; i < 12; i++) {
-      const debutMois = new Date(annee, i, 1);
-      const finMois = new Date(annee, i + 1, 1);
+      mouvementsParMois[i] = [];
+      reparationsParMois[i] = [];
+    }
 
-      const mMois = await prisma.mouvementCarburant.findMany({
-        where: {
-          dateOperation: { gte: debutMois, lt: finMois },
-          ...(camionIds.length > 0 ? { carburant: { camionId: { in: camionIds } } } : {}),
-        },
-      });
+    // Grouper les mouvements par mois
+    mouvementsCarburant.forEach((m) => {
+      const moisM = m.dateOperation.getMonth();
+      if (m.dateOperation.getFullYear() === annee) {
+        mouvementsParMois[moisM].push(m.montant);
+      }
+    });
 
-      const rMois = await prisma.reparation.findMany({
-        where: {
-          date: { gte: debutMois, lt: finMois },
-          ...(camionIds.length > 0 ? { camionId: { in: camionIds } } : {}),
-        },
-      });
+    // Grouper les réparations par mois
+    reparations.forEach((r) => {
+      const moisR = r.date.getMonth();
+      if (r.date.getFullYear() === annee) {
+        reparationsParMois[moisR].push(r.cout);
+      }
+    });
 
-      const carbMois = mMois.reduce((sum, m) => sum + m.montant, 0);
-      const repMois = rMois.reduce((sum, r) => sum + r.cout, 0);
+    for (let i = 0; i < 12; i++) {
+      const carbMois = mouvementsParMois[i].reduce((a, b) => a + b, 0);
+      const repMois = reparationsParMois[i].reduce((a, b) => a + b, 0);
 
       evolutionMensuelle.push({
         name: moisLabels[i],
@@ -104,40 +121,42 @@ export async function GET(request: NextRequest) {
     }
 
     // ========================================================
-    // 4. COMPARATIF PAR CAMION
+    // 4. COMPARATIF PAR CAMION (TRÈS OPTIMISÉ : NO MORE N+1)
     // ========================================================
-    const camions = await prisma.camion.findMany({
-      include: {
-        chauffeur: true,
-      },
+
+    // Créer des index par camionId pour grouper les données rapidement
+    const mouvementsParCamionId: Record<number, typeof mouvementsCarburant> = {};
+    const reparationsParCamionId: Record<number, typeof reparations> = {};
+
+    camions.forEach((c) => {
+      mouvementsParCamionId[c.id] = [];
+      reparationsParCamionId[c.id] = [];
     });
-    const comparatifCamions = [];
 
-    for (const camion of camions) {
-      // Filtrage carburants et réparations sur la période spécifiée
-      const mMoisCamion = await prisma.mouvementCarburant.findMany({
-        where: {
-          carburant: { camionId: camion.id },
-          dateOperation: dateFilter,
-        },
-      });
+    mouvementsCarburant.forEach((m) => {
+      const camionId = m.carburant.camionId;
+      if (mouvementsParCamionId[camionId]) {
+        mouvementsParCamionId[camionId].push(m);
+      }
+    });
 
-      const rCamion = await prisma.reparation.findMany({
-        where: {
-          camionId: camion.id,
-          date: dateFilter,
-        },
-        include: { piecesChangees: true },
-      });
+    reparations.forEach((r) => {
+      if (reparationsParCamionId[r.camionId]) {
+        reparationsParCamionId[r.camionId].push(r);
+      }
+    });
+
+    const comparatifCamions = camions.map((camion) => {
+      const mMoisCamion = mouvementsParCamionId[camion.id] || [];
+      const rCamion = reparationsParCamionId[camion.id] || [];
 
       const carbC = mMoisCamion.reduce((sum, m) => sum + m.montant, 0);
       const repC = rCamion.reduce((sum, r) => sum + r.cout, 0);
       const coutTotalC = carbC + repC;
-      
-      // budgetConsomme based on the current calculation rules
+
       const budgetConsomme = calculBudgetConsomme(carbC, rCamion);
 
-      comparatifCamions.push({
+      return {
         id: camion.id,
         immatriculation: camion.immatriculation,
         marque: camion.marque,
@@ -150,12 +169,12 @@ export async function GET(request: NextRequest) {
           : "Non assigné",
         kilometrage: camion.kilometrageActuel,
         carburant: carbC,
-        litres: 0, // Obsolete
+        litres: 0,
         reparation: repC,
         coutTotal: coutTotalC,
-        consoMoyenne: 0, // Obsolete
-      });
-    }
+        consoMoyenne: 0,
+      };
+    });
 
     // ========================================================
     // 5. RÉPARTITION DES DÉPENSES
@@ -166,91 +185,70 @@ export async function GET(request: NextRequest) {
     ].filter((c) => c.value > 0);
 
     // ========================================================
-    // 6. FRÉQUENCE CARBURANT (nombre de mouvements / mois)
+    // 6. FRÉQUENCE CARBURANT ET MAINTENANCE (OPTIMISÉ)
     // ========================================================
     const frequenceCarburant = [];
+    const frequenceMaintenance = [];
+
     for (let i = 0; i < 12; i++) {
       const debutMois = new Date(annee, i, 1);
       const finMois = new Date(annee, i + 1, 1);
 
-      const mMois = await prisma.mouvementCarburant.findMany({
-        where: {
-          dateOperation: { gte: debutMois, lt: finMois },
-          ...(camionIds.length > 0 ? { carburant: { camionId: { in: camionIds } } } : {}),
-        },
-      });
-
+      const nMois = mouvementsParMois[i].length;
+      const montantMois = mouvementsParMois[i].reduce((a, b) => a + b, 0);
       frequenceCarburant.push({
         name: moisLabels[i],
-        pleins: mMois.length,
-        litres: 0, // Obsolete
-        montant: mMois.reduce((s, m) => s + m.montant, 0),
-      });
-    }
-
-    // ========================================================
-    // 7. FRÉQUENCE MAINTENANCE (interventions / mois)
-    // ========================================================
-    const frequenceMaintenance = [];
-    for (let i = 0; i < 12; i++) {
-      const debutMois = new Date(annee, i, 1);
-      const finMois = new Date(annee, i + 1, 1);
-
-      const rMois = await prisma.reparation.findMany({
-        where: {
-          date: { gte: debutMois, lt: finMois },
-          ...(camionIds.length > 0 ? { camionId: { in: camionIds } } : {}),
-        },
+        pleins: nMois,
+        litres: 0,
+        montant: montantMois,
       });
 
+      const nRMois = reparationsParMois[i].length;
       frequenceMaintenance.push({
         name: moisLabels[i],
-        interventions: rMois.length,
-        montant: rMois.reduce((s, r) => s + r.cout, 0),
+        interventions: nRMois,
       });
     }
 
     // ========================================================
-    // 8. BUDGET PAR VÉHICULE (dotation vs consommé annuel)
+    // 7. BUDGET GLOBAL
     // ========================================================
-    const budgetParVehicule = comparatifCamions
-      .filter((c) => c.dotationAnnuelle > 0 || c.budgetConsomme > 0)
-      .map((c) => ({
-        immatriculation: c.immatriculation,
-        dotation: c.dotationAnnuelle,
-        consomme: c.budgetConsomme,
-        carburant: c.carburant,
-        maintenance: c.reparation,
-      }));
+    let budgetGlobal = 0;
+    try {
+      const budgetParam = await prisma.parametreGlobal.findUnique({
+        where: { cle: "budget_annuel_global" },
+      });
+      if (budgetParam) {
+        budgetGlobal = parseFloat(budgetParam.valeur);
+      }
+    } catch (e) {
+      console.error("Erreur budget:", e);
+    }
 
-    // Dotation totale flotte
-    const dotationTotale = camions.reduce(
-      (s, c) => s + (c.dotationAnnuelle || 0),
-      0
-    );
+    const budgetConsommeGlobal = coutCarburant + coutReparations;
+    const budgetRestantGlobal = budgetGlobal - budgetConsommeGlobal;
 
     return NextResponse.json({
       coutCarburant,
       coutReparations,
       coutTotalExploitation,
-      camionsEnService,
       totalCamions,
+      camionsEnService,
       nbAlertesMaintenance,
       evolutionMensuelle,
       comparatifCamions,
       repartitionCharges,
       frequenceCarburant,
       frequenceMaintenance,
-      budgetParVehicule,
-      dotationTotale,
-      annee,
+      budgetGlobal,
+      budgetConsommeGlobal,
+      budgetRestantGlobal,
     });
   } catch (error) {
     console.error("Erreur GET /api/rapports:", error);
     return NextResponse.json(
-      { error: "Erreur lors de la récupération du rapport" },
+      { error: "Erreur lors du chargement des rapports" },
       { status: 500 }
     );
   }
 }
-
