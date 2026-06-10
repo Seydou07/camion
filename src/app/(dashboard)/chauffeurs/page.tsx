@@ -280,35 +280,14 @@ export default function ChauffeursPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-gray-900">Gestion des chauffeurs</h1>
-          <p className="text-sm text-gray-400">Gérez le personnel de conduite et leurs affectations de camions</p>
-        </div>
-        <Button onClick={handleOpenAddModal}>
-          <svg className="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          Ajouter un chauffeur
-        </Button>
-      </div>
-
-      {/* Table */}
-      <TableCard>
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4">
-          <div className="relative flex-1 max-w-md">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            <input
-              type="text"
-              placeholder="Rechercher par nom ou prénom..."
+      {/* Search + Add Button + Filters */}
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="flex-1 flex flex-wrap items-center gap-4">
+          <div className="w-full md:w-80">
+            <Input
+              placeholder="Rechercher un chauffeur..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full h-10 pl-10 pr-4 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue"
+              onChange={(e: any) => setSearch(e.target.value)}
             />
           </div>
           <div className="flex items-center gap-2">
@@ -331,6 +310,16 @@ export default function ChauffeursPage() {
             ))}
           </div>
         </div>
+        <Button onClick={handleOpenAddModal}>
+          <svg className="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          Ajouter un chauffeur
+        </Button>
+      </div>
+
+      {/* Table */}
+      <TableCard>
         {loading ? (
           <div className="space-y-4 px-6 py-6">
             <Skeleton className="h-10 w-full" />

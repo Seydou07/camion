@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import {
   Button,
   Input,
+  Select,
   Modal,
   Toast,
   ConfirmModal,
@@ -294,7 +295,7 @@ export default function UsersPage() {
 
                 {/* Role badge */}
                 <span className={user.role === "admin" ? "bg-rose-100 text-rose-600 text-[10px] font-black px-3 py-1.5 rounded-xl uppercase" : "bg-fleet-blue/10 text-fleet-blue text-[10px] font-black px-3 py-1.5 rounded-xl uppercase"}>
-                  {user.role === "admin" ? "Administrateur" : "Gestionnaire"}
+                  {user.role === "admin" ? "Super Admin" : "Gestionnaire"}
                 </span>
               </div>
 
@@ -384,23 +385,15 @@ export default function UsersPage() {
             />
           </div>
           <div>
-            <label className="block text-[10px] font-black uppercase text-slate-400 mb-2">Rôle</label>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setRole("gestionnaire")}
-                className={role === "gestionnaire" ? "h-11 rounded-2xl bg-fleet-blue text-white text-sm font-bold transition-all duration-300" : "h-11 rounded-2xl bg-white border border-slate-200 text-slate-600 text-sm font-bold hover:border-fleet-blue/30 transition-all duration-300"}
-              >
-                Gestionnaire
-              </button>
-              <button
-                type="button"
-                onClick={() => setRole("admin")}
-                className={role === "admin" ? "h-11 rounded-2xl bg-rose-500 text-white text-sm font-bold transition-all duration-300" : "h-11 rounded-2xl bg-white border border-slate-200 text-slate-600 text-sm font-bold hover:border-rose-300 transition-all duration-300"}
-              >
-                Administrateur
-              </button>
-            </div>
+            <Select
+              label="Rôle"
+              value={role}
+              onChange={setRole}
+              options={[
+                { value: "gestionnaire", label: "Gestionnaire" },
+                { value: "admin", label: "Super Admin" }
+              ]}
+            />
           </div>
           <div>
             <Input
