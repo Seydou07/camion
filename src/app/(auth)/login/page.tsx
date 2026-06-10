@@ -37,11 +37,6 @@ export default function LoginPage() {
     }
   };
 
-  const handleFillDemo = () => {
-    setEmail("admin@gmail.com");
-    setPassword("admin123");
-    setError("");
-  };
   return (
     <div className="min-h-screen w-full flex flex-col md:flex-row overflow-hidden relative bg-[#F8FAFC] font-sans">
       
@@ -147,9 +142,9 @@ export default function LoginPage() {
           
           {/* Header */}
           <div className="mb-8">
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight">Bienvenue</h2>
+            <h2 className="text-2xl font-black text-slate-900 tracking-tight">Connexion</h2>
             <p className="text-slate-400 text-sm mt-1.5 font-medium leading-relaxed">
-              Connectez-vous pour accéder à votre tableau de bord et gérer votre flotte.
+              Accédez à votre tableau de bord et gérez votre flotte.
             </p>
           </div>
 
@@ -169,7 +164,7 @@ export default function LoginPage() {
                 </div>
                 <input
                   type="email"
-                  placeholder="nom@entreprise.com"
+                  placeholder="admin@truckmanager.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -180,14 +175,9 @@ export default function LoginPage() {
 
             {/* Password */}
             <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">
-                  Mot de passe
-                </label>
-                <span className="text-[11px] text-fleet-blue hover:text-fleet-blue-dark font-bold hover:underline cursor-pointer transition-colors">
-                  Mot de passe oublié ?
-                </span>
-              </div>
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">
+                Mot de passe
+              </label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-fleet-blue transition-colors duration-300">
                   <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -255,23 +245,6 @@ export default function LoginPage() {
               )}
             </button>
           </form>
-
-          {/* Demo Mode */}
-          <div className="mt-8 pt-6 border-t border-slate-100 text-center">
-            <p className="text-[11px] text-slate-400 mb-3 font-semibold uppercase tracking-wider">
-              Mode démo
-            </p>
-            <button
-              type="button"
-              onClick={handleFillDemo}
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-800 border border-slate-200 hover:border-slate-300 rounded-xl text-xs font-bold tracking-wide transition-all duration-200 active:scale-95 cursor-pointer shadow-sm"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              Remplir identifiants démo
-            </button>
-          </div>
 
         </div>
 

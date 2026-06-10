@@ -154,20 +154,26 @@ function getPageTitle(pathname: string) {
   return "TruckManager";
 }
 
-function NavItem({ item, isActive }: { item: typeof menuItems[0]; isActive: boolean }) {
+function NavItem({ item, isActive, darkMode }: { item: typeof menuItems[0]; isActive: boolean; darkMode: boolean }) {
   return (
     <Link
       href={item.href}
       className={cn(
         "relative flex items-center gap-3 py-3 px-6 font-bold text-sm tracking-tight border-r-4 transition-all duration-300 group",
         isActive
-          ? "bg-fleet-blue/10 text-fleet-blue border-fleet-blue"
-          : "text-slate-500/60 border-transparent hover:bg-slate-50 hover:text-fleet-blue"
+          ? darkMode 
+            ? "bg-fleet-blue/20 text-white border-fleet-blue" 
+            : "bg-fleet-blue/10 text-fleet-blue border-fleet-blue"
+          : darkMode
+            ? "text-slate-400 border-transparent hover:bg-slate-700 hover:text-white"
+            : "text-slate-500/60 border-transparent hover:bg-slate-50 hover:text-fleet-blue"
       )}
     >
       <span className={cn(
         "w-5 h-5 transition-transform duration-300 group-hover:scale-110",
-        isActive ? "text-fleet-blue" : "text-slate-400 group-hover:text-fleet-blue"
+        isActive 
+          ? darkMode ? "text-white" : "text-fleet-blue" 
+          : darkMode ? "text-slate-400 group-hover:text-white" : "text-slate-400 group-hover:text-fleet-blue"
       )}>
         {item.icon}
       </span>
@@ -185,6 +191,7 @@ export function DashboardShell({
   const router = useRouter();
   const { data: session, status } = useSession();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -208,12 +215,21 @@ export function DashboardShell({
   const breadcrumbs = getBreadcrumbs(pathname);
   const pageTitle = getPageTitle(pathname);
 
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
+
   return (
-    <div className="min-h-screen flex bg-[#F8FAFC]">
+    <div className={cn("min-h-screen flex", darkMode ? "bg-slate-900" : "bg-[#F8FAFC]")}>
       {/* Sidebar */}
       <aside className={cn(
-        "fixed top-0 bottom-0 bg-white border-r border-slate-100/80 flex flex-col z-30 transition-all duration-300",
-        sidebarOpen ? "left-0 w-[270px]" : "-left-[270px] w-[270px]"
+        "fixed top-0 bottom-0 border-r flex flex-col z-30 transition-all duration-300",
+        sidebarOpen ? "left-0 w-[270px]" : "-left-[270px] w-[270px]",
+        darkMode ? "bg-slate-800 border-slate-700" : "bg-white border-slate-100/80"
       )}>
         {/* Logo */}
         <div className="px-6 py-6">
@@ -224,59 +240,50 @@ export function DashboardShell({
               </svg>
             </div>
             <div>
-              <h1 className="text-lg font-black text-fleet-blue tracking-tight leading-tight">FleetGuardian</h1>
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">Gestion de flotte</p>
+              <h1 className={cn("text-lg font-black tracking-tight leading-tight", darkMode ? "text-white" : "text-fleet-blue")}>FleetGuardian</h1>
+              <p className="text-[10px] font-bold uppercase tracking-tight text-slate-500">Gestion de flotte</p>
             </div>
           </Link>
         </div>
 
         {/* Section label */}
         <div className="px-6 pt-2 pb-2">
-          <p className="text-[10px] font-bold text-slate-300 uppercase tracking-[0.15em]">Menu principal</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">Menu principal</p>
         </div>
 
         {/* Navigation */}
         <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
           {menuItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
-            return <NavItem key={item.href} item={item} isActive={isActive} />;
+            return <NavItem key={item.href} item={item} isActive={isActive} darkMode={darkMode} />;
           })}
 
           {/* Separator */}
           <div className="pt-5 pb-2 px-3">
-            <div className="border-t border-slate-100" />
-            <p className="text-[10px] font-bold text-slate-300 uppercase tracking-[0.15em] mt-4">Système</p>
+            <div className={cn("border-t", darkMode ? "border-slate-700" : "border-slate-100")} />
+            <p className="text-[10px] font-bold uppercase tracking-[0.15em] mt-4 text-slate-400">Système</p>
           </div>
 
           {bottomMenuItems.map((item) => {
             const isActive = pathname === item.href;
-            return <NavItem key={item.href} item={item} isActive={isActive} />;
+            return <NavItem key={item.href} item={item} isActive={isActive} darkMode={darkMode} />;
           })}
         </nav>
 
         {/* User section */}
-        <div className="px-4 py-4 border-t border-slate-100/80 mt-auto">
-          <div className="flex items-center gap-3 p-2 rounded-2xl hover:bg-slate-50 transition-colors group">
+        <div className={cn("px-4 py-4 border-t mt-auto", darkMode ? "border-slate-700" : "border-slate-100/80")}>
+          <div className={cn("flex items-center gap-3 p-2 rounded-2xl transition-colors group", darkMode ? "hover:bg-slate-700" : "hover:bg-slate-50")}>
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-fleet-blue to-fleet-blue-dark text-white flex items-center justify-center text-sm font-black shadow-lg shadow-fleet-blue/15">
               {session.user?.name?.charAt(0)?.toUpperCase() || "A"}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-slate-800 truncate">
+              <p className={cn("text-sm font-bold truncate", darkMode ? "text-white" : "text-slate-800")}>
                 {session.user?.name || "Admin"}
               </p>
               <p className="text-[10px] text-slate-400 truncate font-semibold">
                 {session.user?.email}
               </p>
             </div>
-            <button
-              onClick={() => signOut({ callbackUrl: "/login" })}
-              className="p-2 rounded-xl hover:bg-rose-50 text-slate-400 hover:text-rose-500 transition-all duration-200 cursor-pointer"
-              title="Se déconnecter"
-            >
-              <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
-              </svg>
-            </button>
           </div>
         </div>
       </aside>
@@ -295,38 +302,75 @@ export function DashboardShell({
         sidebarOpen ? "ml-[270px]" : "ml-0"
       )}>
         {/* Header */}
-        <header className="sticky top-0 z-20 bg-white/70 backdrop-blur-2xl border-b border-slate-100/60">
+        <header className={cn("sticky top-0 z-20 backdrop-blur-2xl border-b", 
+          darkMode ? "bg-slate-800/70 border-slate-700" : "bg-white/70 border-slate-100/60"
+        )}>
           <div className="px-8 py-4 flex items-center justify-between">
             {/* Header left: hamburger + page title */}
             <div className="flex items-center gap-4">
               {/* Hamburger button */}
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="p-2.5 rounded-2xl hover:bg-slate-50 text-slate-500 hover:text-slate-700 transition-all cursor-pointer"
+                className={cn("p-2.5 rounded-2xl transition-all cursor-pointer",
+                  darkMode 
+                    ? "hover:bg-slate-700 text-slate-300 hover:text-white" 
+                    : "hover:bg-slate-50 text-slate-500 hover:text-slate-700"
+                )}
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
                 </svg>
               </button>
               {/* Page title */}
-              <h1 className="text-lg font-bold text-slate-800">{pageTitle}</h1>
+              <h1 className={cn("text-lg font-bold", darkMode ? "text-white" : "text-slate-800")}>{pageTitle}</h1>
             </div>
 
-            {/* Header right */}
+            {/* Header right: dark mode toggle + user profile */}
             <div className="flex items-center gap-3">
-              {/* Search button */}
-              <button className="p-2.5 rounded-2xl hover:bg-slate-50 text-slate-400 hover:text-slate-600 transition-all cursor-pointer">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                </svg>
+              {/* Dark mode toggle */}
+              <button
+                onClick={() => setDarkMode(!darkMode)}
+                className={cn("p-2.5 rounded-2xl transition-all cursor-pointer",
+                  darkMode 
+                    ? "hover:bg-slate-700 text-slate-300 hover:text-white" 
+                    : "hover:bg-slate-50 text-slate-500 hover:text-slate-700"
+                )}
+              >
+                {darkMode ? (
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+                  </svg>
+                )}
               </button>
-              {/* Notifications */}
-              <button className="relative p-2.5 rounded-2xl hover:bg-slate-50 text-slate-400 hover:text-slate-600 transition-all cursor-pointer">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-                </svg>
-                <span className="absolute top-2 right-2 w-2 h-2 bg-fleet-blue rounded-full ring-2 ring-white" />
-              </button>
+
+              {/* User profile + logout */}
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-fleet-blue to-fleet-blue-dark text-white flex items-center justify-center text-xs font-black shadow-lg shadow-fleet-blue/15">
+                    {session.user?.name?.charAt(0)?.toUpperCase() || "A"}
+                  </div>
+                  <span className={cn("text-sm font-semibold", darkMode ? "text-white" : "text-slate-700")}>
+                    {session.user?.name?.split(' ')[0] || "Admin"}
+                  </span>
+                </div>
+                <button
+                  onClick={() => signOut({ callbackUrl: "/login" })}
+                  className={cn("p-2 rounded-xl transition-all duration-200 cursor-pointer",
+                    darkMode 
+                      ? "hover:bg-rose-500/20 text-slate-400 hover:text-rose-400" 
+                      : "hover:bg-rose-50 text-slate-400 hover:text-rose-500"
+                  )}
+                  title="Se déconnecter"
+                >
+                  <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         </header>

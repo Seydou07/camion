@@ -39,6 +39,10 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ## Informations de Déploiement (Privé)
 
+### Identifiants Super Admin
+- **Email** : `admin@truckmanager.com`
+- **Mot de passe** : `admin123`
+
 ### Identifiants Supabase
 - **Projet ID** : `noojdhgabseaannyeenl`
 - **Mot de passe DB** : `Camion_Manager_123`
