@@ -225,12 +225,12 @@ export function DashboardShell({
   if (!session) return null;
 
   return (
-    <div className={cn("min-h-screen flex", darkMode ? "bg-slate-900" : "bg-[#F8FAFC]")}>
+    <div className={cn("min-h-screen flex", darkMode ? "bg-slate-950" : "bg-[#F8FAFC]")}>
       {/* Sidebar */}
       <aside className={cn(
         "fixed top-0 bottom-0 border-r flex flex-col z-30 transition-all duration-300",
         sidebarOpen ? "left-0 w-[270px]" : "-left-[270px] w-[270px]",
-        darkMode ? "bg-slate-800 border-slate-700" : "bg-white border-slate-100/80"
+        darkMode ? "bg-slate-900 border-slate-800" : "bg-white border-slate-100/80"
       )}>
         {/* Logo */}
         <div className="px-6 py-6">
@@ -304,7 +304,7 @@ export function DashboardShell({
       )}>
         {/* Header */}
         <header className={cn("sticky top-0 z-20 backdrop-blur-2xl border-b", 
-          darkMode ? "bg-slate-800/70 border-slate-700" : "bg-white/70 border-slate-100/60"
+          darkMode ? "bg-slate-900/70 border-slate-800" : "bg-white/70 border-slate-100/60"
         )}>
           <div className="px-8 py-4 flex items-center justify-between">
             {/* Header left: hamburger + page title */}
@@ -377,7 +377,7 @@ export function DashboardShell({
         </header>
 
         {/* Page content */}
-        <main className="p-8 min-h-[calc(100vh-73px)]">
+        <main className={cn("p-8 min-h-[calc(100vh-73px)]", darkMode ? "bg-slate-950" : "bg-[#F8FAFC]")}>
           <div className="page-enter">
             {children}
           </div>

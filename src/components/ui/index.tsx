@@ -56,9 +56,9 @@ export function Button({
 }: ButtonProps) {
   const variants = {
     primary: "bg-fleet-blue hover:bg-fleet-blue-dark text-white shadow-premium btn-premium",
-    secondary: "bg-fleet-blue/10 hover:bg-fleet-blue/20 text-fleet-blue font-bold",
-    danger: "bg-red-50 hover:bg-red-100 text-red-600 font-bold",
-    ghost: "bg-transparent hover:bg-slate-50 text-slate-500 font-bold border border-slate-200",
+    secondary: "bg-fleet-blue/10 hover:bg-fleet-blue/20 text-fleet-blue font-bold dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200",
+    danger: "bg-red-50 hover:bg-red-100 text-red-600 font-bold dark:bg-red-950/50 dark:hover:bg-red-950/70 dark:text-red-300",
+    ghost: "bg-transparent hover:bg-slate-50 text-slate-500 font-bold border border-slate-200 dark:hover:bg-slate-800 dark:text-slate-400 dark:border-slate-700",
   };
 
   const sizes = {
@@ -106,20 +106,20 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, className, ...props }, ref) => (
     <div className="space-y-1.5 w-full">
       {label && (
-        <label className="block text-[10px] font-black uppercase text-slate-400 ml-1">
+        <label className="block text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 ml-1">
           {label}
         </label>
       )}
       <input
         ref={ref}
         className={cn(
-          "w-full h-9 px-4 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-800 placeholder:text-slate-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue hover:border-slate-300",
-          error && "border-red-300 focus:border-red-500 focus:ring-red-500/10",
+          "w-full h-9 px-4 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-800 placeholder:text-slate-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:placeholder:text-slate-500 dark:focus:border-fleet-blue dark:hover:border-slate-600",
+          error && "border-red-300 focus:border-red-500 focus:ring-red-500/10 dark:border-red-700 dark:focus:border-red-500",
           className
         )}
         {...props}
       />
-      {error && <p className="text-xs text-red-500 font-medium">{error}</p>}
+      {error && <p className="text-xs text-red-500 font-medium dark:text-red-400">{error}</p>}
     </div>
   )
 );
@@ -188,7 +188,7 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
     return (
       <div className="space-y-1.5 w-full" ref={ref}>
         {label && (
-          <label className="block text-[10px] font-black uppercase text-slate-400 ml-1">
+          <label className="block text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 ml-1">
             {label}
           </label>
         )}
@@ -200,8 +200,8 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
             disabled={disabled}
             className={cn(
               "w-full h-9 px-4 pr-10 rounded-xl border text-left transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue hover:border-slate-300 cursor-pointer",
-              disabled ? "bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed" : "bg-white border-slate-200 text-slate-800",
-              error && "border-red-300 focus:border-red-500 focus:ring-red-500/10",
+              disabled ? "bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed dark:bg-slate-800 dark:border-slate-700 dark:text-slate-500" : "bg-white border-slate-200 text-slate-800 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200",
+              error && "border-red-300 focus:border-red-500 focus:ring-red-500/10 dark:border-red-700 dark:focus:border-red-500",
               className
             )}
           >
@@ -209,7 +209,7 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
               {selectedOption?.label || placeholder || "Sélectionner..."}
             </span>
           </button>
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400 dark:text-slate-500">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
             </svg>
@@ -217,23 +217,23 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
 
           {/* Dropdown */}
           {isOpen && !disabled && (
-            <div className="absolute z-50 w-full mt-1 bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden">
+            <div className="absolute z-50 w-full mt-1 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
               {/* Search Input */}
-              <div className="p-2 border-b border-slate-100">
+              <div className="p-2 border-b border-slate-100 dark:border-slate-800">
                 <input
                   type="text"
                   autoFocus
                   placeholder="Rechercher..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full h-8 px-3 text-xs rounded-lg border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20"
+                  className="w-full h-8 px-3 text-xs rounded-lg border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
                 />
               </div>
               
               {/* Options List */}
               <div className="max-h-60 overflow-y-auto">
                 {filteredOptions.length === 0 ? (
-                  <div className="px-4 py-3 text-xs text-slate-500 text-center">
+                  <div className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400 text-center">
                     Aucune option trouvée
                   </div>
                 ) : (
@@ -245,8 +245,8 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
                       className={cn(
                         "w-full px-4 py-2.5 text-left text-xs font-medium transition-colors",
                         opt.value === value
-                          ? "bg-fleet-blue/10 text-fleet-blue"
-                          : "text-slate-700 hover:bg-slate-50"
+                          ? "bg-fleet-blue/10 text-fleet-blue dark:bg-fleet-blue/20 dark:text-fleet-blue-light"
+                          : "text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800"
                       )}
                     >
                       {opt.label}
@@ -257,7 +257,7 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
             </div>
           )}
         </div>
-        {error && <p className="text-xs text-red-500 font-medium">{error}</p>}
+        {error && <p className="text-xs text-red-500 font-medium dark:text-red-400">{error}</p>}
       </div>
     );
   }
@@ -276,20 +276,20 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ label, error, className, ...props }, ref) => (
     <div className="space-y-1.5 w-full">
       {label && (
-        <label className="block text-[10px] font-black uppercase text-slate-400 ml-1">
+        <label className="block text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 ml-1">
           {label}
         </label>
       )}
       <textarea
         ref={ref}
         className={cn(
-          "w-full resize-none rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs font-medium text-slate-800 placeholder:text-slate-400 transition-all duration-300 shadow-inner focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue hover:border-slate-300 min-h-[80px]",
-          error && "border-red-300 focus:border-red-500 focus:ring-red-500/10",
+          "w-full resize-none rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs font-medium text-slate-800 placeholder:text-slate-400 transition-all duration-300 shadow-inner focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue hover:border-slate-300 min-h-[80px] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:placeholder:text-slate-500 dark:focus:border-fleet-blue dark:hover:border-slate-600",
+          error && "border-red-300 focus:border-red-500 focus:ring-red-500/10 dark:border-red-700 dark:focus:border-red-500",
           className
         )}
         {...props}
       />
-      {error && <p className="text-xs text-red-500 font-medium">{error}</p>}
+      {error && <p className="text-xs text-red-500 font-medium dark:text-red-400">{error}</p>}
     </div>
   )
 );
@@ -387,7 +387,7 @@ export function Modal({ isOpen, onClose, title, children, size = "md", noScroll 
       {/* Modal content */}
       <div
         className={cn(
-          "relative bg-white rounded-2xl shadow-2xl w-full border-none animate-scale-in max-h-[95vh] flex flex-col overflow-hidden",
+          "relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full border-none animate-scale-in max-h-[95vh] flex flex-col overflow-hidden",
           sizes[size]
         )}
       >
@@ -405,7 +405,7 @@ export function Modal({ isOpen, onClose, title, children, size = "md", noScroll 
         </div>
         {/* Body */}
         <div className={cn(
-          "p-6 md:p-8 bg-white flex flex-col flex-1",
+          "p-6 md:p-8 bg-white dark:bg-slate-900 flex flex-col flex-1",
           noScroll ? "overflow-hidden" : "overflow-y-auto overflow-x-hidden"
         )}>
           {children}
@@ -452,7 +452,7 @@ export function ConfirmModal({
 
   if (!isOpen) return null;
 
-  const iconBg = variant === "danger" ? "bg-red-50 text-red-500" : "bg-amber-50 text-amber-500";
+  const iconBg = variant === "danger" ? "bg-red-50 text-red-500 dark:bg-red-950/50 dark:text-red-300" : "bg-amber-50 text-amber-500 dark:bg-amber-950/50 dark:text-amber-300";
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 pl-[270px]">
@@ -460,7 +460,7 @@ export function ConfirmModal({
         className="absolute inset-0 bg-slate-950/40 backdrop-blur-sm animate-fade-in"
         onClick={loading ? undefined : onClose}
       />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md border-none animate-scale-in overflow-hidden">
+      <div className="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md border-none animate-scale-in overflow-hidden">
         <div className="p-6">
           <div className="flex items-start gap-4">
             <div className={cn("p-3 rounded-xl flex-shrink-0", iconBg)}>
@@ -469,11 +469,11 @@ export function ConfirmModal({
               </svg>
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-lg font-black text-slate-900 tracking-tight">{title}</h3>
-              <p className="text-sm text-slate-500 mt-2 leading-relaxed">{message}</p>
+              <h3 className="text-lg font-black text-slate-900 dark:text-slate-100 tracking-tight">{title}</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">{message}</p>
             </div>
           </div>
-          <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
+          <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100 dark:border-slate-800">
             <Button type="button" variant="ghost" onClick={onClose} disabled={loading}>
               {cancelLabel}
             </Button>
@@ -482,7 +482,7 @@ export function ConfirmModal({
               variant="danger"
               onClick={onConfirm}
               loading={loading}
-              className={variant === "danger" ? "bg-red-600 hover:bg-red-700 text-white border-0" : undefined}
+              className={variant === "danger" ? "bg-red-600 hover:bg-red-700 text-white border-0 dark:bg-red-600 dark:hover:bg-red-700" : undefined}
             >
               {confirmLabel}
             </Button>
@@ -514,28 +514,28 @@ export function Toast({ message, type = "success", isVisible, onClose }: ToastPr
   if (!isVisible) return null;
 
   const typeStyles = {
-    success: "bg-white border-emerald-100 text-emerald-800 shadow-emerald-500/5",
-    error: "bg-white border-rose-100 text-rose-800 shadow-rose-500/5",
-    info: "bg-white border-fleet-blue/10 text-fleet-blue-dark shadow-fleet-blue/5",
+    success: "bg-white dark:bg-slate-900 border-emerald-100 dark:border-emerald-900/30 text-emerald-800 dark:text-emerald-300 shadow-emerald-500/5",
+    error: "bg-white dark:bg-slate-900 border-rose-100 dark:border-rose-900/30 text-rose-800 dark:text-rose-300 shadow-rose-500/5",
+    info: "bg-white dark:bg-slate-900 border-fleet-blue/10 dark:border-fleet-blue/30 text-fleet-blue-dark dark:text-fleet-blue-light shadow-fleet-blue/5",
   };
 
   const icons = {
     success: (
-      <div className="p-1 rounded-lg bg-emerald-50 text-emerald-500">
+      <div className="p-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-500 dark:text-emerald-300">
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
         </svg>
       </div>
     ),
     error: (
-      <div className="p-1 rounded-lg bg-rose-50 text-rose-50">
-        <svg className="w-5 h-5 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+      <div className="p-1 rounded-lg bg-rose-50 dark:bg-rose-950/30 text-rose-50 dark:text-rose-300">
+        <svg className="w-5 h-5 text-rose-500 dark:text-rose-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </div>
     ),
     info: (
-      <div className="p-1 rounded-lg bg-fleet-blue/10 text-fleet-blue">
+      <div className="p-1 rounded-lg bg-fleet-blue/10 dark:bg-fleet-blue/20 text-fleet-blue dark:text-fleet-blue-light">
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
@@ -553,7 +553,7 @@ export function Toast({ message, type = "success", isVisible, onClose }: ToastPr
       >
         {icons[type]}
         <span className="text-sm font-semibold tracking-tight">{message}</span>
-        <button onClick={onClose} className="ml-3 opacity-60 hover:opacity-100 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer">
+        <button onClick={onClose} className="ml-3 opacity-60 hover:opacity-100 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -576,13 +576,12 @@ interface StatCardProps {
 }
 
 export function StatCard({ title, value, fullValue, icon, change, subtitle }: StatCardProps) {
-  // Déterminer la couleur de bordure selon qu'il s'agit d'un changement positif ou négatif, ou par défaut
   const borderColor = change ? (change.isPositive ? "border-emerald-500" : "border-rose-500") : "border-fleet-blue";
 
   return (
-    <div className={cn("p-4 rounded-2xl border-l-4 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-md flex flex-col justify-center min-h-[100px] relative overflow-hidden group", borderColor)}>
+    <div className={cn("p-4 rounded-2xl border-l-4 bg-white dark:bg-slate-900 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md flex flex-col justify-center min-h-[100px] relative overflow-hidden group", borderColor)}>
       {/* Fond bleu très léger */}
-      <div className="absolute inset-0 bg-fleet-blue/5 pointer-events-none" />
+      <div className="absolute inset-0 bg-fleet-blue/5 dark:bg-fleet-blue/10 pointer-events-none" />
       
       {/* Icône géante en fond */}
       <div className="absolute -right-2 -bottom-4 w-20 h-20 opacity-5 text-fleet-blue pointer-events-none group-hover:scale-110 transition-transform duration-500">
@@ -591,10 +590,10 @@ export function StatCard({ title, value, fullValue, icon, change, subtitle }: St
 
       <div className="relative z-10 w-full">
         <div className="flex items-center gap-1.5 mb-1">
-          <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">{title}</p>
+          <p className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-widest">{title}</p>
           {fullValue && (
             <div className="group/tooltip relative inline-flex">
-              <div className="w-3.5 h-3.5 rounded-full border border-slate-300 text-slate-400 flex items-center justify-center text-[8px] font-bold cursor-help hover:bg-slate-200 transition-colors">
+              <div className="w-3.5 h-3.5 rounded-full border border-slate-300 dark:border-slate-700 text-slate-400 dark:text-slate-500 flex items-center justify-center text-[8px] font-bold cursor-help hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
                 i
               </div>
               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-max px-2.5 py-1 bg-slate-800 text-white text-[10px] font-bold rounded-lg opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-20 shadow-xl">
@@ -610,7 +609,7 @@ export function StatCard({ title, value, fullValue, icon, change, subtitle }: St
           {change && (
             <span className={cn(
               "rounded-full text-[9px] font-bold px-1.5 py-0.5 inline-flex items-center gap-0.5", 
-              change.isPositive ? "bg-emerald-100 text-emerald-600" : "bg-rose-100 text-rose-600"
+              change.isPositive ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300" : "bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-300"
             )}>
               {change.isPositive ? "+" : "-"}
               {Math.abs(change.value)}%
@@ -618,7 +617,7 @@ export function StatCard({ title, value, fullValue, icon, change, subtitle }: St
           )}
         </div>
         
-        {subtitle && <p className="text-[10px] text-slate-500 font-semibold mt-1.5">{subtitle}</p>}
+        {subtitle && <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold mt-1.5">{subtitle}</p>}
       </div>
     </div>
   );
@@ -637,11 +636,11 @@ interface EmptyStateProps {
 export function EmptyState({ icon, title, description, action }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center py-12 text-center">
-      <div className="p-4 rounded-full bg-gray-50 text-gray-400 mb-4">
+      <div className="p-4 rounded-full bg-gray-50 dark:bg-slate-800 text-gray-400 dark:text-slate-500 mb-4">
         {icon}
       </div>
-      <h3 className="text-lg font-semibold text-gray-900 mb-1">{title}</h3>
-      <p className="text-sm text-gray-500 mb-4 max-w-sm">{description}</p>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100 mb-1">{title}</h3>
+      <p className="text-sm text-gray-500 dark:text-slate-400 mb-4 max-w-sm">{description}</p>
       {action}
     </div>
   );
@@ -652,7 +651,7 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
 // ==========================================
 export function Skeleton({ className }: { className?: string }) {
   return (
-    <div className={cn("animate-pulse bg-gray-100 rounded-lg", className)} />
+    <div className={cn("animate-pulse bg-gray-100 dark:bg-slate-800 rounded-lg", className)} />
   );
 }
 
