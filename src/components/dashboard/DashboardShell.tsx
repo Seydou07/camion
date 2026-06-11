@@ -291,26 +291,31 @@ export function DashboardShell({
         </nav>
 
         {/* User section */}
-        <div className={cn("px-3 py-2 border-t mt-auto", darkMode ? "border-slate-700" : "border-slate-100/80")}>
-          <div className="flex items-center gap-2.5 mb-1.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-fleet-blue to-fleet-blue-dark text-white flex items-center justify-center text-xs font-bold shadow-lg shadow-fleet-blue/15 flex-shrink-0">
+        <div className={cn("px-4 py-4 border-t mt-auto", darkMode ? "border-slate-700" : "border-slate-100/80")}>
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-fleet-blue to-fleet-blue-dark text-white flex items-center justify-center text-sm font-bold shadow-lg shadow-fleet-blue/15 flex-shrink-0">
               {session.user?.name?.charAt(0)?.toUpperCase() || "A"}
             </div>
             <div className="flex-1 min-w-0 leading-tight">
-              <p className={cn("text-xs font-bold truncate", darkMode ? "text-white" : "text-slate-800")}>
+              <p className={cn("text-sm font-bold truncate", darkMode ? "text-white" : "text-slate-800")}>
                 {session.user?.name || "Admin"}
+              </p>
+              <p className="text-[11px] text-slate-400 truncate">
+                {session.user?.email || "Administrateur"}
               </p>
             </div>
           </div>
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
-            className={cn("w-full flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[10px] font-semibold transition-all cursor-pointer",
+            className={cn(
+              "w-full flex items-center justify-center gap-2.5 py-3 rounded-xl text-sm font-bold tracking-wide transition-all cursor-pointer",
+              "border-2",
               darkMode
-                ? "text-rose-400/80 hover:text-rose-400 hover:bg-rose-500/10"
-                : "text-rose-500/70 hover:text-rose-500 hover:bg-rose-50"
+                ? "text-rose-400 bg-rose-500/10 border-rose-500/20 hover:bg-rose-500/20 hover:border-rose-500/40 hover:text-rose-300"
+                : "text-rose-600 bg-rose-50 border-rose-200/60 hover:bg-rose-100 hover:border-rose-300 hover:text-rose-700"
             )}
           >
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
             </svg>
             Déconnexion
