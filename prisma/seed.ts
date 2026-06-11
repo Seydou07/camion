@@ -57,6 +57,21 @@ async function main() {
   });
   console.log("Budget global de 35 000 000 F CFA inséré.");
 
+  // Seuils d'alerte par défaut
+  const defaultAlerts = [
+    { cle: "alerts_vidange_km", valeur: "1000", description: "Intervalle de vidange par défaut (km)" },
+    { cle: "alerts_assurance_jours", valeur: "30", description: "Seuil d'alerte avant expiration d'assurance (jours)" },
+    { cle: "alerts_visite_jours", valeur: "30", description: "Seuil d'alerte avant expiration de visite technique (jours)" },
+  ];
+  for (const a of defaultAlerts) {
+    await prisma.parametreGlobal.upsert({
+      where: { cle: a.cle },
+      update: { valeur: a.valeur },
+      create: { cle: a.cle, valeur: a.valeur, description: a.description },
+    });
+  }
+  console.log("Seuils d'alerte par défaut insérés.");
+
   // 4. 10 Camions — neufs (0 km), dotation 1 500 000 chacun
   const camionsData = [
     {

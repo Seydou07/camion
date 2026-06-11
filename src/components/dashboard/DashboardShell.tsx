@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
+import { useDarkMode } from "@/contexts/DarkModeContext";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -191,8 +192,7 @@ export function DashboardShell({
   const router = useRouter();
   const { data: session, status } = useSession();
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [darkMode, setDarkMode] = useState(false);
-  const [darkReady, setDarkReady] = useState(false);
+  const { darkMode, setDarkMode } = useDarkMode();
 
   // Call all hooks BEFORE any conditional returns!
   const breadcrumbs = getBreadcrumbs(pathname);
@@ -204,26 +204,7 @@ export function DashboardShell({
     }
   }, [status, router]);
 
-  // Init dark mode from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem("darkMode");
-    if (stored === "true") {
-      setDarkMode(true);
-      document.documentElement.classList.add("dark");
-    }
-    setDarkReady(true);
-  }, []);
-
-  // Sync class and persist
-  useEffect(() => {
-    if (!darkReady) return;
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-    localStorage.setItem("darkMode", String(darkMode));
-  }, [darkMode, darkReady]);
+  // All dark mode logic is handled by DarkModeContext
 
   if (status === "loading") {
     return (

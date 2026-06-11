@@ -2,6 +2,7 @@
 
 import { SessionProvider } from "next-auth/react";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import { DarkModeProvider } from "@/contexts/DarkModeContext";
 
 export default function DashboardLayout({
   children,
@@ -10,7 +11,9 @@ export default function DashboardLayout({
 }) {
   return (
     <SessionProvider>
-      <DashboardShell>{children}</DashboardShell>
+      <DarkModeProvider>
+        <DashboardShell>{children}</DashboardShell>
+      </DarkModeProvider>
     </SessionProvider>
   );
 }

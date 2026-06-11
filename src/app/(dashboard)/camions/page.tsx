@@ -55,7 +55,6 @@ export default function CamionsPage() {
   const [capaciteReservoir, setCapaciteReservoir] = useState("");
   const [transmission, setTransmission] = useState("Manuelle");
   const [dotationAnnuelle, setDotationAnnuelle] = useState("");
-  const [frequenceVidange, setFrequenceVidange] = useState("");
   const [echeanceAssurance, setEcheanceAssurance] = useState("");
   const [numeroPoliceAssurance, setNumeroPoliceAssurance] = useState("");
   const [compagnieAssurance, setCompagnieAssurance] = useState("");
@@ -183,7 +182,6 @@ export default function CamionsPage() {
     setCapaciteReservoir("");
     setTransmission("Manuelle");
     setDotationAnnuelle("");
-    setFrequenceVidange("");
     setEcheanceAssurance("");
     setNumeroPoliceAssurance("");
     setCompagnieAssurance("");
@@ -210,7 +208,6 @@ export default function CamionsPage() {
     setCapaciteReservoir(camion.capaciteReservoir ? String(camion.capaciteReservoir) : "");
     setTransmission(camion.transmission || "Manuelle");
     setDotationAnnuelle(camion.dotationAnnuelle ? String(camion.dotationAnnuelle) : "");
-    setFrequenceVidange(camion.frequenceVidange ? String(camion.frequenceVidange) : "");
     setEcheanceAssurance(camion.echeanceAssurance ? new Date(camion.echeanceAssurance).toISOString().split("T")[0] : "");
     setNumeroPoliceAssurance(camion.numeroPoliceAssurance || "");
     setCompagnieAssurance(camion.compagnieAssurance || "");
@@ -267,7 +264,6 @@ export default function CamionsPage() {
       capaciteReservoir,
       transmission,
       dotationAnnuelle,
-      frequenceVidange,
       echeanceAssurance: echeanceAssurance || null,
       numeroPoliceAssurance,
       compagnieAssurance,
@@ -634,16 +630,15 @@ export default function CamionsPage() {
 
               <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm space-y-4">
                 <h4 className="text-[9px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Allocation & Entretien
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Budget & Allocation
                 </h4>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <Input label="Dotation annuelle (F) *" type="number" value={dotationAnnuelle} onChange={(e) => setDotationAnnuelle(e.target.value)} required />
+                    <Input label="Dotation annuelle (F)" type="number" value={dotationAnnuelle} onChange={(e) => setDotationAnnuelle(e.target.value)} />
                     <p className={`text-[10px] font-bold px-1 ${budgetStats.budgetRestant < 0 ? 'text-red-500' : 'text-slate-400 dark:text-slate-500'}`}>
                       Budget dispo : {formatMontant(budgetStats.budgetRestant)}
                     </p>
                   </div>
-                  <Input label="Fréquence vidange (km)" type="number" value={frequenceVidange} onChange={(e) => setFrequenceVidange(e.target.value)} />
                 </div>
               </div>
             </div>
