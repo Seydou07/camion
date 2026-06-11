@@ -102,6 +102,15 @@ const bottomMenuItems = [
       </svg>
     ),
   },
+  {
+    label: "Déconnexion",
+    href: "#",
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+      </svg>
+    ),
+  },
 ];
 
 // Breadcrumb mapping
@@ -155,29 +164,41 @@ function getPageTitle(pathname: string) {
   return "TruckManager";
 }
 
-function NavItem({ item, isActive, darkMode }: { item: typeof menuItems[0]; isActive: boolean; darkMode: boolean }) {
+function NavItem({ item, isActive, darkMode, onClick }: { item: typeof menuItems[0]; isActive: boolean; darkMode: boolean; onClick?: () => void }) {
+  const classes = cn(
+    "relative flex items-center gap-3 py-3 px-6 font-bold text-sm tracking-tight border-r-4 transition-all duration-300 group",
+    isActive
+      ? darkMode 
+        ? "bg-fleet-blue/20 text-white border-fleet-blue" 
+        : "bg-fleet-blue/10 text-fleet-blue border-fleet-blue"
+      : darkMode
+        ? "text-slate-400 border-transparent hover:bg-slate-700 hover:text-white"
+        : "text-slate-500/60 border-transparent hover:bg-slate-50 hover:text-fleet-blue"
+  );
+
+  const iconSpan = (
+    <span className={cn(
+      "w-5 h-5 transition-transform duration-300 group-hover:scale-110",
+      isActive 
+        ? darkMode ? "text-white" : "text-fleet-blue" 
+        : darkMode ? "text-slate-400 group-hover:text-white" : "text-slate-400 group-hover:text-fleet-blue"
+    )}>
+      {item.icon}
+    </span>
+  );
+
+  if (onClick) {
+    return (
+      <button onClick={onClick} className={classes + " w-full text-left cursor-pointer"}>
+        {iconSpan}
+        <span className="flex-1 uppercase tracking-tight">{item.label}</span>
+      </button>
+    );
+  }
+
   return (
-    <Link
-      href={item.href}
-      className={cn(
-        "relative flex items-center gap-3 py-3 px-6 font-bold text-sm tracking-tight border-r-4 transition-all duration-300 group",
-        isActive
-          ? darkMode 
-            ? "bg-fleet-blue/20 text-white border-fleet-blue" 
-            : "bg-fleet-blue/10 text-fleet-blue border-fleet-blue"
-          : darkMode
-            ? "text-slate-400 border-transparent hover:bg-slate-700 hover:text-white"
-            : "text-slate-500/60 border-transparent hover:bg-slate-50 hover:text-fleet-blue"
-      )}
-    >
-      <span className={cn(
-        "w-5 h-5 transition-transform duration-300 group-hover:scale-110",
-        isActive 
-          ? darkMode ? "text-white" : "text-fleet-blue" 
-          : darkMode ? "text-slate-400 group-hover:text-white" : "text-slate-400 group-hover:text-fleet-blue"
-      )}>
-        {item.icon}
-      </span>
+    <Link href={item.href} className={classes}>
+      {iconSpan}
       <span className="flex-1 uppercase tracking-tight">{item.label}</span>
     </Link>
   );
@@ -192,6 +213,7 @@ export function DashboardShell({
   const router = useRouter();
   const { data: session, status } = useSession();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [profileOpen, setProfileOpen] = useState(false);
   const { darkMode, setDarkMode } = useDarkMode();
 
   // Call all hooks BEFORE any conditional returns!
@@ -203,6 +225,17 @@ export function DashboardShell({
       router.push("/login");
     }
   }, [status, router]);
+
+  // Close profile dropdown on click outside
+  useEffect(() => {
+    if (!profileOpen) return;
+    const handler = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest("[data-profile-dropdown]")) setProfileOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [profileOpen]);
 
   // All dark mode logic is handled by DarkModeContext
 
@@ -264,6 +297,21 @@ export function DashboardShell({
             const isActive = pathname === item.href;
             return <NavItem key={item.href} item={item} isActive={isActive} darkMode={darkMode} />;
           })}
+          {/* Déconnexion en bas du sidebar */}
+          <NavItem
+            item={{
+              label: "Déconnexion",
+              href: "#",
+              icon: (
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                </svg>
+              ),
+            }}
+            isActive={false}
+            darkMode={darkMode}
+            onClick={() => signOut({ callbackUrl: "/login" })}
+          />
         </nav>
 
         {/* User section */}
@@ -281,6 +329,7 @@ export function DashboardShell({
               </p>
             </div>
           </div>
+
         </div>
       </aside>
 
@@ -343,29 +392,48 @@ export function DashboardShell({
                 )}
               </button>
 
-              {/* User profile + logout */}
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-fleet-blue to-fleet-blue-dark text-white flex items-center justify-center text-xs font-black shadow-lg shadow-fleet-blue/15">
+              {/* User profile dropdown */}
+              <div className="relative" data-profile-dropdown>
+                <button
+                  onClick={() => setProfileOpen(!profileOpen)}
+                  className={cn("flex items-center gap-2 p-1.5 pr-3 rounded-xl transition-all cursor-pointer",
+                    darkMode 
+                      ? "hover:bg-slate-700" 
+                      : "hover:bg-slate-100"
+                  )}
+                >
+                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-fleet-blue to-fleet-blue-dark text-white flex items-center justify-center text-xs font-black">
                     {session.user?.name?.charAt(0)?.toUpperCase() || "A"}
                   </div>
                   <span className={cn("text-sm font-semibold", darkMode ? "text-white" : "text-slate-700")}>
                     {session.user?.name?.split(' ')[0] || "Admin"}
                   </span>
-                </div>
-                <button
-                  onClick={() => signOut({ callbackUrl: "/login" })}
-                  className={cn("p-2 rounded-xl transition-all duration-200 cursor-pointer",
-                    darkMode 
-                      ? "hover:bg-rose-500/20 text-slate-400 hover:text-rose-400" 
-                      : "hover:bg-rose-50 text-slate-400 hover:text-rose-500"
-                  )}
-                  title="Se déconnecter"
-                >
-                  <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                  <svg className={cn("w-4 h-4 transition-transform", profileOpen && "rotate-180", darkMode ? "text-slate-400" : "text-slate-500")} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                   </svg>
                 </button>
+
+                {profileOpen && (
+                  <div className={cn("absolute right-0 mt-2 w-52 rounded-2xl shadow-xl border p-1.5 z-50",
+                    darkMode ? "bg-slate-800 border-slate-700" : "bg-white border-slate-100"
+                  )}>
+                    <div className={cn("px-4 py-3 border-b mb-1", darkMode ? "border-slate-700" : "border-slate-100")}>
+                      <p className={cn("text-sm font-bold", darkMode ? "text-white" : "text-slate-800")}>{session.user?.name}</p>
+                      <p className="text-xs text-slate-400 truncate">{session.user?.email}</p>
+                    </div>
+                    <button
+                      onClick={() => { setProfileOpen(false); signOut({ callbackUrl: "/login" }); }}
+                      className={cn("w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer",
+                        darkMode ? "text-rose-400 hover:bg-rose-500/15" : "text-rose-600 hover:bg-rose-50"
+                      )}
+                    >
+                      <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                      </svg>
+                      Déconnexion
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
