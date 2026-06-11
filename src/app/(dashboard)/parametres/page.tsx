@@ -20,15 +20,15 @@ export default function ParametresPage() {
       <div className="flex flex-col md:flex-row gap-8">
          {/* Sidebar Tabs */}
          <div className="w-full md:w-64 flex-shrink-0">
-            <div className="bg-white rounded-3xl p-3 border border-slate-100 shadow-sm space-y-1">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl p-3 border border-slate-100 dark:border-slate-800 shadow-sm space-y-1">
                {tabs.map((tab) => (
                   <button
                      key={tab.id}
                      onClick={() => setActiveTab(tab.id)}
                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all ${
                         activeTab === tab.id 
-                        ? "bg-slate-900 text-white shadow-lg shadow-slate-900/20" 
-                        : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
+                        ? "bg-slate-900 dark:bg-fleet-blue text-white shadow-lg shadow-slate-900/20" 
+                        : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-800 dark:hover:text-slate-200"
                      }`}
                   >
                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={activeTab === tab.id ? 2 : 1.5}>
@@ -44,16 +44,16 @@ export default function ParametresPage() {
          <div className="flex-1">
             {activeTab === "profil" && (
                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <div className="card-modern p-8">
-                     <h2 className="text-lg font-black text-slate-800 mb-6">Informations personnelles</h2>
+                  <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm rounded-2xl p-8">
+                     <h2 className="text-lg font-black text-slate-800 dark:text-slate-100 mb-6">Informations personnelles</h2>
                      
-                     <div className="flex items-center gap-6 mb-8 pb-8 border-b border-slate-100">
-                        <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-fleet-blue to-fleet-blue-dark flex items-center justify-center text-3xl font-black text-white shadow-lg shadow-fleet-blue/20 border-4 border-white">
+                     <div className="flex items-center gap-6 mb-8 pb-8 border-b border-slate-100 dark:border-slate-800">
+                        <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-fleet-blue to-fleet-blue-dark flex items-center justify-center text-3xl font-black text-white shadow-lg shadow-fleet-blue/20 border-4 border-white dark:border-slate-900">
                            {session?.user?.name?.charAt(0)?.toUpperCase() || "A"}
                         </div>
                         <div>
                            <Button variant="secondary" className="mb-2">Changer la photo</Button>
-                           <p className="text-xs text-slate-400 font-medium">Format recommandé: 256x256px JPG, PNG.</p>
+                           <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">Format recommandé: 256x256px JPG, PNG.</p>
                         </div>
                      </div>
 
@@ -76,9 +76,9 @@ export default function ParametresPage() {
 
             {activeTab === "entreprise" && (
                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <div className="card-modern p-8">
-                     <h2 className="text-lg font-black text-slate-800 mb-6">Informations de l'entreprise</h2>
-                     <p className="text-sm text-slate-500 mb-8 leading-relaxed">
+                  <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm rounded-2xl p-8">
+                     <h2 className="text-lg font-black text-slate-800 dark:text-slate-100 mb-6">Informations de l'entreprise</h2>
+                     <p className="text-sm text-slate-500 dark:text-slate-400 mb-8 leading-relaxed">
                         Ces informations seront utilisées sur les factures générées par le système et dans les rapports officiels.
                      </p>
                      
@@ -99,8 +99,8 @@ export default function ParametresPage() {
 
             {activeTab === "notifications" && (
                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <div className="card-modern p-8">
-                     <h2 className="text-lg font-black text-slate-800 mb-6">Préférences de notification</h2>
+                  <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm rounded-2xl p-8">
+                     <h2 className="text-lg font-black text-slate-800 dark:text-slate-100 mb-6">Préférences de notification</h2>
                      
                      <div className="space-y-4">
                         {[
@@ -109,13 +109,13 @@ export default function ParametresPage() {
                            { title: "Alertes Facturation", desc: "Notifications pour les factures impayées ou en retard.", checked: false },
                            { title: "Activité Système", desc: "Recevoir un email lors de la connexion d'un nouvel appareil au compte admin.", checked: true },
                         ].map((notif, idx) => (
-                           <div key={idx} className="flex items-start justify-between p-4 rounded-2xl border border-slate-100 hover:border-fleet-blue/20 bg-slate-50/50 hover:bg-fleet-blue/5 transition-colors">
+                           <div key={idx} className="flex items-start justify-between p-4 rounded-2xl border border-slate-100 dark:border-slate-800 hover:border-fleet-blue/20 dark:hover:border-fleet-blue/30 bg-slate-50/50 dark:bg-slate-800/50 hover:bg-fleet-blue/5 dark:hover:bg-fleet-blue/10 transition-colors">
                               <div>
-                                 <h3 className="text-sm font-bold text-slate-800">{notif.title}</h3>
-                                 <p className="text-xs text-slate-500 mt-1">{notif.desc}</p>
+                                 <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">{notif.title}</h3>
+                                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{notif.desc}</p>
                               </div>
                               {/* Toggle switch mockup */}
-                              <div className={`w-11 h-6 rounded-full p-1 transition-colors cursor-pointer ${notif.checked ? 'bg-fleet-blue' : 'bg-slate-300'}`}>
+                              <div className={`w-11 h-6 rounded-full p-1 transition-colors cursor-pointer ${notif.checked ? 'bg-fleet-blue' : 'bg-slate-300 dark:bg-slate-700'}`}>
                                  <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${notif.checked ? 'translate-x-5' : 'translate-x-0'}`}></div>
                               </div>
                            </div>
@@ -130,8 +130,8 @@ export default function ParametresPage() {
 
             {activeTab === "securite" && (
                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <div className="card-modern p-8">
-                     <h2 className="text-lg font-black text-slate-800 mb-6">Changer le mot de passe</h2>
+                  <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm rounded-2xl p-8">
+                     <h2 className="text-lg font-black text-slate-800 dark:text-slate-100 mb-6">Changer le mot de passe</h2>
                      
                      <div className="space-y-4 max-w-md">
                         <Input label="Mot de passe actuel" type="password" />
@@ -139,20 +139,20 @@ export default function ParametresPage() {
                         <Input label="Confirmer le nouveau mot de passe" type="password" />
                      </div>
                      <div className="mt-8 flex justify-start">
-                        <Button className="bg-slate-900 hover:bg-slate-800 text-white shadow-xl shadow-slate-900/20">Mettre à jour le mot de passe</Button>
+                        <Button className="bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 dark:hover:bg-slate-600 text-white shadow-xl shadow-slate-900/20">Mettre à jour le mot de passe</Button>
                      </div>
                   </div>
 
-                  <div className="card-modern p-8 border-rose-100">
-                     <h2 className="text-lg font-black text-rose-600 mb-2">Zone de danger</h2>
-                     <p className="text-sm text-slate-500 mb-6">Actions critiques liées à votre compte et vos données.</p>
+                  <div className="bg-white dark:bg-slate-900 border border-rose-100 dark:border-rose-900/50 shadow-sm rounded-2xl p-8">
+                     <h2 className="text-lg font-black text-rose-600 dark:text-rose-400 mb-2">Zone de danger</h2>
+                     <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">Actions critiques liées à votre compte et vos données.</p>
                      
-                     <div className="flex flex-col sm:flex-row gap-4 items-center justify-between p-4 bg-rose-50/50 rounded-2xl border border-rose-100">
+                     <div className="flex flex-col sm:flex-row gap-4 items-center justify-between p-4 bg-rose-50/50 dark:bg-rose-900/20 rounded-2xl border border-rose-100 dark:border-rose-900/50">
                         <div>
-                           <h3 className="text-sm font-bold text-slate-800">Supprimer le compte</h3>
-                           <p className="text-xs text-slate-500 mt-1">Cette action effacera toutes les données de manière irréversible.</p>
+                           <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Supprimer le compte</h3>
+                           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Cette action effacera toutes les données de manière irréversible.</p>
                         </div>
-                        <button className="px-4 py-2 bg-rose-100 text-rose-600 hover:bg-rose-200 text-xs font-bold rounded-xl transition-colors whitespace-nowrap">
+                        <button className="px-4 py-2 bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 hover:bg-rose-200 dark:hover:bg-rose-900/50 text-xs font-bold rounded-xl transition-colors whitespace-nowrap">
                            Supprimer définitivement
                         </button>
                      </div>

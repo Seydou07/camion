@@ -253,26 +253,26 @@ export default function RapportsPage() {
       </div>
 
       {/* Filtres */}
-      <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-4">
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-gray-100 dark:border-slate-800 shadow-sm space-y-4">
         <div className="flex items-center gap-6">
-          <span className="text-[10px] font-black uppercase text-slate-400">Type de rapport</span>
+          <span className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500">Type de rapport</span>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
               checked={reportTypes.carburant}
               onChange={(e) => setReportTypes((prev) => ({ ...prev, carburant: e.target.checked }))}
-              className="w-4 h-4 rounded border-slate-300 text-fleet-blue focus:ring-fleet-blue/20"
+              className="w-4 h-4 rounded border-slate-300 dark:border-slate-700 text-fleet-blue focus:ring-fleet-blue/20"
             />
-            <span className="text-xs font-bold text-slate-700">Carburant</span>
+            <span className="text-xs font-bold text-slate-700 dark:text-slate-200">Carburant</span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
               checked={reportTypes.maintenance}
               onChange={(e) => setReportTypes((prev) => ({ ...prev, maintenance: e.target.checked }))}
-              className="w-4 h-4 rounded border-slate-300 text-fleet-blue focus:ring-fleet-blue/20"
+              className="w-4 h-4 rounded border-slate-300 dark:border-slate-700 text-fleet-blue focus:ring-fleet-blue/20"
             />
-            <span className="text-xs font-bold text-slate-700">Maintenance</span>
+            <span className="text-xs font-bold text-slate-700 dark:text-slate-200">Maintenance</span>
           </label>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -295,39 +295,39 @@ export default function RapportsPage() {
           />
           <div className="relative" ref={vehicleDropdownRef}>
             <div className="space-y-1.5 w-full">
-              <label className="block text-[10px] font-black uppercase text-slate-400 ml-1">Véhicules</label>
+              <label className="block text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 ml-1">Véhicules</label>
               <button
                 type="button"
                 onClick={() => setVehicleDropdownOpen((prev) => !prev)}
-                className="w-full flex items-center justify-between h-9 px-4 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue hover:border-slate-300 cursor-pointer"
+                className="w-full flex items-center justify-between h-9 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-slate-800 dark:text-slate-200 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue hover:border-slate-300 dark:hover:border-slate-600 cursor-pointer"
               >
                 <span className="truncate">{selectedVehicleLabels}</span>
-                <svg className={`w-4 h-4 text-slate-400 transition-transform ${vehicleDropdownOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg className={`w-4 h-4 text-slate-400 dark:text-slate-500 transition-transform ${vehicleDropdownOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
             </div>
             {vehicleDropdownOpen && (
-              <div className="absolute top-full mt-1 left-0 right-0 z-20 bg-white border border-slate-200 rounded-xl shadow-xl max-h-60 overflow-y-auto p-2 space-y-1">
-                <label className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 cursor-pointer">
+              <div className="absolute top-full mt-1 left-0 right-0 z-20 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl max-h-60 overflow-y-auto p-2 space-y-1">
+                <label className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={selectedCamionIds.length === 0}
                     onChange={() => setSelectedCamionIds([])}
-                    className="w-4 h-4 rounded border-slate-300 text-fleet-blue focus:ring-fleet-blue/20"
+                    className="w-4 h-4 rounded border-slate-300 dark:border-slate-700 text-fleet-blue focus:ring-fleet-blue/20"
                   />
-                  <span className="text-xs font-bold text-slate-700">Tous les véhicules</span>
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-200">Tous les véhicules</span>
                 </label>
-                <div className="border-t border-slate-100 my-1" />
+                <div className="border-t border-slate-100 dark:border-slate-700 my-1" />
                 {camions.map((c) => (
-                  <label key={c.id} className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 cursor-pointer">
+                  <label key={c.id} className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={selectedCamionIds.includes(c.id)}
                       onChange={() => toggleCamion(c.id)}
-                      className="w-4 h-4 rounded border-slate-300 text-fleet-blue focus:ring-fleet-blue/20"
+                      className="w-4 h-4 rounded border-slate-300 dark:border-slate-700 text-fleet-blue focus:ring-fleet-blue/20"
                     />
-                    <span className="text-xs font-bold text-slate-700">{c.immatriculation}</span>
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-200">{c.immatriculation}</span>
                   </label>
                 ))}
               </div>
