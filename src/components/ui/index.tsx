@@ -309,8 +309,8 @@ export function Card({ children, className, hover = false, onClick }: CardProps)
   return (
     <div
       className={cn(
-        "card-modern",
-        hover && "card-modern-hover cursor-pointer",
+        "bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm rounded-2xl",
+        hover && "hover:border-slate-200 dark:hover:border-slate-700 hover:-translate-y-1 hover:shadow-md cursor-pointer",
         className
       )}
       onClick={onClick}
