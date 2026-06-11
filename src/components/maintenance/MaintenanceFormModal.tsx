@@ -199,7 +199,7 @@ export default function MaintenanceFormModal({
     >
       <form onSubmit={handleSubmit} className="space-y-6">
         {error && (
-          <div className="p-3 bg-red-50 text-red-600 rounded-xl text-sm font-semibold">
+          <div className="p-3 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 rounded-xl text-sm font-semibold">
             {error}
           </div>
         )}
@@ -207,7 +207,7 @@ export default function MaintenanceFormModal({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Colonne de Gauche */}
           <div className="space-y-4">
-            <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl shadow-sm space-y-4">
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm space-y-4">
               <h3 className="text-[9px] font-black uppercase tracking-widest text-slate-400">Informations Principales</h3>
               <div className="grid grid-cols-2 gap-4">
                 <Select
@@ -245,7 +245,7 @@ export default function MaintenanceFormModal({
               </div>
             </div>
 
-            <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl shadow-sm space-y-4">
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm space-y-4">
               <h3 className="text-[9px] font-black uppercase tracking-widest text-slate-400">Planning & Véhicule</h3>
               <div className="grid grid-cols-2 gap-4">
                 <Input
@@ -274,7 +274,7 @@ export default function MaintenanceFormModal({
 
           {/* Colonne de Droite */}
           <div className="space-y-4">
-            <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl shadow-sm space-y-4">
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm space-y-4">
               <h3 className="text-[9px] font-black uppercase tracking-widest text-slate-400">Prestataire & Notes</h3>
               <Input
                 label="Garage / Prestataire *"
@@ -290,7 +290,7 @@ export default function MaintenanceFormModal({
               />
             </div>
 
-            <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl shadow-sm space-y-4">
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm space-y-4">
               <h3 className="text-[9px] font-black uppercase tracking-widest text-slate-400">Main d'Œuvre</h3>
               <div className="grid grid-cols-2 gap-4">
                 <Input
@@ -323,7 +323,7 @@ export default function MaintenanceFormModal({
           </div>
 
           {pieces.map((piece, index) => (
-            <div key={index} className="p-3 bg-white border border-slate-100 rounded-2xl shadow-sm flex flex-wrap gap-3 items-end">
+            <div key={index} className="p-3 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm flex flex-wrap gap-3 items-end">
               <div className="flex-1 min-w-[200px]">
                 <Input
                   label="Nom de la pièce"
@@ -388,7 +388,7 @@ export default function MaintenanceFormModal({
           </div>
         )}
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+        <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
           <Button type="button" variant="ghost" onClick={onClose}>
             Annuler
           </Button>

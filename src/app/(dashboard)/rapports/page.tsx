@@ -352,14 +352,14 @@ export default function RapportsPage() {
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
                     return (
-                      <div className="bg-white rounded-2xl border border-slate-100 shadow-xl px-4 py-3 text-xs">
-                        <p className="text-xs font-semibold text-gray-500 mb-1">{payload[0].payload.name}</p>
-                        {payload.map((p: any) => (
-                          <p key={p.name} className="font-bold" style={{ color: p.color }}>
-                            {p.name} : {formatMontant(p.value as number)}
-                          </p>
-                        ))}
-                      </div>
+                <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-xl px-4 py-3 text-xs">
+                          <p className="text-xs font-semibold text-gray-500 mb-1">{payload[0].payload.name}</p>
+                          {payload.map((p: any) => (
+                            <p key={p.name} className="font-bold" style={{ color: p.color }}>
+                              {p.name} : {formatMontant(p.value as number)}
+                            </p>
+                          ))}
+                        </div>
                     );
                   }
                   return null;
@@ -391,10 +391,10 @@ export default function RapportsPage() {
                   content={({ active, payload }) => {
                     if (active && payload && payload.length) {
                       return (
-                        <div className="bg-white rounded-2xl border border-slate-100 shadow-xl px-4 py-3 text-xs">
+                        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-xl px-4 py-3 text-xs">
                           <p className="font-semibold text-gray-500 mb-1">{payload[0].payload.name}</p>
                           <p className="font-bold text-fleet-blue">Pleins : {payload[0].payload.pleins}</p>
-                          <p className="font-bold text-slate-600">Litres : {payload[0].payload.litres} L</p>
+                          <p className="font-bold text-slate-600 dark:text-slate-300">Litres : {payload[0].payload.litres} L</p>
                           <p className="font-bold text-rose-500">Montant : {formatMontant(payload[0].payload.montant)}</p>
                         </div>
                       );
@@ -426,10 +426,10 @@ export default function RapportsPage() {
                   content={({ active, payload }) => {
                     if (active && payload && payload.length) {
                       return (
-                        <div className="bg-white rounded-2xl border border-slate-100 shadow-xl px-4 py-3 text-xs">
+                        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-xl px-4 py-3 text-xs">
                           <p className="font-semibold text-gray-500 mb-1">{payload[0].payload.name}</p>
                           <p className="font-bold text-red-500">Interventions : {payload[0].payload.interventions}</p>
-                          <p className="font-bold text-slate-700">Coût : {formatMontant(payload[0].payload.montant)}</p>
+                          <p className="font-bold text-slate-700 dark:text-slate-200">Coût : {formatMontant(payload[0].payload.montant)}</p>
                         </div>
                       );
                     }
@@ -463,8 +463,8 @@ export default function RapportsPage() {
                     if (active && payload && payload.length) {
                       const p = payload[0].payload;
                       return (
-                        <div className="bg-white rounded-2xl border border-slate-100 shadow-xl px-4 py-3 text-xs">
-                          <p className="font-bold text-slate-800 mb-1">{p.immatriculation}</p>
+                        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-xl px-4 py-3 text-xs">
+                          <p className="font-bold text-slate-800 dark:text-slate-200 mb-1">{p.immatriculation}</p>
                           <p className="text-indigo-600">Dotation : {formatMontant(p.dotation)}</p>
                           <p className="text-rose-600">Consommé : {formatMontant(p.consomme)}</p>
                         </div>
@@ -493,20 +493,20 @@ export default function RapportsPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-100 bg-gray-50/50">
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Camion</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Chauffeur</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Kilométrage</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Carburant</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Conso Moy.</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Maintenance</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Exploitation</th>
+                <tr className="border-b border-gray-100 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-800/50">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-300 uppercase tracking-wider">Camion</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-300 uppercase tracking-wider">Chauffeur</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-300 uppercase tracking-wider">Kilométrage</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-300 uppercase tracking-wider">Carburant</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-300 uppercase tracking-wider">Conso Moy.</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-300 uppercase tracking-wider">Maintenance</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-300 uppercase tracking-wider">Exploitation</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-gray-50 dark:divide-slate-800">
                 {(data.comparatifCamions || []).map((c: any) => (
-                  <tr key={c.id} className="hover:bg-fleet-blue/5 cursor-pointer transition-colors text-xs font-medium text-slate-700" onClick={() => (window.location.href = `/camions/${c.id}`)}>
-                    <td className="px-4 py-3 font-bold text-slate-900 text-sm">{c.immatriculation}</td>
+                  <tr key={c.id} className="hover:bg-fleet-blue/5 cursor-pointer transition-colors text-xs font-medium text-slate-700 dark:text-slate-200" onClick={() => (window.location.href = `/camions/${c.id}`)}>
+                    <td className="px-4 py-3 font-bold text-slate-900 dark:text-slate-100 text-sm">{c.immatriculation}</td>
                     <td className="px-4 py-3">{c.chauffeurNom}</td>
                     <td className="px-4 py-3 font-semibold">{c.kilometrage.toLocaleString()} km</td>
                     <td className="px-4 py-3">{formatMontant(c.carburant)} ({c.litres} L)</td>

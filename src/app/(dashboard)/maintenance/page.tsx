@@ -138,15 +138,15 @@ export default function MaintenancePage() {
   const getStatusBadge = (statut: string) => {
     switch (statut) {
       case "planifiee":
-        return <span className="bg-amber-50 text-amber-700 border border-amber-200 px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider">Planifiée</span>;
+        return <span className="bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-900/50 px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider">Planifiée</span>;
       case "en_cours":
         return <span className="bg-fleet-blue/10 text-fleet-blue border border-fleet-blue/20 px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider">En Cours</span>;
       case "terminee":
-        return <span className="bg-green-50 text-green-700 border border-green-200 px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider">Terminée</span>;
+        return <span className="bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-900/50 px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider">Terminée</span>;
       case "annulee":
-        return <span className="bg-red-50 text-red-700 border border-red-200 px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider">Annulée</span>;
+        return <span className="bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900/50 px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider">Annulée</span>;
       default:
-        return <span className="bg-gray-50 text-gray-700 border border-gray-200 px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider">{statut}</span>;
+        return <span className="bg-gray-50 dark:bg-gray-950/30 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-900/50 px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider">{statut}</span>;
     }
   };
 
@@ -259,7 +259,7 @@ export default function MaintenancePage() {
                 placeholder="Rechercher par camion, référence..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-10 pl-10 pr-4 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue"
+                className="w-full h-10 pl-10 pr-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-slate-800 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -276,7 +276,7 @@ export default function MaintenancePage() {
                 className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-colors flex-shrink-0 ${
                   filterStatut === btn.value
                     ? "bg-fleet-blue text-white shadow-lg shadow-fleet-blue/20"
-                    : "bg-slate-50 text-slate-500 hover:bg-slate-100"
+                    : "bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
                 }`}
               >
                 {btn.label}

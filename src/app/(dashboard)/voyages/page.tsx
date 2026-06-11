@@ -482,13 +482,13 @@ export default function VoyagesPage() {
   const getStatusBadge = (statut: string) => {
     if (statut === "EN_COURS" || statut === "en_cours") {
       return (
-        <span className="bg-amber-50 text-amber-700 border border-amber-200 px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider animate-pulse">
+        <span className="bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-900/50 px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider animate-pulse">
           En route
         </span>
       );
     }
     return (
-      <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider">
+      <span className="bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/50 px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider">
         Terminé
       </span>
     );
@@ -500,7 +500,7 @@ export default function VoyagesPage() {
       header: "Date",
       className: "w-32",
       render: (item: any) => (
-        <span className="text-sm font-semibold text-slate-700">{formatDate(item.dateDebut).split(' ')[0]}</span>
+        <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{formatDate(item.dateDebut).split(' ')[0]}</span>
       ),
     },
     {
@@ -509,7 +509,7 @@ export default function VoyagesPage() {
       className: "w-40",
       render: (item: any) => (
         <div className="flex flex-col">
-          <span className="font-bold text-slate-800 bg-slate-100 border border-slate-200 px-2 py-1 rounded-lg text-[11px] tracking-tight w-fit">
+          <span className="font-bold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-700 px-2 py-1 rounded-lg text-[11px] tracking-tight w-fit">
             {item.camion?.immatriculation}
           </span>
           <span className="text-[10px] text-slate-400 mt-1 font-medium">{item.camion?.marque}</span>
@@ -522,10 +522,10 @@ export default function VoyagesPage() {
       className: "w-48",
       render: (item: any) => (
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400 border border-slate-200">
+          <div className="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-[10px] font-black text-slate-400 border border-slate-200 dark:border-slate-700">
             {item.chauffeur ? `${item.chauffeur.prenom?.[0] || ""}${item.chauffeur.nom?.[0] || ""}` : "?"}
           </div>
-          <span className="text-sm font-bold text-slate-600 truncate">
+          <span className="text-sm font-bold text-slate-600 dark:text-slate-300 truncate">
             {item.chauffeur ? `${item.chauffeur.prenom || ""} ${item.chauffeur.nom}` : "Non assigné"}
           </span>
         </div>
@@ -536,7 +536,7 @@ export default function VoyagesPage() {
       header: "Destination",
       render: (item: any) => (
         <div className="flex flex-col">
-          <span className="text-sm font-bold text-slate-700 truncate block max-w-[300px]">{item.destination}</span>
+          <span className="text-sm font-bold text-slate-700 dark:text-slate-200 truncate block max-w-[300px]">{item.destination}</span>
           <span className="text-[10px] text-slate-400 font-medium">Voyage #{item.numeroVoyage}</span>
         </div>
       ),
@@ -572,30 +572,30 @@ export default function VoyagesPage() {
     <div className="space-y-6">
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-4 rounded-2xl border-l-4 border-amber-500 bg-white shadow-sm relative overflow-hidden group">
-          <div className="absolute inset-0 bg-amber-50/50 pointer-events-none" />
+        <div className="p-4 rounded-2xl border-l-4 border-amber-500 bg-white dark:bg-slate-900 shadow-sm relative overflow-hidden group">
+          <div className="absolute inset-0 bg-amber-50/50 dark:bg-amber-950/20 pointer-events-none" />
           <div className="relative z-10">
             <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Voyages en cours</p>
-            <p className="text-2xl font-black leading-none text-amber-600 tracking-tight mt-1">{stats.actifs}</p>
-            <p className="text-[10px] text-slate-500 font-semibold mt-1.5 uppercase tracking-tighter">Missions actives sur la route</p>
+            <p className="text-2xl font-black leading-none text-amber-600 dark:text-amber-300 tracking-tight mt-1">{stats.actifs}</p>
+            <p className="text-[10px] text-slate-500 dark:text-slate-300 font-semibold mt-1.5 uppercase tracking-tighter">Missions actives sur la route</p>
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl border-l-4 border-fleet-blue bg-white shadow-sm relative overflow-hidden group">
+        <div className="p-4 rounded-2xl border-l-4 border-fleet-blue bg-white dark:bg-slate-900 shadow-sm relative overflow-hidden group">
           <div className="absolute inset-0 bg-fleet-blue/5 pointer-events-none" />
           <div className="relative z-10">
             <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Distance Totale</p>
             <p className="text-2xl font-black leading-none text-fleet-blue tracking-tight mt-1">{stats.totalKm.toLocaleString()} km</p>
-            <p className="text-[10px] text-slate-500 font-semibold mt-1.5 uppercase tracking-tighter">Cumul des kilomètres parcourus</p>
+            <p className="text-[10px] text-slate-500 dark:text-slate-300 font-semibold mt-1.5 uppercase tracking-tighter">Cumul des kilomètres parcourus</p>
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl border-l-4 border-rose-500 bg-white shadow-sm relative overflow-hidden group">
-          <div className="absolute inset-0 bg-rose-50/50 pointer-events-none" />
+        <div className="p-4 rounded-2xl border-l-4 border-rose-500 bg-white dark:bg-slate-900 shadow-sm relative overflow-hidden group">
+          <div className="absolute inset-0 bg-rose-50/50 dark:bg-rose-950/20 pointer-events-none" />
           <div className="relative z-10">
             <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Budget Carburant</p>
-            <p className="text-2xl font-black leading-none text-rose-600 tracking-tight mt-1">{formatMontantAbrege(stats.totalCarb)}</p>
-            <p className="text-[10px] text-slate-500 font-semibold mt-1.5 uppercase tracking-tighter">Dépenses totales sur voyages</p>
+            <p className="text-2xl font-black leading-none text-rose-600 dark:text-rose-400 tracking-tight mt-1">{formatMontantAbrege(stats.totalCarb)}</p>
+            <p className="text-[10px] text-slate-500 dark:text-slate-300 font-semibold mt-1.5 uppercase tracking-tighter">Dépenses totales sur voyages</p>
           </div>
         </div>
       </div>
@@ -613,7 +613,7 @@ export default function VoyagesPage() {
                 <input
                   type="text"
                   placeholder="Rechercher une destination, un camion ou un chauffeur..."
-                  className="w-full h-10 pl-10 pr-4 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue"
+                  className="w-full h-10 pl-10 pr-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-slate-800 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
@@ -631,7 +631,7 @@ export default function VoyagesPage() {
                   className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-colors flex-shrink-0 ${
                     filterStatut === btn.value
                       ? "bg-fleet-blue text-white shadow-lg shadow-fleet-blue/20"
-                      : "bg-slate-50 text-slate-500 hover:bg-slate-100"
+                      : "bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50"
                   }`}
                 >
                   {btn.label}
@@ -661,7 +661,7 @@ export default function VoyagesPage() {
               onRowClick={(item) => handleOpenDetailModal(item)}
               emptyMessage="Aucun voyage trouvé."
             />
-            <div className="px-6 py-4 border-t border-slate-50 bg-slate-50/30">
+            <div className="px-6 py-4 border-t border-slate-50 dark:border-slate-700 bg-slate-50/30 dark:bg-slate-800/30">
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
@@ -744,7 +744,7 @@ export default function VoyagesPage() {
             onChange={(e) => setObservations(e.target.value)}
           />
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-slate-700">
             <Button type="button" variant="ghost" onClick={() => setIsAddModalOpen(false)}>
               Annuler
             </Button>
@@ -763,7 +763,7 @@ export default function VoyagesPage() {
       >
         {selectedVoyage && (
           <form onSubmit={handleEndVoyage} className="space-y-4">
-            <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 text-xs space-y-1 mb-4 text-gray-600">
+            <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700 text-xs space-y-1 mb-4 text-gray-600 dark:text-slate-300">
               <p><strong>Numéro :</strong> {selectedVoyage.numeroVoyage}</p>
               <p><strong>Camion :</strong> {selectedVoyage.camion?.immatriculation}</p>
               <p><strong>Destination :</strong> {selectedVoyage.destination}</p>
@@ -797,10 +797,10 @@ export default function VoyagesPage() {
             />
 
             {/* Ticket upload at closure */}
-            <div className="p-4 rounded-xl border border-amber-200 bg-amber-50/50 space-y-4">
+            <div className="p-4 rounded-xl border border-amber-200 dark:border-amber-900/50 bg-amber-50/50 dark:bg-amber-950/20 space-y-4">
               <div className="flex items-center justify-between">
-                <h4 className="text-[10px] font-black uppercase tracking-widest text-amber-700">Tickets carburant</h4>
-                <span className="text-[9px] font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full italic">Optionnel</span>
+                <h4 className="text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-300">Tickets carburant</h4>
+                <span className="text-[9px] font-bold text-amber-600 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/30 px-2 py-0.5 rounded-full italic">Optionnel</span>
               </div>
 
               <div className="space-y-2">
@@ -816,25 +816,25 @@ export default function VoyagesPage() {
                   />
                   <label
                     htmlFor="end-fuel-receipt-upload"
-                    className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-slate-200 rounded-xl hover:border-fleet-blue hover:bg-fleet-blue/5 transition-all cursor-pointer bg-white"
+                    className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl hover:border-fleet-blue hover:bg-fleet-blue/5 transition-all cursor-pointer bg-white dark:bg-slate-900"
                   >
                     <div className="flex flex-col items-center gap-1">
                       <svg className="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                       </svg>
-                      <span className="text-[10px] font-bold text-slate-500">Cliquer pour joindre les reçus finaux</span>
+                      <span className="text-[10px] font-bold text-slate-500 dark:text-slate-300">Cliquer pour joindre les reçus finaux</span>
                     </div>
                   </label>
                 </div>
                 {receiptFiles.length > 0 && (
                   <div className="grid grid-cols-3 gap-2 mt-2">
                     {receiptFiles.map((file, idx) => (
-                      <div key={idx} className="relative group rounded-lg border border-slate-100 overflow-hidden bg-white h-16">
+                      <div key={idx} className="relative group rounded-lg border border-slate-100 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-900 h-16">
                         {file.file.type.startsWith("image/") ? (
                           <img src={file.preview} alt="Preview" className="w-full h-full object-cover" />
                         ) : (
                           <div className="flex items-center justify-center h-full">
-                            <svg className="w-5 h-5 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                            <svg className="w-5 h-5 text-rose-500 dark:text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
                           </div>
                         )}
                         <button 
@@ -870,21 +870,21 @@ export default function VoyagesPage() {
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                     <div>
                       <p className="text-slate-400 font-bold uppercase text-[9px]">Mouvements</p>
-                      <p className="font-black text-slate-800">{selectedVoyage.carburant?.mouvements?.length || 0}</p>
+                      <p className="font-black text-slate-800 dark:text-slate-200">{selectedVoyage.carburant?.mouvements?.length || 0}</p>
                     </div>
                     <div>
                       <p className="text-slate-400 font-bold uppercase text-[9px]">Coût carburant</p>
-                      <p className="font-black text-rose-600">{formatMontant(coutCarb)}</p>
+                      <p className="font-black text-rose-600 dark:text-rose-400">{formatMontant(coutCarb)}</p>
                     </div>
                     <div>
                       <p className="text-slate-400 font-bold uppercase text-[9px]">Distance</p>
-                      <p className="font-black text-slate-800">
+                      <p className="font-black text-slate-800 dark:text-slate-200">
                         {dist !== null ? `${dist} km` : "—"}
                       </p>
                     </div>
                     <div>
                       <p className="text-slate-400 font-bold uppercase text-[9px]">Conso (estimée)</p>
-                      <p className="font-black text-slate-800">
+                      <p className="font-black text-slate-800 dark:text-slate-200">
                         {conso ? `${conso} L/100` : "—"}
                       </p>
                     </div>
@@ -893,7 +893,7 @@ export default function VoyagesPage() {
               );
             })()}
 
-            <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+            <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-slate-700">
               <Button type="button" variant="ghost" onClick={() => setIsEndModalOpen(false)}>
                 Annuler
               </Button>
@@ -916,7 +916,7 @@ export default function VoyagesPage() {
         {selectedVoyage && (
           <div className="space-y-5 h-full flex flex-col">
             {/* Header Section with key stats */}
-            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 shrink-0">
+            <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700 shrink-0">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-fleet-blue text-white flex items-center justify-center shadow-lg shadow-fleet-blue/20">
                   <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -924,12 +924,12 @@ export default function VoyagesPage() {
                   </svg>
                 </div>
                 <div>
-                  <h4 className="text-lg font-black text-slate-800 tracking-tight uppercase">Voyage #{selectedVoyage.numeroVoyage}</h4>
+                  <h4 className="text-lg font-black text-slate-800 dark:text-slate-200 tracking-tight uppercase">Voyage #{selectedVoyage.numeroVoyage}</h4>
                   <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{selectedVoyage.destination}</p>
                 </div>
               </div>
               <div className="flex items-center gap-6">
-                <div className="text-right border-r border-slate-200 pr-6 hidden sm:block">
+                <div className="text-right border-r border-slate-200 dark:border-slate-700 pr-6 hidden sm:block">
                   <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Distance</p>
                   <p className="text-sm font-black text-fleet-blue">
                     {selectedVoyage.kilometrageArrivee 
@@ -951,49 +951,49 @@ export default function VoyagesPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Acteurs */}
                   <div className="space-y-3">
-                    <div className="p-4 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center gap-4">
+                    <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 shadow-sm flex items-center gap-4">
                       <div className="w-10 h-10 rounded-full bg-fleet-blue/5 text-fleet-blue flex items-center justify-center shrink-0">
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
                       </div>
                       <div>
                         <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Véhicule</p>
                         <p className="text-sm font-black text-fleet-blue">{selectedVoyage.camion?.immatriculation}</p>
-                        <p className="text-[10px] font-bold text-slate-500">{selectedVoyage.camion?.marque} {selectedVoyage.camion?.modele}</p>
+                        <p className="text-[10px] font-bold text-slate-500 dark:text-slate-300">{selectedVoyage.camion?.marque} {selectedVoyage.camion?.modele}</p>
                       </div>
                     </div>
-                    <div className="p-4 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center shrink-0">
+                    <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 shadow-sm flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800/50 text-slate-400 flex items-center justify-center shrink-0">
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                       </div>
                       <div>
                         <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Chauffeur</p>
-                        <p className="text-sm font-black text-slate-800">{selectedVoyage.chauffeur ? `${selectedVoyage.chauffeur.prenom} ${selectedVoyage.chauffeur.nom}` : "Non assigné"}</p>
-                        <p className="text-[10px] font-bold text-slate-500">{selectedVoyage.chauffeur?.telephone || "—"}</p>
+                        <p className="text-sm font-black text-slate-800 dark:text-slate-200">{selectedVoyage.chauffeur ? `${selectedVoyage.chauffeur.prenom} ${selectedVoyage.chauffeur.nom}` : "Non assigné"}</p>
+                        <p className="text-[10px] font-bold text-slate-500 dark:text-slate-300">{selectedVoyage.chauffeur?.telephone || "—"}</p>
                       </div>
                     </div>
                   </div>
 
                   {/* Trajet */}
-                  <div className="p-5 rounded-2xl bg-slate-50 border border-slate-100 space-y-4">
-                    <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500 border-b border-slate-200 pb-2 flex items-center gap-2">
+                  <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 space-y-4">
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 pb-2 flex items-center gap-2">
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
                       Suivi Odomètre
                     </h4>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-3">
                       <div>
                         <p className="text-[9px] font-bold text-slate-400 uppercase">Index Départ</p>
-                        <p className="text-xs font-black text-slate-700">{selectedVoyage.kilometrageDepart?.toLocaleString()} km</p>
+                        <p className="text-xs font-black text-slate-700 dark:text-slate-200">{selectedVoyage.kilometrageDepart?.toLocaleString()} km</p>
                       </div>
                       <div>
                         <p className="text-[9px] font-bold text-slate-400 uppercase">Index Arrivée</p>
-                        <p className="text-xs font-black text-slate-700">{selectedVoyage.kilometrageArrivee?.toLocaleString() || "—"} km</p>
+                        <p className="text-xs font-black text-slate-700 dark:text-slate-200">{selectedVoyage.kilometrageArrivee?.toLocaleString() || "—"} km</p>
                       </div>
-                      <div className="col-span-2 pt-2 border-t border-slate-200/50">
+                      <div className="col-span-2 pt-2 border-t border-slate-200/50 dark:border-slate-700/50">
                         <p className="text-[9px] font-bold text-slate-400 uppercase">Dates Trajet</p>
                         <div className="flex items-center gap-2 mt-1">
-                          <span className="text-xs font-black text-slate-700">{formatDate(selectedVoyage.dateDebut).split(' ')[0]}</span>
-                          <span className="text-slate-300">→</span>
-                          <span className="text-xs font-black text-slate-700">{selectedVoyage.dateFin ? formatDate(selectedVoyage.dateFin).split(' ')[0] : "..."}</span>
+                          <span className="text-xs font-black text-slate-700 dark:text-slate-200">{formatDate(selectedVoyage.dateDebut).split(' ')[0]}</span>
+                          <span className="text-slate-300 dark:text-slate-600">→</span>
+                          <span className="text-xs font-black text-slate-700 dark:text-slate-200">{selectedVoyage.dateFin ? formatDate(selectedVoyage.dateFin).split(' ')[0] : "..."}</span>
                         </div>
                       </div>
                     </div>
@@ -1001,9 +1001,9 @@ export default function VoyagesPage() {
                 </div>
 
                 {/* Carburant Section */}
-                <div className="p-6 rounded-2xl bg-white border border-slate-100 shadow-sm space-y-5">
-                  <div className="flex items-center justify-between border-b border-slate-50 pb-3">
-                    <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 shadow-sm space-y-5">
+                  <div className="flex items-center justify-between border-b border-slate-50 dark:border-slate-700 pb-3">
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-300 flex items-center gap-2">
                       <svg className="w-3.5 h-3.5 text-fleet-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                       Analyse Financière Carburant
                     </h4>
@@ -1013,11 +1013,11 @@ export default function VoyagesPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div className="space-y-1">
                       <p className="text-[9px] font-bold text-slate-400 uppercase">Dépenses Réelles du Voyage</p>
-                      <p className="text-lg font-black text-rose-500">{formatMontant(selectedVoyage.carburant?.totalDepenses || 0)}</p>
+                      <p className="text-lg font-black text-rose-500 dark:text-rose-400">{formatMontant(selectedVoyage.carburant?.totalDepenses || 0)}</p>
                     </div>
                     <div className="space-y-1 text-right">
                       <p className="text-[9px] font-bold text-slate-400 uppercase">Budget Véhicule Restant</p>
-                      <p className="text-lg font-black text-emerald-600">
+                      <p className="text-lg font-black text-emerald-600 dark:text-emerald-400">
                         {formatMontant(selectedVoyage.camion?.budgetRestant || 0)}
                       </p>
                     </div>
@@ -1026,11 +1026,11 @@ export default function VoyagesPage() {
                   <div className="space-y-2">
                     <div className="flex justify-between items-center text-[10px] font-black uppercase">
                       <span className="text-slate-400 tracking-widest">Dépenses cumulées</span>
-                      <span className="text-rose-500">
+                      <span className="text-rose-500 dark:text-rose-400">
                         {formatMontant(selectedVoyage.carburant?.totalDepenses || 0)}
                       </span>
                     </div>
-                    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                    <div className="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden shadow-inner">
                       <div 
                         className="h-full transition-all duration-700 ease-out bg-rose-500"
                         style={{ width: "100%" }}
@@ -1058,20 +1058,20 @@ export default function VoyagesPage() {
                 </div>
 
                 {selectedVoyage.observations && (
-                  <div className="p-4 rounded-2xl bg-amber-50 border border-amber-100 relative overflow-hidden">
+                  <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900/50 relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-2 opacity-10">
-                      <svg className="w-12 h-12 text-amber-600" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C19.5693 16 20.017 15.5523 20.017 15V9C20.017 8.44772 19.5693 8 19.017 8H16.017C14.9124 8 14.017 7.10457 14.017 6V3L21.017 3V15C21.017 18.3137 18.3307 21 15.017 21H14.017ZM3 21L3 18C3 16.8954 3.89543 16 5 16H8C8.55228 16 9 15.5523 9 15V9C9 8.44772 8.55228 8 8 8H5C3.89543 8 3 7.10457 3 6V3L10 3V15C10 18.3137 7.31371 21 4 21H3Z" /></svg>
+                      <svg className="w-12 h-12 text-amber-600 dark:text-amber-300" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C19.5693 16 20.017 15.5523 20.017 15V9C20.017 8.44772 19.5693 8 19.017 8H16.017C14.9124 8 14.017 7.10457 14.017 6V3L21.017 3V15C21.017 18.3137 18.3307 21 15.017 21H14.017ZM3 21L3 18C3 16.8954 3.89543 16 5 16H8C8.55228 16 9 15.5523 9 15V9C9 8.44772 8.55228 8 8 8H5C3.89543 8 3 7.10457 3 6V3L10 3V15C10 18.3137 7.31371 21 4 21H3Z" /></svg>
                     </div>
-                    <p className="text-[10px] font-black text-amber-700 uppercase mb-2 flex items-center gap-1.5 relative z-10">Observations de voyage</p>
-                    <p className="text-sm text-amber-900 leading-relaxed font-medium relative z-10 italic">"{selectedVoyage.observations}"</p>
+                    <p className="text-[10px] font-black text-amber-700 dark:text-amber-300 uppercase mb-2 flex items-center gap-1.5 relative z-10">Observations de voyage</p>
+                    <p className="text-sm text-amber-900 dark:text-amber-100 leading-relaxed font-medium relative z-10 italic">"{selectedVoyage.observations}"</p>
                   </div>
                 )}
               </div>
 
               {/* Right Side: History (4 cols) */}
-              <div className="lg:col-span-4 flex flex-col min-h-0 bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
-                <div className="p-4 border-b border-slate-50 bg-slate-50/50 flex justify-between items-center">
-                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Mouvements Carburant</h4>
+              <div className="lg:col-span-4 flex flex-col min-h-0 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm overflow-hidden">
+                <div className="p-4 border-b border-slate-50 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between items-center">
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-300">Mouvements Carburant</h4>
                   {(selectedVoyage.statut === "EN_COURS" || selectedVoyage.statut === "en_cours") && (
                     <button
                       onClick={handleOpenAddFuelModal}
@@ -1086,16 +1086,16 @@ export default function VoyagesPage() {
                 </div>
                 <div className="flex-1 overflow-y-auto">
                   {selectedVoyage.carburant?.mouvements && selectedVoyage.carburant.mouvements.length > 0 ? (
-                    <div className="divide-y divide-slate-50">
+                    <div className="divide-y divide-slate-50 dark:divide-slate-700">
                       {selectedVoyage.carburant.mouvements.map((mvt: any) => (
-                        <div key={mvt.id} className="p-4 hover:bg-slate-50 transition-colors group">
+                        <div key={mvt.id} className="p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
                           <div className="flex justify-between items-start mb-1.5">
                             <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">{formatDate(mvt.dateOperation).split(' ')[0]}</span>
-                            <span className="text-xs font-black text-slate-900 group-hover:text-fleet-blue transition-colors">{formatMontant(mvt.montant)}</span>
+                            <span className="text-xs font-black text-slate-900 dark:text-slate-100 group-hover:text-fleet-blue transition-colors">{formatMontant(mvt.montant)}</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-                            <p className="text-[11px] text-slate-600 font-bold truncate">{mvt.stationService || "Station non précisée"}</p>
+                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/30 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                            <p className="text-[11px] text-slate-600 dark:text-slate-300 font-bold truncate">{mvt.stationService || "Station non précisée"}</p>
                           </div>
                           {mvt.commentaire && (
                             <p className="text-[10px] text-slate-400 mt-1 line-clamp-2 italic leading-tight">"{mvt.commentaire}"</p>
@@ -1120,21 +1120,21 @@ export default function VoyagesPage() {
                     </div>
                   ) : (
                     <div className="h-full flex flex-col items-center justify-center p-8 text-center space-y-3 opacity-40">
-                      <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-300 flex items-center justify-center">
+                      <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-300 dark:text-slate-400 flex items-center justify-center">
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                       </div>
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Aucun mouvement</p>
                     </div>
                   )}
                 </div>
-                <div className="p-4 bg-slate-50 border-t border-slate-50 text-center">
+                <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-50 dark:border-slate-700 text-center">
                   <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Dépenses totales voyage</p>
-                  <p className="text-lg font-black text-rose-500 mt-0.5">{formatMontant(selectedVoyage.carburant?.totalDepenses || 0)}</p>
+                  <p className="text-lg font-black text-rose-500 dark:text-rose-400 mt-0.5">{formatMontant(selectedVoyage.carburant?.totalDepenses || 0)}</p>
                 </div>
               </div>
             </div>
 
-            <div className="flex justify-between items-center pt-4 border-t border-slate-100 shrink-0">
+            <div className="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-slate-700 shrink-0">
               <div className="flex gap-3">
                 <Button 
                   variant="danger" 
@@ -1194,10 +1194,10 @@ export default function VoyagesPage() {
             onChange={(e) => setFuelStation(e.target.value)}
           />
           
-          <div className="p-4 rounded-xl border border-amber-200 bg-amber-50/50 space-y-4">
+          <div className="p-4 rounded-xl border border-amber-200 dark:border-amber-900/50 bg-amber-50/50 dark:bg-amber-950/20 space-y-4">
             <div className="flex items-center justify-between">
-              <h4 className="text-[10px] font-black uppercase tracking-widest text-amber-700">Ticket carburant</h4>
-              <span className="text-[9px] font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full italic">Optionnel</span>
+              <h4 className="text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-300">Ticket carburant</h4>
+              <span className="text-[9px] font-bold text-amber-600 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/30 px-2 py-0.5 rounded-full italic">Optionnel</span>
             </div>
 
             <div className="space-y-2">
@@ -1213,13 +1213,13 @@ export default function VoyagesPage() {
                 />
                 <label
                   htmlFor="fuel-receipt-upload"
-                  className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-slate-200 rounded-xl hover:border-fleet-blue hover:bg-fleet-blue/5 transition-all cursor-pointer bg-white"
+                  className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl hover:border-fleet-blue hover:bg-fleet-blue/5 transition-all cursor-pointer bg-white dark:bg-slate-900"
                 >
                   <div className="flex flex-col items-center gap-1">
                     <svg className="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                     </svg>
-                    <span className="text-[10px] font-bold text-slate-500">Cliquer pour joindre le ticket</span>
+                    <span className="text-[10px] font-bold text-slate-500 dark:text-slate-300">Cliquer pour joindre le ticket</span>
                   </div>
                 </label>
               </div>
@@ -1227,12 +1227,12 @@ export default function VoyagesPage() {
               {receiptFiles.length > 0 && (
                 <div className="grid grid-cols-3 gap-2 mt-2">
                   {receiptFiles.map((file, idx) => (
-                    <div key={idx} className="relative group rounded-lg border border-slate-100 overflow-hidden bg-white h-16">
+                    <div key={idx} className="relative group rounded-lg border border-slate-100 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-900 h-16">
                       {file.file.type.startsWith("image/") ? (
                         <img src={file.preview} alt="Preview" className="w-full h-full object-cover" />
                       ) : (
                         <div className="flex items-center justify-center h-full">
-                          <svg className="w-5 h-5 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                          <svg className="w-5 h-5 text-rose-500 dark:text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
                         </div>
                       )}
                       <button 
@@ -1256,7 +1256,7 @@ export default function VoyagesPage() {
             onChange={(e) => setFuelCommentaire(e.target.value)}
           />
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-slate-700">
             <Button type="button" variant="ghost" onClick={() => setIsAddFuelModalOpen(false)}>
               Annuler
             </Button>

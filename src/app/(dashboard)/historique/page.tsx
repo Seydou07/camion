@@ -132,7 +132,7 @@ export default function HistoryPage() {
                 placeholder="Rechercher dans les logs..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-11 pl-12 pr-4 rounded-2xl border border-slate-200 bg-white text-sm font-semibold text-slate-800 placeholder:text-slate-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue"
+                className="w-full h-11 pl-12 pr-4 rounded-2xl border border-slate-200 bg-white text-sm font-semibold text-slate-800 dark:text-slate-200 placeholder:text-slate-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue dark:bg-slate-900 dark:border-slate-700"
               />
             </div>
           </div>
@@ -145,7 +145,7 @@ export default function HistoryPage() {
                 className={`flex items-center gap-2 h-10 px-4 rounded-xl text-[10px] font-black uppercase transition-all duration-300 border ${
                   selectedCategory === cat.id
                     ? "bg-fleet-blue text-white shadow-lg shadow-fleet-blue/20"
-                    : "bg-slate-50 text-slate-500 hover:bg-slate-100"
+                    : "bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
                 }`}
               >
                 {cat.label}
@@ -163,16 +163,16 @@ export default function HistoryPage() {
           {[...Array(5)].map((_, i) => (
             <div key={i} className="flex gap-6">
               <div className="flex flex-col items-center">
-                <div className="w-12 h-12 rounded-full bg-slate-100 animate-pulse" />
-                <div className="w-0.5 flex-1 bg-slate-100" />
+                <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 animate-pulse" />
+                <div className="w-0.5 flex-1 bg-slate-100 dark:bg-slate-800" />
               </div>
-              <div className="flex-1 bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
-                <div className="h-4 bg-slate-100 rounded w-1/4 mb-4" />
-                <div className="h-3 bg-slate-100 rounded w-full mb-2" />
-                <div className="h-3 bg-slate-100 rounded w-3/4 mb-4" />
+              <div className="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-sm">
+                <div className="h-4 bg-slate-100 dark:bg-slate-800 rounded w-1/4 mb-4" />
+                <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded w-full mb-2" />
+                <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded w-3/4 mb-4" />
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-slate-100" />
-                  <div className="h-3 bg-slate-100 rounded w-1/3" />
+                  <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800" />
+                  <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded w-1/3" />
                 </div>
               </div>
             </div>
@@ -185,7 +185,7 @@ export default function HistoryPage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h3 className="text-lg font-black text-slate-700 mb-1">
+          <h3 className="text-lg font-black text-slate-700 dark:text-slate-200 mb-1">
             Aucune activité enregistrée
           </h3>
           <p className="text-sm text-slate-400">
@@ -195,12 +195,12 @@ export default function HistoryPage() {
       ) : (
         <div className="relative">
           {/* Vertical line */}
-          <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-slate-200 ml-5" />
+          <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-slate-200 dark:bg-slate-700 ml-5" />
           <div className="space-y-8">
             {logs.map((log) => (
               <div key={log.id} className="flex gap-6">
                 <div className="flex flex-col items-center z-10">
-                  <div className="w-12 h-12 rounded-full bg-white border-4 border-slate-100 flex items-center justify-center text-fleet-blue hover:bg-fleet-blue hover:text-white hover:border-fleet-blue/20 transition-all duration-300 shadow-sm">
+                  <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-900 border-4 border-slate-100 dark:border-slate-700 flex items-center justify-center text-fleet-blue hover:bg-fleet-blue hover:text-white hover:border-fleet-blue/20 transition-all duration-300 shadow-sm">
                     {getEntityIcon(log.entity)}
                   </div>
                 </div>
@@ -210,7 +210,7 @@ export default function HistoryPage() {
                       setSelectedLog(log);
                       setIsModalOpen(true);
                     }}
-                    className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm cursor-pointer hover:shadow-lg hover:-translate-y-0.5 hover:border-fleet-blue/30 transition-all duration-300 relative overflow-hidden"
+                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-sm cursor-pointer hover:shadow-lg hover:-translate-y-0.5 hover:border-fleet-blue/30 transition-all duration-300 relative overflow-hidden"
                   >
                     {/* Card header */}
                     <div className="flex items-start justify-between mb-3">
@@ -227,7 +227,7 @@ export default function HistoryPage() {
                       </span>
                     </div>
                     {/* Details */}
-                    <p className="text-sm text-slate-700 mb-4">
+                    <p className="text-sm text-slate-700 dark:text-slate-200 mb-4">
                       {log.details || "Aucun détail disponible"}
                     </p>
                     {/* User */}
@@ -244,7 +244,7 @@ export default function HistoryPage() {
                           </>
                         ) : (
                           <>
-                            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 text-xs font-black">
+                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 text-xs font-black">
                               S
                             </div>
                             <span className="text-xs font-semibold text-slate-400">
@@ -275,7 +275,7 @@ export default function HistoryPage() {
                 {getEntityIcon(selectedLog.entity)}
               </div>
               <div>
-                <h3 className="text-lg font-black text-slate-800">
+                <h3 className="text-lg font-black text-slate-800 dark:text-slate-200">
                   {getActionLabel(selectedLog.action)}
                 </h3>
                 <p className="text-xs text-slate-400">
@@ -296,7 +296,7 @@ export default function HistoryPage() {
                 <span className="text-xs text-slate-400 font-bold uppercase tracking-tight">
                   Date & Heure
                 </span>
-                <span className="text-sm font-semibold text-slate-700">
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
                   {new Date(selectedLog.createdAt).toLocaleString('fr-FR', {
                     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
                   })}
@@ -308,14 +308,14 @@ export default function HistoryPage() {
               <span className="text-xs text-slate-400 font-bold uppercase tracking-tight">
                 Exécuté par
               </span>
-              <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+              <div className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700">
                 {selectedLog.user ? (
                   <>
                     <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-fleet-blue/10 to-fleet-blue/5 flex items-center justify-center text-fleet-blue text-sm font-black">
                       {getInitials(selectedLog.user.name)}
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-slate-700">{selectedLog.user.name}</p>
+                      <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">{selectedLog.user.name}</p>
                       <p className="text-xs text-slate-400">{selectedLog.user.email}</p>
                     </div>
                   </>
@@ -337,12 +337,12 @@ export default function HistoryPage() {
                 <span className="text-xs text-slate-400 font-bold uppercase tracking-tight">
                   Commentaire / Description
                 </span>
-                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-sm text-slate-700">
+                <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700 text-sm text-slate-700 dark:text-slate-200">
                   {selectedLog.details}
                 </div>
               </div>
             )}
-            <div className="pt-4 border-t border-slate-100">
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-700">
               <div className="flex justify-end">
                 <Button onClick={() => setIsModalOpen(false)}>
                   Fermer le panel

@@ -366,13 +366,13 @@ export default function CarburantPage() {
   const getStatusBadge = (statut: string) => {
     if (statut === "EN_COURS" || statut === "en_cours") {
       return (
-        <span className="bg-amber-50 text-amber-700 border border-amber-200 px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider animate-pulse">
+        <span className="bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-900/50 px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider animate-pulse">
           En cours
         </span>
       );
     }
     return (
-      <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider">
+      <span className="bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/50 px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider">
         Clôturé
       </span>
     );
@@ -380,12 +380,12 @@ export default function CarburantPage() {
 
   const getTypeOperationBadge = (type: string) => {
     const colors: Record<string, string> = {
-      PREVISION: "bg-blue-50 text-blue-700 border-blue-200",
-      DEPENSE: "bg-rose-50 text-rose-700 border-rose-200",
-      COMPLEMENT: "bg-orange-50 text-orange-700 border-orange-200",
-      AJUSTEMENT: "bg-purple-50 text-purple-700 border-purple-200",
+      PREVISION: "bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-900/50",
+      DEPENSE: "bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-900/50",
+      COMPLEMENT: "bg-orange-50 dark:bg-orange-950/30 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-900/50",
+      AJUSTEMENT: "bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-900/50",
     };
-    const color = colors[type] || "bg-slate-50 text-slate-700 border-slate-200";
+    const color = colors[type] || "bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700";
     return (
       <span className={`px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider border ${color}`}>
         {type}
@@ -418,7 +418,7 @@ export default function CarburantPage() {
       header: "Date",
       className: "w-28",
       render: (item: Dossier) => (
-        <span className="text-xs font-black tracking-widest text-slate-500">{formatDate(item.createdAt).split(" ")[0]}</span>
+        <span className="text-xs font-black tracking-widest text-slate-500 dark:text-slate-400">{formatDate(item.createdAt).split(" ")[0]}</span>
       ),
     },
     {
@@ -426,7 +426,7 @@ export default function CarburantPage() {
       header: "N° Voyage",
       className: "w-32",
       render: (item: Dossier) => (
-        <span className="text-xs font-black tracking-widest text-slate-500">{item.voyage?.numeroVoyage || "N/A"}</span>
+        <span className="text-xs font-black tracking-widest text-slate-500 dark:text-slate-400">{item.voyage?.numeroVoyage || "N/A"}</span>
       ),
     },
     {
@@ -435,7 +435,7 @@ export default function CarburantPage() {
       className: "w-32",
       render: (item: Dossier) => (
         <div className="space-y-0.5">
-          <div className="font-bold text-slate-800 text-sm">{item.camion?.immatriculation || "-"}</div>
+          <div className="font-bold text-slate-800 dark:text-slate-100 text-sm">{item.camion?.immatriculation || "-"}</div>
         </div>
       ),
     },
@@ -444,7 +444,7 @@ export default function CarburantPage() {
       header: "Chauffeur",
       className: "w-40",
       render: (item: Dossier) => (
-        <div className="text-sm font-semibold text-slate-600">
+        <div className="text-sm font-semibold text-slate-600 dark:text-slate-300">
           {item.chauffeur ? `${item.chauffeur.prenom || ""} ${item.chauffeur.nom}` : "Non assigné"}
         </div>
       ),
@@ -471,39 +471,39 @@ export default function CarburantPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <div className="p-4 rounded-2xl border-l-4 border-rose-500 bg-white shadow-sm relative overflow-hidden group">
-          <div className="absolute inset-0 bg-rose-50/50 pointer-events-none" />
+        <div className="p-4 rounded-2xl border-l-4 border-rose-500 bg-white dark:bg-slate-900 shadow-sm relative overflow-hidden group">
+          <div className="absolute inset-0 bg-rose-50/50 dark:bg-rose-950/20 pointer-events-none" />
           <div className="relative z-10">
-            <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Dépenses Totales</p>
+            <p className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-widest">Dépenses Totales</p>
             <p className="text-2xl font-black leading-none text-rose-600 tracking-tight mt-1">{formatMontantAbrege(stats.totalDepenses)}</p>
-            <p className="text-[10px] text-slate-500 font-semibold mt-1.5 uppercase tracking-tighter">Cumul des paiements</p>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold mt-1.5 uppercase tracking-tighter">Cumul des paiements</p>
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl border-l-4 border-fleet-blue bg-white shadow-sm relative overflow-hidden group">
+        <div className="p-4 rounded-2xl border-l-4 border-fleet-blue bg-white dark:bg-slate-900 shadow-sm relative overflow-hidden group">
           <div className="absolute inset-0 bg-fleet-blue/5 pointer-events-none" />
           <div className="relative z-10">
-            <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Compléments Carburant</p>
+            <p className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-widest">Compléments Carburant</p>
             <p className="text-2xl font-black leading-none text-fleet-blue tracking-tight mt-1">{formatMontantAbrege(stats.totalComplements)}</p>
-            <p className="text-[10px] text-slate-500 font-semibold mt-1.5 uppercase tracking-tighter">Montants ajoutés en cours de voyage</p>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold mt-1.5 uppercase tracking-tighter">Montants ajoutés en cours de voyage</p>
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl border-l-4 border-amber-500 bg-white shadow-sm relative overflow-hidden group">
-          <div className="absolute inset-0 bg-amber-50/50 pointer-events-none" />
+        <div className="p-4 rounded-2xl border-l-4 border-amber-500 bg-white dark:bg-slate-900 shadow-sm relative overflow-hidden group">
+          <div className="absolute inset-0 bg-amber-50/50 dark:bg-amber-950/20 pointer-events-none" />
           <div className="relative z-10">
-            <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Missions actives</p>
+            <p className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-widest">Missions actives</p>
             <p className="text-2xl font-black leading-none text-amber-600 tracking-tight mt-1">{stats.enCours}</p>
-            <p className="text-[10px] text-slate-500 font-semibold mt-1.5 uppercase tracking-tighter">Suivis en cours</p>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold mt-1.5 uppercase tracking-tighter">Suivis en cours</p>
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl border-l-4 border-red-600 bg-white shadow-sm relative overflow-hidden group">
-          <div className="absolute inset-0 bg-red-50/50 pointer-events-none" />
+        <div className="p-4 rounded-2xl border-l-4 border-red-600 bg-white dark:bg-slate-900 shadow-sm relative overflow-hidden group">
+          <div className="absolute inset-0 bg-red-50/50 dark:bg-red-950/20 pointer-events-none" />
           <div className="relative z-10">
-            <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Avec Compléments</p>
+            <p className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-widest">Avec Compléments</p>
             <p className="text-2xl font-black leading-none text-red-600 tracking-tight mt-1">{stats.dossiersAvecComplements}</p>
-            <p className="text-[10px] text-slate-500 font-semibold mt-1.5 uppercase tracking-tighter">Voyages ayant reçu un ajout</p>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold mt-1.5 uppercase tracking-tighter">Voyages ayant reçu un ajout</p>
           </div>
         </div>
       </div>
@@ -514,7 +514,7 @@ export default function CarburantPage() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4">
           {/* Search */}
           <div className="relative flex-1 max-w-md w-full">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400 dark:text-slate-500">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -522,7 +522,7 @@ export default function CarburantPage() {
             <input
               type="text"
               placeholder="Rechercher un voyage, un camion ou un chauffeur..."
-              className="w-full h-10 pl-10 pr-4 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue"
+              className="w-full h-10 pl-10 pr-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -540,7 +540,7 @@ export default function CarburantPage() {
                 className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-colors flex-shrink-0 ${
                   filterStatut === btn.value
                     ? "bg-fleet-blue text-white shadow-lg shadow-fleet-blue/20"
-                    : "bg-slate-50 text-slate-500 hover:bg-slate-100"
+                    : "bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
                 }`}
               >
                 {btn.label}
@@ -563,7 +563,7 @@ export default function CarburantPage() {
               onRowClick={(item) => setSelectedDossier(item)}
               emptyMessage="Aucun dossier carburant trouvé."
             />
-            <div className="px-6 py-4 border-t border-slate-50 bg-slate-50/30">
+            <div className="px-6 py-4 border-t border-slate-50 dark:border-slate-700 bg-slate-50/30 dark:bg-slate-800/20">
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
@@ -588,7 +588,7 @@ export default function CarburantPage() {
         {selectedDossier && (
           <div className="space-y-6 h-full flex flex-col">
             {/* Header Section */}
-            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 shrink-0">
+            <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700 shrink-0">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-rose-500 text-white flex items-center justify-center shadow-lg shadow-rose-500/20">
                   <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -596,28 +596,28 @@ export default function CarburantPage() {
                   </svg>
                 </div>
                 <div>
-                  <h4 className="text-lg font-black text-slate-800 tracking-tight uppercase">Dossier #{selectedDossier.id}</h4>
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Voyage {selectedDossier.voyage?.numeroVoyage} • {selectedDossier.camion?.immatriculation}</p>
+                  <h4 className="text-lg font-black text-slate-800 dark:text-slate-100 tracking-tight uppercase">Dossier #{selectedDossier.id}</h4>
+                  <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Voyage {selectedDossier.voyage?.numeroVoyage} • {selectedDossier.camion?.immatriculation}</p>
                 </div>
               </div>
               <div className="flex flex-col items-end gap-1.5">
                 {getStatusBadge(selectedDossier.statut)}
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Créé le {formatDate(selectedDossier.createdAt)}</span>
+                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Créé le {formatDate(selectedDossier.createdAt)}</span>
               </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 min-h-0 overflow-hidden">
               {/* Left Side: Summary & Progress (4 cols) */}
               <div className="lg:col-span-4 space-y-6 overflow-y-auto pr-1">
-                <div className="p-6 rounded-2xl bg-white border border-slate-100 shadow-sm space-y-6">
-                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500 border-b border-slate-50 pb-3">Récapitulatif Carburant</h4>
+                <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 shadow-sm space-y-6">
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 border-b border-slate-50 pb-3">Récapitulatif Carburant</h4>
                   
                   <div className="space-y-4">
-                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
-                      <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">Budget Total Véhicule</p>
-                      <p className="text-lg font-black text-slate-700">{formatMontant(getBudgetVehiculeTotal(selectedDossier))}</p>
+                    <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
+                      <p className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase mb-1">Budget Total Véhicule</p>
+                      <p className="text-lg font-black text-slate-700 dark:text-slate-200">{formatMontant(getBudgetVehiculeTotal(selectedDossier))}</p>
                     </div>
-                    <div className="p-3 rounded-xl bg-rose-50 border border-rose-100">
+                    <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-100">
                       <p className="text-[9px] font-bold text-rose-400 uppercase mb-1">Budget Consommé Voyage</p>
                       <p className="text-lg font-black text-rose-600">{formatMontant(selectedDossier.totalDepenses)}</p>
                     </div>
@@ -640,7 +640,7 @@ export default function CarburantPage() {
                         {getUtilisationBudgetVehicule(selectedDossier)}%
                       </span>
                     </div>
-                    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                    <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden shadow-inner">
                       <div 
                         className={`h-full transition-all duration-700 ${
                           getUtilisationBudgetVehicule(selectedDossier) >= 100 ? 'bg-red-500' : 'bg-fleet-blue'
@@ -648,38 +648,38 @@ export default function CarburantPage() {
                         style={{ width: `${Math.min(100, getUtilisationBudgetVehicule(selectedDossier))}%` }}
                       />
                     </div>
-                    <p className="text-[9px] text-slate-400 font-medium italic mt-1">
+                    <p className="text-[9px] text-slate-400 dark:text-slate-500 font-medium italic mt-1">
                       Ici on suit le consommé du voyage et le budget global restant du véhicule, sans afficher de budget prévu.
                     </p>
                   </div>
                 </div>
 
-                <div className="p-5 rounded-2xl bg-slate-50 border border-slate-100 space-y-3">
-                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Véhicule Associé</h4>
+                <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 space-y-3">
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Véhicule Associé</h4>
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-white border border-slate-100 flex items-center justify-center text-fleet-blue font-black text-xs">
+                    <div className="w-10 h-10 rounded-full bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 flex items-center justify-center text-fleet-blue font-black text-xs">
                       {selectedDossier.camion?.immatriculation.slice(-2)}
                     </div>
                     <div>
-                      <p className="text-sm font-black text-slate-800">{selectedDossier.camion?.immatriculation}</p>
-                      <p className="text-[10px] font-bold text-slate-400">{selectedDossier.camion?.marque} {selectedDossier.camion?.modele}</p>
+                      <p className="text-sm font-black text-slate-800 dark:text-slate-100">{selectedDossier.camion?.immatriculation}</p>
+                      <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500">{selectedDossier.camion?.marque} {selectedDossier.camion?.modele}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Right Side: History (8 cols) */}
-              <div className="lg:col-span-8 flex flex-col min-h-0 bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
-                <div className="p-4 border-b border-slate-50 bg-slate-50/50 flex justify-between items-center">
-                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Historique des Mouvements</h4>
-                  <span className="bg-white px-3 py-1 rounded-full border border-slate-100 text-[10px] font-black text-slate-400">
+              <div className="lg:col-span-8 flex flex-col min-h-0 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm overflow-hidden">
+                <div className="p-4 border-b border-slate-50 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/20 flex justify-between items-center">
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Historique des Mouvements</h4>
+                  <span className="bg-white dark:bg-slate-900 px-3 py-1 rounded-full border border-slate-100 dark:border-slate-700 text-[10px] font-black text-slate-400 dark:text-slate-500">
                     {selectedDossier.mouvements?.length || 0} Ticket(s)
                   </span>
                 </div>
                 <div className="flex-1 overflow-y-auto">
                   {selectedDossier.mouvements && selectedDossier.mouvements.length > 0 ? (
                     <table className="w-full text-left">
-                      <thead className="bg-slate-50/50 text-[9px] font-black uppercase tracking-widest text-slate-400 sticky top-0 z-10 backdrop-blur-sm">
+                      <thead className="bg-slate-50/50 dark:bg-slate-800/20 text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 sticky top-0 z-10 backdrop-blur-sm">
                         <tr>
                           <th className="px-6 py-3">Date & Station</th>
                           <th className="px-6 py-3">Type</th>
@@ -687,12 +687,12 @@ export default function CarburantPage() {
                           <th className="px-6 py-3 text-center">Reçu</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-50">
+                      <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
                         {selectedDossier.mouvements.map((mvt: Mouvement) => (
-                          <tr key={mvt.id} className="hover:bg-slate-50/50 transition-colors group">
+                          <tr key={mvt.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors group">
                             <td className="px-6 py-4">
-                              <p className="text-[10px] font-black text-slate-400 uppercase mb-0.5">{formatDate(mvt.dateOperation).split(' ')[0]}</p>
-                              <p className="text-xs font-bold text-slate-700 group-hover:text-fleet-blue transition-colors">{mvt.stationService || "Station non précisée"}</p>
+                              <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase mb-0.5">{formatDate(mvt.dateOperation).split(' ')[0]}</p>
+                              <p className="text-xs font-bold text-slate-700 dark:text-slate-200 group-hover:text-fleet-blue transition-colors">{mvt.stationService || "Station non précisée"}</p>
                             </td>
                             <td className="px-6 py-4">{getTypeOperationBadge(mvt.typeOperation || 'DEPENSE')}</td>
                             <td className="px-6 py-4 text-right">
@@ -707,7 +707,7 @@ export default function CarburantPage() {
                                       href={recu.cheminImage}
                                       target="_blank"
                                       rel="noreferrer"
-                                      className="block w-9 h-9 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 hover:ring-2 hover:ring-fleet-blue/40 transition-all"
+                                      className="block w-9 h-9 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 hover:ring-2 hover:ring-fleet-blue/40 transition-all"
                                     >
                                       {recu.mimeType?.startsWith("image/") ? (
                                         <img
@@ -723,7 +723,7 @@ export default function CarburantPage() {
                                     </a>
                                   ))}
                                   {mvt.recus.length > 4 && (
-                                    <span className="text-[9px] font-bold text-slate-400">+{mvt.recus.length - 4}</span>
+                                    <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500">+{mvt.recus.length - 4}</span>
                                   )}
                                 </div>
                               ) : (
@@ -736,21 +736,21 @@ export default function CarburantPage() {
                     </table>
                   ) : (
                     <div className="h-full flex flex-col items-center justify-center p-12 text-center space-y-4 opacity-40">
-                      <div className="w-16 h-16 rounded-full bg-slate-100 text-slate-300 flex items-center justify-center">
+                      <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-300 flex items-center justify-center">
                         <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                       </div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Aucun mouvement enregistré</p>
+                      <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Aucun mouvement enregistré</p>
                     </div>
                   )}
                 </div>
                 <div className="p-4 bg-slate-900 border-t border-slate-800 flex justify-between items-center">
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Dépenses Cumulées</p>
+                  <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Dépenses Cumulées</p>
                   <p className="text-xl font-black text-fleet-blue">{formatMontant(selectedDossier.totalDepenses)}</p>
                 </div>
               </div>
             </div>
 
-            <div className="flex justify-between pt-4 border-t border-slate-100 shrink-0">
+            <div className="flex justify-between pt-4 border-t border-slate-100 dark:border-slate-700 shrink-0">
               <Button
                 type="button"
                 variant="primary"
@@ -802,8 +802,8 @@ export default function CarburantPage() {
           </div>
 
           <div className="space-y-1.5">
-            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Reçus (un ou plusieurs)</label>
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-900">
+            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Reçus (un ou plusieurs)</label>
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-4 dark:border-slate-700 dark:bg-slate-900">
               <input
                 type="file"
                 multiple
@@ -815,21 +815,21 @@ export default function CarburantPage() {
                   await uploadReceiptFiles(files);
                   e.target.value = "";
                 }}
-                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition-all duration-200 focus:border-fleet-blue focus:ring-2 focus:ring-fleet-blue/20 file:mr-3 file:rounded-lg file:border-0 file:bg-fleet-blue file:px-3 file:py-1.5 file:text-[10px] file:font-black file:text-white file:uppercase file:tracking-widest hover:file:bg-fleet-blue/90"
+                className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 outline-none transition-all duration-200 focus:border-fleet-blue focus:ring-2 focus:ring-fleet-blue/20 file:mr-3 file:rounded-lg file:border-0 file:bg-fleet-blue file:px-3 file:py-1.5 file:text-[10px] file:font-black file:text-white file:uppercase file:tracking-widest hover:file:bg-fleet-blue/90"
               />
-              <p className="mt-2 text-[11px] text-slate-400">Formats acceptés : JPG, PNG, PDF — sélectionnez plusieurs fichiers à la fois</p>
+              <p className="mt-2 text-[11px] text-slate-400 dark:text-slate-500">Formats acceptés : JPG, PNG, PDF — sélectionnez plusieurs fichiers à la fois</p>
               {receiptPreviews.length > 0 && (
                 <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {receiptPreviews.map((r, i) => (
-                    <div key={i} className="relative rounded-xl border border-slate-200 bg-white p-2 shadow-sm">
-                      <div className="flex h-14 items-center justify-center overflow-hidden rounded-lg bg-slate-50">
+                    <div key={i} className="relative rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-2 shadow-sm">
+                      <div className="flex h-14 items-center justify-center overflow-hidden rounded-lg bg-slate-50 dark:bg-slate-800/50">
                         {r.mimeType.startsWith("image/") ? (
                           <img src={r.previewUrl} alt={r.fileName} className="h-full w-full object-cover" />
                         ) : (
                           <span className="text-[9px] font-black text-fleet-blue uppercase tracking-widest">PDF</span>
                         )}
                       </div>
-                      <p className="mt-1 truncate text-[10px] font-semibold text-slate-700">{r.fileName}</p>
+                      <p className="mt-1 truncate text-[10px] font-semibold text-slate-700 dark:text-slate-200">{r.fileName}</p>
                       <button
                         type="button"
                         onClick={() => {
@@ -845,7 +845,7 @@ export default function CarburantPage() {
                 </div>
               )}
               {uploadingReceipt && (
-                <div className="mt-3 flex items-center gap-2 text-[11px] text-slate-500 font-semibold">
+                <div className="mt-3 flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400 font-semibold">
                   <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
                   Téléversement en cours…
                 </div>
@@ -854,17 +854,17 @@ export default function CarburantPage() {
           </div>
 
           <div className="space-y-1.5">
-            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Commentaire</label>
+            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Commentaire</label>
             <textarea
               value={commentaire}
               onChange={(e) => setCommentaire(e.target.value)}
               placeholder="Optionnel — Raison du mouvement, détails…"
               rows={3}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition-all duration-200 focus:border-fleet-blue focus:ring-2 focus:ring-fleet-blue/20 placeholder:text-slate-400"
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-sm text-slate-700 dark:text-slate-200 outline-none transition-all duration-200 focus:border-fleet-blue focus:ring-2 focus:ring-fleet-blue/20 placeholder:text-slate-400"
             />
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
             <Button type="button" variant="ghost" onClick={() => setIsAddMovementModalOpen(false)}>
               Annuler
             </Button>
@@ -883,13 +883,13 @@ export default function CarburantPage() {
         size="sm"
       >
         <form onSubmit={handleAddRecuToMovement} className="space-y-4">
-          <div className="rounded-xl border border-fleet-blue/20 bg-fleet-blue/5 p-3 text-[11px] text-slate-600 font-medium">
+          <div className="rounded-xl border border-fleet-blue/20 bg-fleet-blue/5 p-3 text-[11px] text-slate-600 dark:text-slate-300 font-medium">
             Le reçu sera attaché au mouvement existant. Aucun montant supplémentaire n'est ajouté.
           </div>
 
           <div className="space-y-1.5">
-            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Reçus</label>
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Reçus</label>
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-4">
               <input
                 type="file"
                 multiple
@@ -901,21 +901,21 @@ export default function CarburantPage() {
                   await uploadRecuOnlyFiles(files);
                   e.target.value = "";
                 }}
-                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none file:mr-3 file:rounded-lg file:border-0 file:bg-fleet-blue file:px-3 file:py-1.5 file:text-[10px] file:font-black file:text-white file:uppercase file:tracking-widest hover:file:bg-fleet-blue/90"
+                className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 outline-none file:mr-3 file:rounded-lg file:border-0 file:bg-fleet-blue file:px-3 file:py-1.5 file:text-[10px] file:font-black file:text-white file:uppercase file:tracking-widest hover:file:bg-fleet-blue/90"
               />
-              <p className="mt-2 text-[11px] text-slate-400">JPG, PNG, PDF — plusieurs fichiers possibles</p>
+              <p className="mt-2 text-[11px] text-slate-400 dark:text-slate-500">JPG, PNG, PDF — plusieurs fichiers possibles</p>
               {recuOnlyPreviews.length > 0 && (
                 <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {recuOnlyPreviews.map((r, i) => (
-                    <div key={i} className="relative rounded-xl border border-slate-200 bg-white p-2 shadow-sm">
-                      <div className="flex h-14 items-center justify-center overflow-hidden rounded-lg bg-slate-50">
+                    <div key={i} className="relative rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-2 shadow-sm">
+                      <div className="flex h-14 items-center justify-center overflow-hidden rounded-lg bg-slate-50 dark:bg-slate-800/50">
                         {r.mimeType.startsWith("image/") ? (
                           <img src={r.previewUrl} alt={r.fileName} className="h-full w-full object-cover" />
                         ) : (
                           <span className="text-[9px] font-black text-fleet-blue uppercase tracking-widest">PDF</span>
                         )}
                       </div>
-                      <p className="mt-1 truncate text-[10px] font-semibold text-slate-700">{r.fileName}</p>
+                      <p className="mt-1 truncate text-[10px] font-semibold text-slate-700 dark:text-slate-200">{r.fileName}</p>
                       <button
                         type="button"
                         onClick={() => {
@@ -931,7 +931,7 @@ export default function CarburantPage() {
                 </div>
               )}
               {uploadingRecuOnly && (
-                <div className="mt-3 flex items-center gap-2 text-[11px] text-slate-500 font-semibold">
+                <div className="mt-3 flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400 font-semibold">
                   <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
                   Téléversement en cours…
                 </div>
@@ -939,7 +939,7 @@ export default function CarburantPage() {
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
             <Button type="button" variant="ghost" onClick={() => setIsAddRecuModalOpen(false)}>
               Annuler
             </Button>

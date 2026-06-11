@@ -296,12 +296,12 @@ export default function CamionDetailPage({
   if (!data || data.error) {
     return (
       <div className="text-center py-20 flex flex-col items-center">
-        <div className="w-20 h-20 bg-slate-100 text-slate-300 rounded-full flex items-center justify-center mb-6">
+        <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 text-slate-300 rounded-full flex items-center justify-center mb-6">
            <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
            </svg>
         </div>
-        <p className="text-xl font-bold text-slate-500">{data?.error || "Véhicule introuvable"}</p>
+        <p className="text-xl font-bold text-slate-500 dark:text-slate-400">{data?.error || "Véhicule introuvable"}</p>
         <Button className="mt-6" variant="secondary" onClick={() => (window.location.href = "/camions")}>
            Retour à la flotte
         </Button>
@@ -365,7 +365,7 @@ export default function CamionDetailPage({
     <div className="space-y-8 page-enter pb-10">
       
       {/* Hero Section */}
-      <div className="relative overflow-hidden rounded-[2rem] bg-white border border-slate-100 shadow-sm p-6 md:p-8">
+      <div className="relative overflow-hidden rounded-[2rem] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 shadow-sm p-6 md:p-8">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
            <div className="flex items-center gap-5">
               <div className="w-20 h-20 rounded-2xl bg-fleet-blue/10 flex items-center justify-center text-fleet-blue border border-fleet-blue/20">
@@ -380,24 +380,24 @@ export default function CamionDetailPage({
                       {statutCamionLabels[data.statut]}
                     </div>
                  </Badge>
-                 <h1 className="text-3xl font-black tracking-tight text-slate-800">
+                 <h1 className="text-3xl font-black tracking-tight text-slate-800 dark:text-slate-200">
                     {data.immatriculation}
                  </h1>
-                 <p className="text-slate-500 font-medium text-sm mt-1">
+                 <p className="text-slate-500 dark:text-slate-400 font-medium text-sm mt-1">
                     {data.marque} {data.modele || ""} • <span className="text-fleet-blue font-bold">{data.capaciteTonnes} Tonnes</span>
                   </p>
               </div>
            </div>
 
-           <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-100">
-              <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-slate-400 shadow-sm">
+           <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-2xl border border-slate-100 dark:border-slate-700">
+              <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center text-slate-400 dark:text-slate-500 shadow-sm">
                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                  </svg>
               </div>
               <div className="pr-4">
-                 <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Chauffeur assigné</p>
-                 <p className="text-sm font-bold text-slate-700">
+                 <p className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 tracking-wider">Chauffeur assigné</p>
+                 <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
                    {data.chauffeur ? `${data.chauffeur.prenom || ""} ${data.chauffeur.nom}` : "Non assigné"}
                  </p>
               </div>
@@ -415,17 +415,17 @@ export default function CamionDetailPage({
               <div
                 key={i}
                 className={`flex items-center gap-3 px-5 py-3 rounded-2xl border ${
-                  isCritique ? "border-rose-200 bg-rose-50" : isHaute ? "border-amber-200 bg-amber-50" : "border-yellow-200 bg-yellow-50"
+                  isCritique ? "border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/30" : isHaute ? "border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-950/30" : "border-yellow-200 dark:border-yellow-900/50 bg-yellow-50 dark:bg-yellow-950/30"
                 }`}
               >
                 <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${isCritique ? "bg-rose-500" : isHaute ? "bg-amber-500" : "bg-yellow-400"}`} />
-                <span className="text-xs font-black uppercase tracking-widest text-slate-400 w-28 shrink-0">
+                <span className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 w-28 shrink-0">
                   {alert.type === "vidange" ? "Vidange" : alert.type === "assurance" ? "Assurance" : "Visite Technique"}
                 </span>
-                <span className="text-sm font-bold text-slate-700">{alert.message}</span>
+                <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{alert.message}</span>
                 <span
                   className={`ml-auto text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md ${
-                    isCritique ? "bg-rose-200 text-rose-700" : isHaute ? "bg-amber-200 text-amber-700" : "bg-yellow-200 text-yellow-700"
+                    isCritique ? "bg-rose-200 dark:bg-rose-900/50 text-rose-700 dark:text-rose-300" : isHaute ? "bg-amber-200 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300" : "bg-yellow-200 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300"
                   }`}
                 >
                   {isCritique ? "Critique" : isHaute ? "Haute" : "Moyenne"}
@@ -444,15 +444,15 @@ export default function CamionDetailPage({
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                <div className="card-modern p-5 relative overflow-hidden group">
                   <div className="absolute top-0 right-0 w-16 h-16 bg-fleet-blue/10 rounded-bl-[100%] transition-transform group-hover:scale-110"></div>
-                  <p className="text-xs text-slate-400 font-bold uppercase tracking-wider relative z-10">Kilométrage Actuel</p>
-                  <p className="text-xl font-black text-slate-800 mt-2 relative z-10">
-                     {data.kilometrageActuel.toLocaleString()} <span className="text-xs text-slate-400 font-bold">km</span>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider relative z-10">Kilométrage Actuel</p>
+                  <p className="text-xl font-black text-slate-800 dark:text-slate-200 mt-2 relative z-10">
+                     {data.kilometrageActuel.toLocaleString()} <span className="text-xs text-slate-400 dark:text-slate-500 font-bold">km</span>
                   </p>
                </div>
                <div className="card-modern p-5 relative overflow-hidden group">
                   <div className="absolute top-0 right-0 w-16 h-16 bg-emerald-50 rounded-bl-[100%] transition-transform group-hover:scale-110"></div>
-                  <p className="text-xs text-slate-400 font-bold uppercase tracking-wider relative z-10">Mise en service</p>
-                  <p className="text-sm font-black text-slate-800 mt-3.5 relative z-10">
+                  <p className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider relative z-10">Mise en service</p>
+                  <p className="text-sm font-black text-slate-800 dark:text-slate-200 mt-3.5 relative z-10">
                      {formatDate(data.dateMiseService)}
                   </p>
                </div>
@@ -460,8 +460,8 @@ export default function CamionDetailPage({
                   <div className="absolute top-0 right-0 w-24 h-24 bg-amber-50 rounded-bl-[100%] transition-transform group-hover:scale-110"></div>
                   <div className="flex justify-between items-end relative z-10">
                      <div>
-                        <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Visite Technique</p>
-                        <p className="text-lg font-black text-slate-800 mt-3">
+                        <p className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">Visite Technique</p>
+                        <p className="text-lg font-black text-slate-800 dark:text-slate-200 mt-3">
                            {data.prochaineVisite ? formatDate(data.prochaineVisite) : "Non programmée"}
                         </p>
                      </div>
@@ -482,32 +482,32 @@ export default function CamionDetailPage({
                         </svg>
                      </div>
                      <div>
-                        <h3 className="text-lg font-black text-slate-800 tracking-tight">Maintenances Préventives</h3>
-                        <p className="text-xs text-slate-400 font-medium">Suivi des alertes kilométriques pour ce camion</p>
+                        <h3 className="text-lg font-black text-slate-800 dark:text-slate-200 tracking-tight">Maintenances Préventives</h3>
+                        <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">Suivi des alertes kilométriques pour ce camion</p>
                      </div>
                   </div>
                </div>
 
-               <div className="overflow-x-auto rounded-2xl border border-slate-100">
+               <div className="overflow-x-auto rounded-2xl border border-slate-100 dark:border-slate-700">
                   <table className="w-full text-left">
                      <thead>
-                        <tr className="bg-slate-50/80">
-                           <th className="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Type d'entretien</th>
-                           <th className="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Kilométrage Cible</th>
-                           <th className="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Écart</th>
-                           <th className="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Statut</th>
+                        <tr className="bg-slate-50/80 dark:bg-slate-800/50">
+                           <th className="px-4 py-3 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Type d'entretien</th>
+                           <th className="px-4 py-3 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Kilométrage Cible</th>
+                           <th className="px-4 py-3 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Écart</th>
+                           <th className="px-4 py-3 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Statut</th>
                         </tr>
                      </thead>
-                     <tbody className="divide-y divide-slate-50">
+                     <tbody className="divide-y divide-slate-50 dark:divide-slate-800/50">
                         {data.maintenancesPlanifiees && data.maintenancesPlanifiees.length > 0 ? (
                            data.maintenancesPlanifiees.map((m: any) => {
                               const restant = m.kilometrageCible - data.kilometrageActuel;
                               const isOverdue = restant <= 0 || m.statut === "en_retard";
                               
                               return (
-                                 <tr key={m.id} className="hover:bg-slate-50/30 transition-colors">
-                                    <td className="px-4 py-3 text-sm font-bold text-slate-700">{typeLabels[m.type] || m.type}</td>
-                                    <td className="px-4 py-3 text-sm text-slate-600 font-medium">{m.kilometrageCible.toLocaleString()} km</td>
+                                 <tr key={m.id} className="hover:bg-slate-50/30 dark:hover:bg-slate-800/30 transition-colors">
+                                    <td className="px-4 py-3 text-sm font-bold text-slate-700 dark:text-slate-200">{typeLabels[m.type] || m.type}</td>
+                                    <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300 font-medium">{m.kilometrageCible.toLocaleString()} km</td>
                                     <td className="px-4 py-3 text-sm font-bold">
                                        {isOverdue ? (
                                           <span className="text-rose-600">Dépassé de {Math.abs(restant).toLocaleString()} km</span>
@@ -529,7 +529,7 @@ export default function CamionDetailPage({
                            })
                         ) : (
                            <tr>
-                              <td colSpan={4} className="px-4 py-8 text-center text-sm text-slate-400 font-medium italic">
+                              <td colSpan={4} className="px-4 py-8 text-center text-sm text-slate-400 dark:text-slate-500 font-medium italic">
                                  Aucun entretien planifié pour ce camion.
                               </td>
                            </tr>
@@ -549,8 +549,8 @@ export default function CamionDetailPage({
                         </svg>
                      </div>
                      <div>
-                        <h3 className="text-lg font-black text-slate-800 tracking-tight">Suivi Carburant</h3>
-                        <p className="text-xs text-slate-400 font-medium">Evolution des dépenses carburant du véhicule dans le temps</p>
+                        <h3 className="text-lg font-black text-slate-800 dark:text-slate-200 tracking-tight">Suivi Carburant</h3>
+                        <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">Evolution des dépenses carburant du véhicule dans le temps</p>
                      </div>
                   </div>
                </div>
@@ -573,37 +573,37 @@ export default function CamionDetailPage({
                         </BarChart>
                         </ResponsiveContainer>
                      ) : (
-                        <div className="h-full flex items-center justify-center text-sm font-medium text-slate-400 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                        <div className="h-full flex items-center justify-center text-sm font-medium text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
                            Aucun dossier carburant enregistré
                         </div>
                      )}
                   </div>
                   {/* KPI List */}
                   <div className="space-y-3">
-                     <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100">
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Budget Carburant Consommé</p>
+                     <div className=" p-3 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700">
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest">Budget Carburant Consommé</p>
                         <p className="text-xl font-black text-fleet-blue mt-0.5">
                            {formatMontant(budgetCarburantConsomme)}
                         </p>
                      </div>
-                     <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100">
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Dernier dossier</p>
-                        <p className="text-lg font-black text-slate-800 mt-0.5">
+                     <div className=" p-3 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700">
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest">Dernier dossier</p>
+                        <p className="text-lg font-black text-slate-800 dark:text-slate-200 mt-0.5">
                            {carburantDossiers[0] ? formatDateSafe(carburantDossiers[0].createdAt) : "-"}
                         </p>
                      </div>
-                     <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100">
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Dossiers Carburant</p>
-                        <p className="text-lg font-black text-slate-800 mt-0.5">{data.counts?.carburants || 0}</p>
+                     <div className=" p-3 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700">
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest">Dossiers Carburant</p>
+                        <p className="text-lg font-black text-slate-800 dark:text-slate-200 mt-0.5">{data.counts?.carburants || 0}</p>
                      </div>
                   </div>
                </div>
 
                <div className="space-y-3 mt-4">
                   <div className="flex items-center justify-between">
-                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Derniers dossiers carburant</p>
+                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Derniers dossiers carburant</p>
                      {carburantRowsRestants > 0 && (
-                        <span className="text-[10px] font-bold text-slate-500">
+                        <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
                            + {carburantRowsRestants} autre(s) non affiché(s)
                         </span>
                      )}
@@ -611,22 +611,22 @@ export default function CamionDetailPage({
                   {carburantRows.length > 0 ? (
                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         {carburantRows.map((c: any) => (
-                           <div key={c.id} className="rounded-2xl border border-slate-100 bg-slate-50/70 p-4 space-y-2">
+                           <div key={c.id} className="rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/50 p-4 space-y-2">
                               <div className="flex items-center justify-between gap-3">
-                                 <span className="text-xs font-black text-slate-800">{formatDateSafe(c.createdAt)}</span>
-                                 <span className="text-[10px] font-bold text-slate-500">
+                                 <span className="text-xs font-black text-slate-800 dark:text-slate-200">{formatDateSafe(c.createdAt)}</span>
+                                 <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
                                     {c.statut === "CLOTURE" ? "Clôturé" : "En cours"}
                                  </span>
                               </div>
-                              <p className="text-xs text-slate-500 font-semibold truncate">
+                              <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold truncate">
                                  {c.chauffeur ? `${c.chauffeur.prenom || ""} ${c.chauffeur.nom}`.trim() : "Non assigné"}
                               </p>
-                              <p className="text-lg font-black text-slate-800">{formatMontant(c.totalDepenses || 0)}</p>
+                              <p className="text-lg font-black text-slate-800 dark:text-slate-200">{formatMontant(c.totalDepenses || 0)}</p>
                            </div>
                         ))}
                      </div>
                   ) : (
-                     <div className="px-4 py-6 text-center text-slate-400 italic rounded-2xl border border-slate-100 bg-slate-50/70">
+                     <div className="px-4 py-6 text-center text-slate-400 dark:text-slate-500 italic rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/50">
                         Aucun dossier carburant.
                      </div>
                   )}
@@ -643,8 +643,8 @@ export default function CamionDetailPage({
                         </svg>
                      </div>
                      <div>
-                        <h3 className="text-lg font-black text-slate-800 tracking-tight">Historique des Interventions</h3>
-                        <p className="text-xs text-slate-400 font-medium">Réparations mécaniques, pièces changées et entretiens</p>
+                        <h3 className="text-lg font-black text-slate-800 dark:text-slate-200 tracking-tight">Historique des Interventions</h3>
+                        <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">Réparations mécaniques, pièces changées et entretiens</p>
                      </div>
                   </div>
                </div>
@@ -666,23 +666,23 @@ export default function CamionDetailPage({
                            </BarChart>
                         </ResponsiveContainer>
                      ) : (
-                        <div className="h-full flex items-center justify-center text-sm font-medium text-slate-400 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                        <div className="h-full flex items-center justify-center text-sm font-medium text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
                            Aucune intervention cette année
                         </div>
                      )}
                   </div>
                   <div className="space-y-4">
-                     <div className="flex justify-between items-center pb-3 border-b border-slate-100">
-                        <span className="text-sm font-bold text-slate-500">Interventions ce mois</span>
+                     <div className="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-slate-700">
+                        <span className="text-sm font-bold text-slate-500 dark:text-slate-400">Interventions ce mois</span>
                         <span className="text-lg font-black text-rose-500">{data.counts?.reparationsMois || 0}</span>
                      </div>
-                     <div className="flex justify-between items-center pb-3 border-b border-slate-100">
-                        <span className="text-sm font-bold text-slate-500">Budget maintenance consommé</span>
-                        <span className="text-lg font-black text-slate-800">{formatMontant(budgetMaintenanceConsomme)}</span>
+                     <div className="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-slate-700">
+                        <span className="text-sm font-bold text-slate-500 dark:text-slate-400">Budget maintenance consommé</span>
+                        <span className="text-lg font-black text-slate-800 dark:text-slate-200">{formatMontant(budgetMaintenanceConsomme)}</span>
                      </div>
                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-bold text-slate-500">Dernière maintenance</span>
-                        <span className="text-sm font-black text-slate-800 bg-slate-100 px-3 py-1 rounded-full">
+                        <span className="text-sm font-bold text-slate-500 dark:text-slate-400">Dernière maintenance</span>
+                        <span className="text-sm font-black text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">
                            {derniereMaintenance ? formatDateSafe(derniereMaintenance.date) : "-"}
                         </span>
                      </div>
@@ -691,9 +691,9 @@ export default function CamionDetailPage({
 
                <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Dernières interventions</p>
+                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Dernières interventions</p>
                      {reparationsRestantes > 0 && (
-                        <span className="text-[10px] font-bold text-slate-500">
+                        <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
                            + {reparationsRestantes} autre(s) non affichée(s)
                         </span>
                      )}
@@ -701,21 +701,21 @@ export default function CamionDetailPage({
                   {recentReparations.length > 0 ? (
                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         {recentReparations.map((rep: any) => (
-                           <div key={rep.id} className="rounded-2xl border border-slate-100 bg-slate-50/70 p-4 space-y-2">
+                           <div key={rep.id} className="rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/50 p-4 space-y-2">
                               <div className="flex items-center justify-between gap-3">
                                  <Badge variant={rep.type === "vidange" ? "bg-purple-50 text-purple-700" : rep.type === "pneus" ? "bg-gray-50 text-gray-700" : "bg-blue-50 text-blue-700"}>
                                     {typeReparationLabels[rep.type] || rep.type}
                                  </Badge>
                                  <span className="text-xs font-black text-rose-600">{formatMontant(rep.cout)}</span>
                               </div>
-                              <p className="text-xs text-slate-500 font-semibold">{formatDateSafe(rep.date)}</p>
-                              <p className="text-sm text-slate-800 font-bold truncate">{rep.garage}</p>
-                              <p className="text-xs text-slate-500 line-clamp-2">{rep.description}</p>
+                              <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold">{formatDateSafe(rep.date)}</p>
+                              <p className="text-sm text-slate-800 dark:text-slate-200 font-bold truncate">{rep.garage}</p>
+                              <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">{rep.description}</p>
                            </div>
                         ))}
                      </div>
                   ) : (
-                     <div className="text-center py-6 text-slate-400 italic text-sm rounded-2xl border border-slate-100 bg-slate-50/70">
+                     <div className="text-center py-6 text-slate-400 dark:text-slate-500 italic text-sm rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/50">
                         Aucune réparation enregistrée.
                      </div>
                   )}
@@ -727,53 +727,53 @@ export default function CamionDetailPage({
          {/* Right Column: Fleet Operational Sheet */}
          <div className="lg:col-span-1">
             <div className="sticky top-24">
-               <div className="card-modern p-6 border-fleet-blue/20 bg-gradient-to-b from-white to-fleet-blue/5">
+               <div className="card-modern p-6 border-fleet-blue/20 bg-gradient-to-b from-white dark:from-slate-900 to-fleet-blue/5 dark:to-fleet-blue/10">
                   <div className="text-center mb-6">
                      <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-fleet-blue/10 text-fleet-blue mb-3 shadow-sm shadow-fleet-blue/10">
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0012 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 01-2.031.352 5.988 5.988 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.971zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 01-2.031.352 5.989 5.989 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.971z" />
                         </svg>
                      </div>
-                     <h4 className="text-xs font-black tracking-widest text-slate-400 uppercase">
+                     <h4 className="text-xs font-black tracking-widest text-slate-400 dark:text-slate-500 uppercase">
                         Budget Véhicule
                      </h4>
-                     <p className="text-lg font-black text-slate-800 mt-1">Vue globale du camion</p>
+                     <p className="text-lg font-black text-slate-800 dark:text-slate-200 mt-1">Vue globale du camion</p>
                   </div>
 
                   <div className="space-y-3 text-xs">
-                     <div className="flex justify-between items-center p-3 rounded-xl bg-white border border-slate-100">
-                        <span className="font-bold text-slate-500">Budget véhicule</span>
-                        <span className="font-black text-slate-800">{formatMontant(budgetVehiculeTotal)}</span>
+                     <div className="flex justify-between items-center p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700">
+                        <span className="font-bold text-slate-500 dark:text-slate-400">Budget véhicule</span>
+                        <span className="font-black text-slate-800 dark:text-slate-200">{formatMontant(budgetVehiculeTotal)}</span>
                      </div>
-                     <div className="flex justify-between items-center p-3 rounded-xl bg-white border border-slate-100">
-                        <span className="font-bold text-slate-500">Budget consommé</span>
+                     <div className="flex justify-between items-center p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700">
+                        <span className="font-bold text-slate-500 dark:text-slate-400">Budget consommé</span>
                         <span className="font-black text-rose-500">{formatMontant(budgetVehiculeConsomme)}</span>
                      </div>
-                     <div className="flex justify-between items-center p-3 rounded-xl bg-white border border-slate-100">
-                        <span className="font-bold text-slate-500">Budget restant</span>
+                     <div className="flex justify-between items-center p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700">
+                        <span className="font-bold text-slate-500 dark:text-slate-400">Budget restant</span>
                         <span className={`font-black ${budgetVehiculeRestant < 0 ? "text-rose-500" : "text-emerald-600"}`}>
                            {formatMontant(budgetVehiculeRestant)}
                         </span>
                      </div>
-                     <div className="flex justify-between items-center p-3 rounded-xl bg-white border border-slate-100">
-                        <span className="font-bold text-slate-500">Consommé carburant</span>
+                     <div className="flex justify-between items-center p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700">
+                        <span className="font-bold text-slate-500 dark:text-slate-400">Consommé carburant</span>
                         <span className="font-black text-fleet-blue">{formatMontant(budgetCarburantConsomme)}</span>
                      </div>
-                     <div className="flex justify-between items-center p-3 rounded-xl bg-white border border-slate-100">
-                        <span className="font-bold text-slate-500">Consommé maintenance</span>
+                     <div className="flex justify-between items-center p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700">
+                        <span className="font-bold text-slate-500 dark:text-slate-400">Consommé maintenance</span>
                         <span className="font-black text-amber-600">{formatMontant(budgetMaintenanceConsomme)}</span>
                      </div>
                   </div>
 
                   <div className="mt-6 pt-5 border-t border-slate-200">
-                     <p className="text-[10px] font-bold tracking-widest text-slate-400 uppercase text-center mb-2">Utilisation du budget</p>
-                     <div className="w-full h-2 bg-white rounded-full overflow-hidden shadow-inner">
+                     <p className="text-[10px] font-bold tracking-widest text-slate-400 dark:text-slate-500 uppercase text-center mb-2">Utilisation du budget</p>
+                     <div className="w-full h-2 bg-white dark:bg-slate-900 rounded-full overflow-hidden shadow-inner">
                         <div
                            className={`h-full transition-all duration-700 ${budgetVehiculePercent >= 100 ? "bg-rose-500" : "bg-fleet-blue"}`}
                            style={{ width: `${budgetVehiculePercent}%` }}
                         />
                      </div>
-                     <p className="text-center text-xs font-black mt-3 text-slate-700">{budgetVehiculePercent}% consommé</p>
+                     <p className="text-center text-xs font-black mt-3 text-slate-700 dark:text-slate-200">{budgetVehiculePercent}% consommé</p>
                   </div>
                </div>
             </div>
@@ -812,7 +812,7 @@ export default function CamionDetailPage({
             </div>
           </div>
           <div className="space-y-1.5">
-            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Photo du reçu</label>
+            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Photo du reçu</label>
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-900">
               <input
                 type="file"
@@ -830,12 +830,12 @@ export default function CamionDetailPage({
                     setFuelRecuUrl("");
                   }
                 }}
-                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition-all duration-200 focus:border-fleet-blue focus:ring-2 focus:ring-fleet-blue/20"
+                className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 outline-none transition-all duration-200 focus:border-fleet-blue focus:ring-2 focus:ring-fleet-blue/20"
               />
-              <p className="mt-2 text-[11px] text-slate-400">Formats acceptés : JPG, PNG, PDF</p>
+              <p className="mt-2 text-[11px] text-slate-400 dark:text-slate-500">Formats acceptés : JPG, PNG, PDF</p>
               {fuelReceiptPreviewUrl && (
-                <div className="mt-3 flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 text-sm text-slate-700 shadow-sm">
-                  <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl bg-slate-100 text-slate-500">
+                <div className="mt-3 flex items-center gap-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 text-sm text-slate-700 dark:text-slate-200 shadow-sm">
+                  <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
                     {fuelReceiptFile?.type.startsWith("image/") ? (
                       <img src={fuelReceiptPreviewUrl} alt="Aperçu reçu" className="h-full w-full object-cover" />
                     ) : (
@@ -843,15 +843,15 @@ export default function CamionDetailPage({
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-semibold text-slate-900">{fuelReceiptFileName || fuelReceiptFile?.name}</p>
-                    <p className="text-[11px] text-slate-400">{fuelUploadingReceipt ? "Téléversement en cours…" : "Fichier prêt"}</p>
+                    <p className="truncate font-semibold text-slate-900 dark:text-slate-100">{fuelReceiptFileName || fuelReceiptFile?.name}</p>
+                    <p className="text-[11px] text-slate-400 dark:text-slate-500">{fuelUploadingReceipt ? "Téléversement en cours…" : "Fichier prêt"}</p>
                   </div>
                 </div>
               )}
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
             <Button type="button" variant="ghost" onClick={() => setIsFuelModalOpen(false)}>Annuler</Button>
             <Button type="submit" loading={isSubmitting} disabled={fuelUploadingReceipt}>Enregistrer</Button>
           </div>
@@ -880,9 +880,9 @@ export default function CamionDetailPage({
           <Textarea label="Description de la panne / Travaux effectués *" placeholder="Rapport d'intervention..." value={repDesc} onChange={(e) => setRepDesc(e.target.value)} required />
 
           {/* Pièces de rechange */}
-          <div className="space-y-2 pb-4 border-b border-slate-100">
+          <div className="space-y-2 pb-4 border-b border-slate-100 dark:border-slate-700">
             <div className="flex justify-between items-center">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Pièces de rechange / Détails</span>
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Pièces de rechange / Détails</span>
               <button type="button" className="text-xs text-fleet-blue font-bold hover:underline" onClick={handleAddRepPiece}>
                 + Ajouter une pièce
               </button>
@@ -926,7 +926,7 @@ export default function CamionDetailPage({
 
           <Input label="Coût total calculé (F) *" type="number" value={repCout} onChange={(e) => setRepCout(e.target.value)} required />
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
             <Button type="button" variant="ghost" onClick={() => setIsReparationModalOpen(false)}>Annuler</Button>
             <Button type="submit" loading={isSubmitting}>Enregistrer l'Intervention</Button>
           </div>

@@ -342,8 +342,8 @@ export default function CamionsPage() {
             </svg>
           </div>
           <div>
-            <p className="font-bold text-slate-800 text-sm">{item.immatriculation}</p>
-            <p className="text-xs text-slate-400 font-medium">{item.marque} {item.modele || ""}</p>
+            <p className="font-bold text-slate-800 dark:text-slate-200 text-sm">{item.immatriculation}</p>
+            <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">{item.marque} {item.modele || ""}</p>
           </div>
         </div>
       ),
@@ -361,7 +361,7 @@ export default function CamionsPage() {
       key: "chauffeur",
       header: "Chauffeur",
       render: (item: any) => item.chauffeur ? (
-        <span className="font-semibold text-slate-600 text-sm">{item.chauffeur.prenom || ""} {item.chauffeur.nom}</span>
+        <span className="font-semibold text-slate-600 dark:text-slate-300 text-sm">{item.chauffeur.prenom || ""} {item.chauffeur.nom}</span>
       ) : (
         <span className="text-slate-400 italic text-xs">Aucun</span>
       ),
@@ -370,7 +370,7 @@ export default function CamionsPage() {
       key: "kilometrage",
       header: "Kilométrage actuel",
       render: (item: any) => (
-        <span className="text-sm font-semibold text-slate-700">{item.kilometrageActuel?.toLocaleString() || 0} km</span>
+        <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{item.kilometrageActuel?.toLocaleString() || 0} km</span>
       ),
     },
     {
@@ -429,22 +429,22 @@ export default function CamionsPage() {
       {/* Budget Global Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* Budget Global */}
-        <div className="p-4 rounded-2xl border-l-4 border-fleet-blue bg-white shadow-sm relative overflow-hidden group">
-          <div className="absolute inset-0 bg-fleet-blue/5 pointer-events-none" />
+        <div className="p-4 rounded-2xl border-l-4 border-fleet-blue bg-white dark:bg-slate-900 shadow-sm relative overflow-hidden group">
+          <div className="absolute inset-0 bg-fleet-blue/5 dark:bg-fleet-blue/10 pointer-events-none" />
           <div className="relative z-10">
-            <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Budget Global</p>
+            <p className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-widest">Budget Global</p>
             {editingBudgetGlobal ? (
               <div className="flex items-center gap-2 mt-2">
                 <input
                   type="number"
                   value={budgetGlobalInput}
                   onChange={(e) => setBudgetGlobalInput(e.target.value)}
-                  className="h-8 w-full rounded-lg border border-slate-200 px-3 text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20"
+                  className="h-8 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 text-sm font-bold text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20"
                   placeholder="Montant..."
                   autoFocus
                 />
                 <button onClick={handleSaveBudgetGlobal} className="h-8 px-3 bg-fleet-blue text-white text-xs font-bold rounded-lg hover:bg-fleet-blue-dark transition-colors">OK</button>
-                <button onClick={() => setEditingBudgetGlobal(false)} className="h-8 px-3 bg-slate-100 text-slate-500 text-xs font-bold rounded-lg hover:bg-slate-200 transition-colors">✕</button>
+                <button onClick={() => setEditingBudgetGlobal(false)} className="h-8 px-3 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs font-bold rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">✕</button>
               </div>
             ) : (
               <div className="flex items-center justify-between mt-1">
@@ -465,13 +465,13 @@ export default function CamionsPage() {
         </div>
 
         {/* Total Alloué */}
-        <div className="p-4 rounded-2xl border-l-4 border-indigo-500 bg-white shadow-sm relative overflow-hidden">
-          <div className="absolute inset-0 bg-indigo-50/50 pointer-events-none" />
+        <div className="p-4 rounded-2xl border-l-4 border-indigo-500 bg-white dark:bg-slate-900 shadow-sm relative overflow-hidden">
+          <div className="absolute inset-0 bg-indigo-50/50 dark:bg-indigo-950/20 pointer-events-none" />
           <div className="relative z-10">
-            <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Total Alloué</p>
+            <p className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-widest">Total Alloué</p>
             <p className="text-2xl font-black leading-none text-indigo-600 tracking-tight mt-1">{formatMontantAbrege(budgetStats.totalAlloue)}</p>
             {budgetGlobal > 0 && (
-              <p className="text-[10px] text-slate-500 font-semibold mt-1.5">
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold mt-1.5">
                 {Math.round((budgetStats.totalAlloue / budgetGlobal) * 100)}% du global
               </p>
             )}
@@ -479,14 +479,14 @@ export default function CamionsPage() {
         </div>
 
         {/* Budget Restant */}
-        <div className="p-4 rounded-2xl border-l-4 border-emerald-500 bg-white shadow-sm relative overflow-hidden">
-          <div className="absolute inset-0 bg-emerald-50/50 pointer-events-none" />
+        <div className="p-4 rounded-2xl border-l-4 border-emerald-500 bg-white dark:bg-slate-900 shadow-sm relative overflow-hidden">
+          <div className="absolute inset-0 bg-emerald-50/50 dark:bg-emerald-950/20 pointer-events-none" />
           <div className="relative z-10">
-            <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Budget Restant</p>
+            <p className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-widest">Budget Restant</p>
             <p className={`text-2xl font-black leading-none tracking-tight mt-1 ${budgetStats.budgetRestant < 0 ? 'text-red-600' : 'text-emerald-600'}`}>
               {formatMontantAbrege(budgetStats.budgetRestant)}
             </p>
-            <p className="text-[10px] text-slate-500 font-semibold mt-1.5">
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold mt-1.5">
               Disponible pour affectation
             </p>
           </div>
@@ -518,7 +518,7 @@ export default function CamionsPage() {
                   className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-colors flex-shrink-0 ${
                     filterStatut === btn.value
                       ? "bg-fleet-blue text-white shadow-lg shadow-fleet-blue/20"
-                      : "bg-slate-50 text-slate-500 hover:bg-slate-100"
+                      : "bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
                   }`}
                 >
                   {btn.label}
@@ -573,7 +573,7 @@ export default function CamionsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Colonne de Gauche */}
             <div className="space-y-4">
-              <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl shadow-sm space-y-4">
+              <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm space-y-4">
                 <h4 className="text-[9px] font-black uppercase tracking-widest text-fleet-blue flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-fleet-blue"></span> Identité du véhicule
                 </h4>
@@ -589,7 +589,7 @@ export default function CamionsPage() {
                 <Input label="N° Châssis (VIN)" placeholder="VIN..." value={numeroChassis} onChange={(e) => setNumeroChassis(e.target.value)} />
               </div>
 
-              <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl shadow-sm space-y-4">
+              <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm space-y-4">
                 <h4 className="text-[9px] font-black uppercase tracking-widest text-amber-600 flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-600"></span> Documents & Conformité
                 </h4>
@@ -607,7 +607,7 @@ export default function CamionsPage() {
 
             {/* Colonne de Droite */}
             <div className="space-y-4">
-              <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl shadow-sm space-y-4">
+              <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm space-y-4">
                 <h4 className="text-[9px] font-black uppercase tracking-widest text-emerald-600 flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> État & Technique
                 </h4>
@@ -632,14 +632,14 @@ export default function CamionsPage() {
                 <Input label="Réservoir (L)" type="number" value={capaciteReservoir} onChange={(e) => setCapaciteReservoir(e.target.value)} />
               </div>
 
-              <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl shadow-sm space-y-4">
-                <h4 className="text-[9px] font-black uppercase tracking-widest text-slate-500 flex items-center gap-2">
+              <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm space-y-4">
+                <h4 className="text-[9px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Allocation & Entretien
                 </h4>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <Input label="Dotation annuelle (F) *" type="number" value={dotationAnnuelle} onChange={(e) => setDotationAnnuelle(e.target.value)} required />
-                    <p className={`text-[10px] font-bold px-1 ${budgetStats.budgetRestant < 0 ? 'text-red-500' : 'text-slate-400'}`}>
+                    <p className={`text-[10px] font-bold px-1 ${budgetStats.budgetRestant < 0 ? 'text-red-500' : 'text-slate-400 dark:text-slate-500'}`}>
                       Budget dispo : {formatMontant(budgetStats.budgetRestant)}
                     </p>
                   </div>
@@ -651,7 +651,7 @@ export default function CamionsPage() {
 
           <Textarea label="Notes particulières" placeholder="Observations diverses..." value={notes} onChange={(e) => setNotes(e.target.value)} />
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
             <Button type="button" variant="ghost" onClick={() => setIsModalOpen(false)}>Annuler</Button>
             <Button type="submit" loading={isSubmitting}>{editingCamion ? "Sauvegarder" : "Enregistrer le véhicule"}</Button>
           </div>

@@ -192,6 +192,7 @@ export function DashboardShell({
   const { data: session, status } = useSession();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
+  const [darkReady, setDarkReady] = useState(false);
 
   // Call all hooks BEFORE any conditional returns!
   const breadcrumbs = getBreadcrumbs(pathname);
@@ -203,17 +204,30 @@ export function DashboardShell({
     }
   }, [status, router]);
 
+  // Init dark mode from localStorage on mount
   useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
+    const stored = localStorage.getItem("darkMode");
+    if (stored === "true") {
+      setDarkMode(true);
+      document.documentElement.classList.add("dark");
     }
-  }, [darkMode]);
+    setDarkReady(true);
+  }, []);
+
+  // Sync class and persist
+  useEffect(() => {
+    if (!darkReady) return;
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+    localStorage.setItem("darkMode", String(darkMode));
+  }, [darkMode, darkReady]);
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
+      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] dark:bg-slate-950">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-[3px] border-fleet-blue border-t-transparent rounded-full animate-spin" />
           <p className="text-sm text-slate-400 font-semibold tracking-wide">Chargement...</p>

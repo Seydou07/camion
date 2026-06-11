@@ -366,34 +366,34 @@ export default function DashboardPage() {
 
       {/* 4. Alertes & Rappels */}
       {alerts.length > 0 ? (
-        <div className="rounded-2xl border border-rose-200 bg-rose-50/50 overflow-hidden">
-          <div className="flex items-center gap-3 px-6 py-4 border-b border-rose-100">
-            <div className="w-9 h-9 rounded-xl bg-rose-500 text-white flex items-center justify-center shadow-lg shadow-rose-500/20">
+        <div className="rounded-2xl border border-rose-200 dark:border-rose-900/50 bg-rose-50/50 dark:bg-rose-950/20 overflow-hidden">
+          <div className="flex items-center gap-3 px-6 py-4 border-b border-rose-100 dark:border-rose-900/30">
+            <div className="w-9 h-9 rounded-xl bg-rose-500 text-white flex items-center justify-center shadow-lg shadow-rose-500/20 dark:shadow-rose-500/10">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
               </svg>
             </div>
             <div className="flex-1">
-              <h3 className="text-sm font-black text-slate-800 tracking-tight">Alertes & Rappels</h3>
-              <p className="text-[11px] font-semibold text-slate-500">
-                {alertsCount.critique > 0 && <span className="text-rose-600 font-black">{alertsCount.critique} critique{alertsCount.critique > 1 ? "s" : ""}</span>}
+              <h3 className="text-sm font-black text-slate-800 dark:text-slate-100 tracking-tight">Alertes & Rappels</h3>
+              <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                {alertsCount.critique > 0 && <span className="text-rose-600 dark:text-rose-400 font-black">{alertsCount.critique} critique{alertsCount.critique > 1 ? "s" : ""}</span>}
                 {alertsCount.critique > 0 && alertsCount.haute > 0 && <span> & </span>}
-                {alertsCount.haute > 0 && <span className="text-amber-600 font-black">{alertsCount.haute} haute{alertsCount.haute > 1 ? "s" : ""}</span>}
+                {alertsCount.haute > 0 && <span className="text-amber-600 dark:text-amber-400 font-black">{alertsCount.haute} haute{alertsCount.haute > 1 ? "s" : ""}</span>}
                 {alertsCount.total > 0 && <span> — {alertsCount.total} alerte{alertsCount.total > 1 ? "s" : ""}</span>}
               </p>
             </div>
             <Link href="/maintenance">
-              <span className="text-[10px] font-black uppercase tracking-widest text-fleet-blue hover:underline cursor-pointer px-3 py-1.5 rounded-xl hover:bg-white/60 transition-colors">
+              <span className="text-[10px] font-black uppercase tracking-widest text-fleet-blue hover:underline cursor-pointer px-3 py-1.5 rounded-xl hover:bg-white/60 dark:hover:bg-slate-800/60 transition-colors">
                 Gérer →
               </span>
             </Link>
           </div>
-          <div className="divide-y divide-rose-100">
+          <div className="divide-y divide-rose-100 dark:divide-rose-900/30">
             {alerts.map((alert: any, i: number) => {
               const severityConfig: Record<string, { bg: string; dot: string; label: string; text: string }> = {
-                critique: { bg: "bg-rose-50 hover:bg-rose-100", dot: "bg-rose-500", label: "Critique", text: "text-rose-700" },
-                haute: { bg: "bg-amber-50 hover:bg-amber-100", dot: "bg-amber-500", label: "Haute", text: "text-amber-700" },
-                moyenne: { bg: "bg-yellow-50 hover:bg-yellow-100", dot: "bg-yellow-400", label: "Moyenne", text: "text-yellow-700" },
+                critique: { bg: "bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-950/60", dot: "bg-rose-500", label: "Critique", text: "text-rose-700 dark:text-rose-300" },
+                haute: { bg: "bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-950/60", dot: "bg-amber-500", label: "Haute", text: "text-amber-700 dark:text-amber-300" },
+                moyenne: { bg: "bg-yellow-50 dark:bg-yellow-950/40 hover:bg-yellow-100 dark:hover:bg-yellow-950/60", dot: "bg-yellow-400", label: "Moyenne", text: "text-yellow-700 dark:text-yellow-300" },
               };
               const cfg = severityConfig[alert.severity] || severityConfig.moyenne;
               const typeLabels: Record<string, string> = {
@@ -408,13 +408,13 @@ export default function DashboardPage() {
                   className={`flex items-center gap-4 px-6 py-3.5 ${cfg.bg} transition-all group`}
                 >
                   <span className={`w-2.5 h-2.5 rounded-full ${cfg.dot} shrink-0`} />
-                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 w-28 shrink-0">{typeLabels[alert.type] || alert.type}</span>
-                  <span className="font-black text-sm text-slate-800 min-w-[100px]">{alert.immatriculation}</span>
-                  <span className="text-sm font-bold text-slate-600 flex-1">{alert.message}</span>
-                  <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md ${alert.severity === "critique" ? "bg-rose-200 text-rose-700" : alert.severity === "haute" ? "bg-amber-200 text-amber-700" : "bg-yellow-200 text-yellow-700"}`}>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 w-28 shrink-0">{typeLabels[alert.type] || alert.type}</span>
+                  <span className="font-black text-sm text-slate-800 dark:text-slate-200 min-w-[100px]">{alert.immatriculation}</span>
+                  <span className="text-sm font-bold text-slate-600 dark:text-slate-400 flex-1">{alert.message}</span>
+                  <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md ${alert.severity === "critique" ? "bg-rose-200 dark:bg-rose-900/60 text-rose-700 dark:text-rose-300" : alert.severity === "haute" ? "bg-amber-200 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300" : "bg-yellow-200 dark:bg-yellow-900/60 text-yellow-700 dark:text-yellow-300"}`}>
                     {cfg.label}
                   </span>
-                  <svg className="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <svg className="w-4 h-4 text-slate-300 dark:text-slate-600 group-hover:text-slate-500 dark:group-hover:text-slate-300 transition-colors shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                   </svg>
                 </Link>
@@ -425,14 +425,14 @@ export default function DashboardPage() {
       ) : (
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/20">
+            <div className="w-9 h-9 rounded-xl bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/20 dark:shadow-emerald-500/10">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             <div>
-              <h3 className="text-sm font-black text-slate-800 tracking-tight">Aucune alerte</h3>
-              <p className="text-[11px] font-semibold text-slate-400">Tous les véhicules sont à jour</p>
+              <h3 className="text-sm font-black text-slate-800 dark:text-slate-100 tracking-tight">Aucune alerte</h3>
+              <p className="text-[11px] font-semibold text-slate-400 dark:text-slate-500">Tous les véhicules sont à jour</p>
             </div>
           </div>
         </Card>

@@ -231,8 +231,8 @@ export default function ChauffeursPage() {
       render: (item: any) => (
         <span className={`text-[9px] font-black uppercase px-2 py-1 rounded-md border ${
           item.statut === "actif" 
-            ? "bg-green-50 text-green-700 border-green-200" 
-            : "bg-gray-50 text-gray-700 border-gray-200"
+            ? "bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-900/50" 
+            : "bg-gray-50 dark:bg-gray-950/30 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-900/50"
         }`}>
           {item.statut === "actif" ? "Actif" : "Inactif"}
         </span>
@@ -304,7 +304,7 @@ export default function ChauffeursPage() {
                   className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-colors flex-shrink-0 ${
                     filterStatut === btn.value
                       ? "bg-fleet-blue text-white shadow-lg shadow-fleet-blue/20"
-                      : "bg-slate-50 text-slate-500 hover:bg-slate-100"
+                      : "bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
                   }`}
                 >
                   {btn.label}

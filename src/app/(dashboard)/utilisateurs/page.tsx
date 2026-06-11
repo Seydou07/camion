@@ -224,7 +224,7 @@ export default function UsersPage() {
         <div className="flex flex-col md:flex-row gap-4 items-center justify-between px-6 py-4">
           <div className="w-full md:w-72">
             <div className="relative">
-              <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
               </svg>
               <input
@@ -232,7 +232,7 @@ export default function UsersPage() {
                 placeholder="Rechercher un membre..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-10 pl-12 pr-4 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-800 placeholder:text-slate-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue"
+                className="w-full h-10 pl-12 pr-4 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-800 dark:text-slate-200 placeholder:text-slate-400 dark:text-slate-500 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-fleet-blue/20 focus:border-fleet-blue dark:bg-slate-900 dark:text-slate-200 dark:border-slate-700"
               />
             </div>
           </div>
@@ -248,21 +248,21 @@ export default function UsersPage() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-6 pb-6">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-slate-50 border border-slate-100 rounded-3xl p-6 shadow-sm">
+              <div key={i} className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-3xl p-6 shadow-sm">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 rounded-2xl bg-slate-200 animate-pulse" />
+                  <div className="w-12 h-12 rounded-2xl bg-slate-200 dark:bg-slate-700 animate-pulse" />
                   <div className="flex-1">
-                    <div className="h-4 bg-slate-200 rounded w-3/4 mb-2" />
-                    <div className="h-3 bg-slate-200 rounded w-1/2" />
+                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4 mb-2" />
+                    <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/2" />
                   </div>
                 </div>
-                <div className="h-3 bg-slate-200 rounded w-full mb-2" />
-                <div className="h-3 bg-slate-200 rounded w-5/6 mb-4" />
-                <div className="border-t border-slate-100 pt-4">
-                  <div className="h-3 bg-slate-200 rounded w-1/3 mb-3" />
+                <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-full mb-2" />
+                <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-5/6 mb-4" />
+                <div className="border-t border-slate-100 dark:border-slate-700 pt-4">
+                  <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/3 mb-3" />
                   <div className="flex gap-2">
                     {[...Array(3)].map((_, j) => (
-                      <div key={j} className="w-9 h-9 rounded-xl bg-slate-200" />
+                      <div key={j} className="w-9 h-9 rounded-xl bg-slate-200 dark:bg-slate-700" />
                     ))}
                   </div>
                 </div>
@@ -274,7 +274,7 @@ export default function UsersPage() {
             {users.map((user) => (
               <div
                 key={user.id}
-                className="group bg-white border border-slate-100 rounded-3xl p-6 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden"
+                className="group bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-3xl p-6 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden"
               >
                 {/* Top section: avatar + role */}
                 <div className="flex items-center justify-between mb-4">
@@ -284,19 +284,19 @@ export default function UsersPage() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight">{user.name}</h3>
+                        <h3 className="text-sm font-black text-slate-800 dark:text-slate-200 uppercase tracking-tight">{user.name}</h3>
                       </div>
                       <p className="text-xs text-fleet-blue font-semibold mt-1">@{user.email.split("@")[0]}</p>
-                      <p className="text-xs text-slate-400 font-medium">{user.email}</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">{user.email}</p>
                     </div>
                   </div>
 
                   {/* Role badge */}
                   <span className={
                       user.role === "superadmin" 
-                        ? "bg-purple-100 text-purple-600 text-[10px] font-black px-3 py-1.5 rounded-xl uppercase" 
+                        ? "bg-purple-100 dark:bg-purple-950/30 text-purple-600 dark:text-purple-300 text-[10px] font-black px-3 py-1.5 rounded-xl uppercase" 
                         : user.role === "admin"
-                          ? "bg-blue-100 text-blue-600 text-[10px] font-black px-3 py-1.5 rounded-xl uppercase"
+                          ? "bg-blue-100 dark:bg-blue-950/30 text-blue-600 dark:text-blue-300 text-[10px] font-black px-3 py-1.5 rounded-xl uppercase"
                           : "bg-fleet-blue/10 text-fleet-blue text-[10px] font-black px-3 py-1.5 rounded-xl uppercase"
                     }>
                     {user.role === "superadmin" ? "Super Admin" : user.role === "admin" ? "Admin" : "Gestionnaire"}
@@ -304,7 +304,7 @@ export default function UsersPage() {
                 </div>
 
                 {/* Bottom section: status + actions */}
-                <div className="border-t border-slate-100 pt-4">
+                <div className="border-t border-slate-100 dark:border-slate-700 pt-4">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-sm" />
@@ -315,7 +315,7 @@ export default function UsersPage() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleOpenPwdModal(user)}
-                      className="flex-1 h-9 flex items-center justify-center rounded-xl border border-slate-200 bg-slate-50 hover:bg-fleet-blue/10 hover:border-fleet-blue/20 hover:text-fleet-blue text-slate-500 transition-all duration-300"
+                      className="flex-1 h-9 flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 hover:bg-fleet-blue/10 hover:border-fleet-blue/20 hover:text-fleet-blue text-slate-500 dark:text-slate-300 dark:text-slate-300 transition-all duration-300"
                       title="Changer le mot de passe"
                     >
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -324,7 +324,7 @@ export default function UsersPage() {
                     </button>
                     <button
                       onClick={() => handleOpenEditModal(user)}
-                      className="flex-1 h-9 flex items-center justify-center rounded-xl border border-slate-200 bg-slate-50 hover:bg-amber-50 hover:border-amber-200 hover:text-amber-600 text-slate-500 transition-all duration-300"
+                      className="flex-1 h-9 flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 hover:bg-amber-50 hover:border-amber-200 hover:text-amber-600 text-slate-500 dark:text-slate-300 dark:text-slate-300 transition-all duration-300"
                       title="Modifier"
                     >
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -333,7 +333,7 @@ export default function UsersPage() {
                     </button>
                     <button
                       onClick={() => handleDeleteUser(user.id)}
-                      className="flex-1 h-9 flex items-center justify-center rounded-xl border border-slate-200 bg-slate-50 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-600 text-slate-500 transition-all duration-300"
+                      className="flex-1 h-9 flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-600 text-slate-500 dark:text-slate-300 dark:text-slate-300 transition-all duration-300"
                       title="Supprimer"
                     >
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -349,15 +349,15 @@ export default function UsersPage() {
       </TableCard>
 
       {/* Security warning */}
-      <div className="bg-amber-50 border border-amber-200 rounded-3xl p-6 flex items-start gap-4">
-        <div className="w-10 h-10 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-600 flex-shrink-0">
+      <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-3xl p-6 flex items-start gap-4">
+        <div className="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center text-amber-600 dark:text-amber-300 flex-shrink-0">
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
           </svg>
         </div>
         <div>
-          <h4 className="text-sm font-black text-amber-900 mb-1">Zone de sécurité critique</h4>
-          <p className="text-xs text-amber-700 leading-relaxed">
+          <h4 className="text-sm font-black text-amber-900 dark:text-amber-100 mb-1">Zone de sécurité critique</h4>
+          <p className="text-xs text-amber-700 dark:text-amber-300 leading-relaxed">
             Les actions de suppression sont irréversibles et affectent directement l'accès à l'application pour les utilisateurs concernés.
           </p>
         </div>
@@ -421,7 +421,7 @@ export default function UsersPage() {
               required={!editingUser || password.length > 0}
             />
           </div>
-          <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
+          <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100 dark:border-slate-700">
             <Button
               type="button"
               variant="ghost"
@@ -466,7 +466,7 @@ export default function UsersPage() {
               required
             />
           </div>
-          <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
+          <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100 dark:border-slate-700">
             <Button
               type="button"
               variant="ghost"
